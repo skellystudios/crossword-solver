@@ -1,0 +1,37 @@
+Prior Work -
+
+GENERATING
+
+Cryptic crossword clues: generating text with a hidden meaning
+David Hardcastle - 2007
+http://dl.acm.org/citation.cfm?id=1610189
+
+SOLVING
+
+PROVERB: The Probabilistic Cruciverbalist 
+Greg A. Keim, Noam M. Shazeer, Michael L. Littman - 1999 
+http://www.aaai.org/Papers/AAAI/1999/AAAI99-101.pdf
+Just non-cryptic style
+
+
+Computer Assisted Analysis of Cryptic Crosswords
+P.W.Williams and D. Woodhead - 1977
+http://comjnl.oxfordjournals.org/content/22/1/67.full.pdf
+LACROSS language, formal definitions - good building material
+
+
+Cryptic crossword clue interpreter
+M Hart, RH Davis - 1992
+http://www.sciencedirect.com/science/article/pii/0950584992900913
+Seem to have a basic system, good analysis of clue types
+
+OTHER
+A Statistical Study of Failures In Solving Crossword Puzzles
+Naranana, 2010
+http://www.tandfonline.com/doi/abs/10.1080/09296174.2010.485445#.U1V71eZdXtY
+Lots of stats about different failure types
+
+Expertise in cryptic crossword performance: 
+Kathryn Friedlander, Philip Fine, 2009
+http://www.legacyweb.rcm.ac.uk/cache/fl0019994.pdf
+By psychologists(!)
