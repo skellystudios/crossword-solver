@@ -1,0 +1,10 @@
+
+1. Summary of Cryptic Crosswords in the Literature 
+
+While not a topic well covered in scientific literature in generla, what few analytical studies around cryptic crosswords there are tend to be classifiable into three main groups. 
+
+The largest body of work that exists is centered around the generation of cryptic clues, focused largely around analysis of how string literals from a pre-determined answer can be transformed by set clueing patterns, as well as some work around measures of the quality of generated clues. 
+
+The next set are the select few who have done prior, similar investigations into solving cryptic clues, with some work put into formalising definitions and notation for the sorts of clue types that appear in the majority of cryptic crosswords, and some attempts at solving. There has also been some work done towards solving non-cryptic crosswords probablistically, working on whole-grid solutions rather than individual clues.
+
+There are also some more left of field studies done: statistical studies into errors made during manual solving, and psychological studies into solving.  
