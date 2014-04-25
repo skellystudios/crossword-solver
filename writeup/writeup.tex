@@ -1,0 +1,85 @@
+\documentclass[12pt]{article}
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{escapeinside={<@}{@>}}
+
+
+\newcommand\todo[1]{\textcolor{red}{#1}}
+
+
+\title{Solving Cryptic Crosswords With Functional Programming \\ - Literature Review}
+
+\author{
+        Michael Skelly \\
+        Department of Computer Science\\
+        Imperial College
+}
+\date{\today}
+
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This is the paper's abstract \ldots
+\end{abstract}
+
+\section{Summary of Cryptic Crosswords }
+
+\subsection{Cryptic Crosswords}
+
+\subsection{In the literature}
+While not a topic well covered in scientific literature in general, what few analytical studies around cryptic crosswords there are tend to be classifiable into three main groups:\\
+
+The largest body of work that exists is centered around the generation of cryptic clues, focused largely around analysis of how string literals from a pre-determined answer can be transformed by set clueing patterns, as well as some work around measures of the quality of generated clues. \\
+
+The next set are the select few who have done prior, similar investigations into solving cryptic clues, with some work put into formalising definitions and notation for the sorts of clue types that appear in the majority of cryptic crosswords, and some attempts at solving. There has also been some work done towards solving non-cryptic crosswords probablistically, working on whole-grid solutions rather than individual clues.\\
+
+There are also some more left of field studies done: statistical studies into errors made during manual solving, and psychological studies into solving.  
+
+\subsection{Formalisation}
+
+\todo {Need to do this shit}
+
+
+\section{The Cryptic Crossword}
+
+\subsection{Structure of a cryptic clue}
+A cryptic crossword differs from a normal crossword in that the clue for each answer consists of two parts. 
+
+The first is the definition, which performs the same function as a clue in a 'regular' crossword. The answer to the clue is usually a synonym for the definition ('circular' and 'round') or may be an example of the definition ('farm animal' and 'pig'). Other forms that the definition may take will be discussed later on.
+
+The second part of the clue is the wordplay. This is an encoded and often ambiguous second method of deriving the answer, using techniques such as anagram, subsitution and concatenation. 
+
+The clue as a whole is presented as a concatenation of the two parts, sometimes with a subsidiary word indicating that one can be derived from the other (for example, 'from' or 'is'). The final clue will often resemble a valid english utterance, although this 'surface reading' very rarely has any relation to the final answer.
+
+\begin{verbatim}
+
+d
+\end{verbatim}
+
+\begin{lstlisting}
+clue <@$\rightarrow$@> definition, wordplay | wordplay, definition
+\end{lstlisting}
+
+
+
+\subsection{The Definition}
+
+
+
+2\subsection{The Wordplay}
+
+
+\section{Results}\label{results}
+In this section we describe the results.
+
+\section{Conclusions}\label{conclusions}
+We worked hard, and achieved very little.
+
+\bibliographystyle{abbrv}
+\bibliography{main}
+
+\end{document}
+This is never printed
