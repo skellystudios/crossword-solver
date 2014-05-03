@@ -5,11 +5,12 @@ import Data.List
 data Clue = DefNode String ClueTree 
   deriving Show
 
-data ClueTree = ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree
+data ClueTree = ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String]
   deriving Show
 
 data Anagrind = AIndicator [String] deriving Show
 data InsertionIndicator = IIndicator [String] deriving Show
+data HWIndicator = HWIndicator [String] deriving Show
 
 
 includeReversals xs = xs ++ [(snd(x),fst(x)) | x <- xs] 
@@ -35,6 +36,7 @@ expand :: [String] -> [ClueTree]
 expand ys = [Leaf (concatWithSpaces ys)] 
 	++ (if length ys > 1 then makeAnagramNodes ys else [] )
 	++ (if length ys > 1 then makeConsNodes ys else [])
+	++ (if length ys > 1 then makeHiddenWordNodes ys else [])
 	++ (if length ys > 2 then makeInsertionNodes ys else [])
 
 
@@ -46,7 +48,6 @@ makeConsNodes xs = let parts = twoParts xs
 
 -- ANAGRAMS
  
-
 -- Sometimes need to use synonymns here ??? Maybe anagram subtypes needs to be a special type of subtree
 makeAnagramNodes :: [String] -> [ClueTree]
 makeAnagramNodes xs = let parts = twoParts xs
@@ -67,8 +68,6 @@ anagrams1 (x:xs) ys = (anagrams1 xs (x:ys)) ++ (anagrams1 xs (ys++[x]))
 
 
 -- INSERTIONS
-
--- Sometimes need to use synonymns here ??? Maybe anagram subtypes needs to be a special type of subtree
 makeInsertionNodes :: [String] -> [ClueTree]
 makeInsertionNodes xs = let parts = threeParts xs
                   in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x), z' <- (expand z)] 
@@ -81,6 +80,21 @@ insertInto xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (insertInto xs ys))
 
 isInsertionWord ["in"] = True
 isInsertionWord _ = False
+
+
+
+
+-- HIDDEN WORDS
+makeHiddenWordNodes :: [String] -> [ClueTree]
+makeHiddenWordNodes xs = let parts = twoParts xs
+                  in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] 
+
+
+isHWIndicator ["found","in"] = True
+isHWIndicator _ = False
+
+substr [] = [[]]
+substr (x:xs) = (map ((:) x) (substr xs)) ++ substr xs 
 
 
 concatWithSpaces (x:[]) = x
@@ -98,11 +112,12 @@ eval_tree (AnagramNode x y) = anagrams(concat(y))
 eval_tree (Leaf x) = syn x ++ [x]
 eval_tree (ConsNode x y) = [x' ++ y' | x' <- eval_tree(x), y' <- eval_tree(y)]
 eval_tree (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree(x), y' <- eval_tree(y)]
+eval_tree (HiddenWordNode ind ys) = substr (concat ys)
 
 syn :: String -> [String]
 syn "notice" = ["ack", "acknowledge", "sign"] ++  [show x | x <- [1..50]]
 syn "coat" = ["jacket"]
-syn "companion" = ["friend", "escort"]
+syn "companion" = ["friend", "escort", "mate"]
 syn "shredded" = ["changed", "stripped"]
 syn "corset" = ["basque"]  ++  [show x | x <- [1..50]]
 syn "flying" = ["jet"]  ++  [show x | x <- [1..50]]
