@@ -44,8 +44,6 @@ makeConsNodes :: [String] -> [ClueTree]
 makeConsNodes xs = let parts = twoParts xs
                    in concat [[ConsNode x' y' |x' <- (expand (fst part)), y' <- (expand (snd part))] | part <- parts]  
 
-
-
 -- ANAGRAMS
  
 -- Sometimes need to use synonymns here ??? Maybe anagram subtypes needs to be a special type of subtree
@@ -82,8 +80,6 @@ isInsertionWord ["in"] = True
 isInsertionWord _ = False
 
 
-
-
 -- HIDDEN WORDS
 makeHiddenWordNodes :: [String] -> [ClueTree]
 makeHiddenWordNodes xs = let parts = twoParts xs
@@ -101,7 +97,7 @@ concatWithSpaces (x:[]) = x
 concatWithSpaces (x:xs) = x ++ " " ++ concatWithSpaces xs
  
 clue1 = words "companion shredded corset"
-clue2 = words "notice in flying coat notice in flying coat"
+clue2 = words "notice in flying coat"
 
 -- Now we evaluate
 eval :: Clue -> [String]
