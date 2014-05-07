@@ -70,10 +70,6 @@
 
 \begin_layout Title
 Solving Cryptic Crosswords through Functional Programming
-\begin_inset Newline newline
-\end_inset
-
-Literature Review
 \end_layout
 
 \begin_layout Author
@@ -99,6 +95,10 @@ th
 \end_inset
 
  2014
+\end_layout
+
+\begin_layout Part
+Literature Review
 \end_layout
 
 \begin_layout Section
@@ -138,23 +138,25 @@ A crossword is a puzzle, usually published in newspapers or magazines.
 \begin_layout Standard
 Grids can be very densely white, with few black squares and most squares
  shared by two words (usually called 
-\series bold
+\noun on
 American Style
-\series default
+\noun default
 ) or more sparse, with fewer overlapped clues (called 
-\series bold
+\emph on
+\noun on
 British Style
-\series default
+\emph default
+\noun default
 ).
  Clues can also be in two styles.
  
-\series bold
+\noun on
 Straight
-\series default
+\noun default
  or 
-\series bold
+\noun on
 Quick
-\series default
+\noun default
  crossword clues usually provide a single straightforward indicator as to
  what the correct word might be - often a synonym for the clue ('Joyful'
  = 'Happy') or a missing word (
@@ -175,8 +177,11 @@ Time
 
 ).
  
+\noun on
+Cryptic
 \series bold
-Cryptic 
+\noun default
+ 
 \series default
 clues are less straight-forward, appearing on the surface to be a valid
  syntactic utterance in English, but actually consisting of a definition
@@ -293,17 +298,22 @@ Cryptic crosswords are deliberately ambiguous.
  are identical to words’ semantic meanings.
  Often, the setter will deliberately chose words to give rise to further
  ambiguities.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-MORE HERE
+ For example, the 
+\emph on
+Telegraph
+\emph default
+ printed
 \end_layout
 
-\end_inset
+\begin_layout LyX-Code
+Bug starts to move in dark, glowing endlessly (5)
+\end_layout
 
-
+\begin_layout Standard
+cluing for 'MIDGE'.
+ Usually "endlessly" and similar mean "remove the last letter", but here
+ it is one of five consecutive words to form an acronym from, with the word
+ "starts" as an indicator.
 \end_layout
 
 \begin_layout Paragraph
@@ -311,19 +321,12 @@ State Space
 \end_layout
 
 \begin_layout Standard
-Even with only a few different clue types, the number off different readings
- of one clue based on those grows exponentially with the length of the clue
+Even with only a few different clue types, the number of different readings
+ of one clue based on those grows exponentially with the length of the clue.
+ This means that unless heuristics are applied, the evaluation time for
+ a whole grid longer clues may be unfeasibly long.
+ Even longer than it takes me to do the Times Crossword.
  
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-MORE HERE
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Paragraph
@@ -440,17 +443,17 @@ Knowledge Base
 As well as being made up of encrypted and hidden meanings, cryptic crosswords
  also draws on a diverse knowledge base of synonyms, abbreviations, facts
  etc.
+ These can include information as diverse as names of capital cities, common
+ sayings, and the fact that one may carry a wallet in ones pocket.
  
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-MORE HERE
 \end_layout
 
-\end_inset
-
-
+\begin_layout Standard
+In order to run a fully working cryptic crossword solver against any arbitrary
+ clue, all of these pieces of information must be encoded, stored and accessible
+ to the solver in a machine readable form.
+ Understandably, this is subject to an entire field of study itself.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -459,26 +462,45 @@ Programming Language Analogues
 
 \begin_layout Standard
 Much of the current work on interpreting crosswords draws on work by Backus,
- Naur and Chomsky in creating a specification for the language 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-MORE HERE
-\end_layout
-
-\end_inset
-
-
+ Naur and Chomsky in creating a specification for the grammar of crosswords.
+ While these frameworks are useful for describing many different languages,
+ interpretations of the grammar of cryptic crosswords seem to be peversely
+ somewhat closer to mathematical and programming lanaguges than to natural
+ langauge.
+ In some ways, the cryptic clue as a whole can be thought of as a program
+ that generates the output string as its answer.
+ The wordplay section is analagous to a program, and the definition section
+ of a clue could be thought of as a checksum to verify the final answer.
 \end_layout
 
 \begin_layout Subsubsection
-Lexing, Parsing, Solving 
+Lexing, Parsing, Evaluating 
 \end_layout
 
 \begin_layout Standard
-As the grammar is ambiguous, we can't tokenise one one pass and then parse
- on a second 
+The steps for compiling and running a computer program apply also to solving
+ (or 'running') a crossword as a program.
+ Each word in the input string needs to be tokenized, parsed into a relevant
+ structure and then that structure evaluated to produce the final answer.
+ Unusually for a programming language, however, the grammar of a cryptic
+ crossword is highly ambiguous, and requires complex parsing.
+ Firstly, programming language are only usually required to output the one
+ valid abstract syntax tree, however here we may need to output many thousands
+ in order to evaluate them to see which yields the correct answer.
+ Furthermore, the grammar cannot be expressed without using complex context-sens
+itive features such as lookbacks, lookaheads and backtracking.
+ Most major programming languages are parsed without these features, allowing
+ information to flow in one direction from the lexer to the parser.
+ To parse a cryptic crossword, lexing and parsing need to take place simultaneou
+sly in a process refered to as called 
+\begin_inset Quotes eld
+\end_inset
+
+Scannerless Parsing
+\begin_inset Quotes erd
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Subsection
@@ -486,20 +508,35 @@ There's No Accounting for Wit
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Basically, mention that there are lots of clues that rely on plain wit.
+Along with clearly defined and program-like cryptic crossword clues, there
+ exist other clues that rely on humour, imagery and wit, rather than following
+ the regimented classical structure, as set out by Ximenes.
+ Some examples include:
 \end_layout
 
-\end_inset
+\begin_layout LyX-Code
+Flower of London? (6)    
+\end_layout
 
+\begin_layout LyX-Code
+    (= THAMES, flower = that which flows)
+\end_layout
 
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+In which you can get three couples together and have sex (5) 
+\end_layout
+
+\begin_layout LyX-Code
+    (= LATIN, 'sex' is 6 in Latin)
 \end_layout
 
 \begin_layout Standard
-Flower of London? (6)
+Clues such as these, and the question of computerised wit and humour, unfortunat
+ely exist out of the scope of this project.
 \end_layout
 
 \begin_layout Section
@@ -561,6 +598,12 @@ There are several issues with this grammar.
 l manipulation
 \end_layout
 
+\begin_layout Standard
+Still, they have provided the basis for future work, and begun a basic enumerati
+on of clue types.
+ 
+\end_layout
+
 \begin_layout Subsection
 Simple Clue Markup Language 
 \end_layout
@@ -572,37 +615,67 @@ Proposed by Hall and Rapanotti, Simple Clue Markup Language (SCML) attempts
 \end_layout
 
 \begin_layout Standard
-Double underlining (bold underlining, here) is used to denote the definition,
- underlining denotes an operator, with its class as an optional subscript,
- with scope provided by brackets and concatenation (and definition/wordplay
- separation) given by a semi-colon.
+Double underlining is used to denote the definition, underlining denotes
+ an operator, with its class as an optional subscript, with scope provided
+ by brackets and concatenation (and definition/wordplay separation) given
+ by a semi-colon.
  Thus in their given example: 
 \end_layout
 
 \begin_layout LyX-Code
-Note the shuddering domestic appliance Bill regularly installed,
-\begin_inset Newline newline
-\end_inset
-
-noisy thing (6,7) 
+Note the shuddering appliance Bill regularly installed, noisy thing (6,7)
+ 
 \end_layout
 
 \begin_layout LyX-Code
-Note; (the) shudderinga; (domestic appliance,
-\begin_inset Newline newline
-\end_inset
 
-(Bill)regularlyt)installede;noisy thing 
-\begin_inset Note Note
-status open
+\bar under
+Note
+\bar default
+;(the)
+\bar under
+shuddering
+\bar default
+
+\begin_inset script subscript
 
 \begin_layout Plain Layout
-fix the underlining etc on this
+a
 \end_layout
 
 \end_inset
 
+;(appliance,(Bill)
+\bar under
+regularly
+\bar default
 
+\begin_inset script subscript
+
+\begin_layout Plain Layout
+t
+\end_layout
+
+\end_inset
+
+)
+\bar under
+installed
+\bar default
+
+\begin_inset script subscript
+
+\begin_layout Plain Layout
+e
+\end_layout
+
+\end_inset
+
+;
+\uuline on
+noisy thing
+\uuline default
+ 
 \end_layout
 
 \begin_layout Quote
@@ -621,14 +694,14 @@ the ‘regularly’ of ‘Bill regularly’ may indicate alternate letters (‘t
 
 \begin_layout Quote
 ‘installed’ suggests the embedding (‘e’) of those letters within something
- meaning ‘domestic appliance’.
+ meaning ‘ appliance’.
 \end_layout
 
 \begin_layout Standard
 In this, we have no markup differentiation for literal strings (‘Bill’)
- against words with their semantic context (‘domestic appliance’), and we
- also take certain words that reduce to abbreviations (‘Note’) to be non-determi
-nistic nullary operators.
+ against words with their semantic context (‘appliance’), and we also take
+ certain words that reduce to abbreviations (‘Note’) to be non-deterministic
+ nullary operators.
  With some changes and additions (tagging of string vs.
  semantic word, for example), this markup serves as a good way to represent
  a parsing of a clue in a human readable way.
@@ -745,22 +818,45 @@ PICCUP
 \end_layout
 
 \begin_layout Standard
-Hart and Davies define what is currently the most sNullary and N-aryatisfying
- proposal for a formal syntactical definition of cryptic crossword syntax,
- in a loosely BNF grammar.
+Hart and Davies define what is currently the most satisfying proposal for
+ a formal syntactical definition of cryptic crossword syntax, in a loosely
+ BNF grammar.
  Theirs is the only current definition that closely resembles a usable formally
  defined language.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-DO MORE HERE
 \end_layout
 
-\end_inset
+\begin_layout Standard
+Their interpretation only specifies the grammar in terms of building an
+ abstract syntax tree, rather than attempting to include a notation for
+ clue or answer.
+\end_layout
 
+\begin_layout LyX-Code
+Anagram → Synonym(.Equ Indicator).AnagramSentence
+\end_layout
 
+\begin_layout LyX-Code
+/AnagramSentence(.Equ Indicator).Synonym 
+\end_layout
+
+\begin_layout LyX-Code
+AnagramSentence → AnagramPointer.AnagramMaterial
+\end_layout
+
+\begin_layout LyX-Code
+/ Anagram Material.Anagram Pointer AnagramPointer~ Word(.Word)* 
+\end_layout
+
+\begin_layout LyX-Code
+AnagramMaterial → Word(.Word)* 
+\end_layout
+
+\begin_layout LyX-Code
+Synonym → Word(.Word)* 
+\end_layout
+
+\begin_layout LyX-Code
+Equ Indicator → Word (.Word)*
 \end_layout
 
 \begin_layout Subsection
@@ -825,11 +921,88 @@ For clarity, we additionally define:
 \end_layout
 
 \begin_layout LyX-Code
-String = any string literal
+String = [any string literal]
 \end_layout
 
 \begin_layout Subsection
 Context Free?
+\end_layout
+
+\begin_layout Standard
+The grammar described in this paper not a regular grammar (for example:
+ any of the binary operators generate two non-terminals), but it can be
+ formulated as a context-free grammar.
+ 
+\end_layout
+
+\begin_layout Standard
+We define a 
+\noun on
+context-free grammar
+\noun default
+ (CFG) as one in which the expansion of a non-terminal is not affected by
+ the symbols before and after it.
+\end_layout
+
+\begin_layout Standard
+While we can certainly define a working grammar for cryptic crossword clues
+ in terms of a CFG, it may be useful to consider other options as a means
+ of reducing the number of trees generated during the parsing phase to speed
+ up the evaluation phase.
+ We could take, for example, the clue length as a contextual variable: in
+ that case, a 6 letter clue whose parse tree contains an anagram of a 4-letter
+ string cannot yield another anagram of 5 letters.
+\end_layout
+
+\begin_layout LyX-Code
+        Cons Node
+\end_layout
+
+\begin_layout LyX-Code
+   
+\bar under
+         |       
+\end_layout
+
+\begin_layout LyX-Code
+Anagram        Wordplay
+\end_layout
+
+\begin_layout LyX-Code
+  |               
+\end_layout
+
+\begin_layout LyX-Code
+String
+\end_layout
+
+\begin_layout LyX-Code
+  |
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Quotes eld
+\end_inset
+
+apples
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this example, the wordplay on the right should not be expanded out to
+ an anagram node featuring a string of 5 characters (to consume, say, the
+ string 
+\begin_inset Quotes eld
+\end_inset
+
+mixed pears
+\begin_inset Quotes erd
+\end_inset
+
+).
 \end_layout
 
 \begin_layout Subsection
@@ -915,8 +1088,11 @@ A cryptic crossword differs from a normal crossword in that the clue for
 \end_layout
 
 \begin_layout LyX-Code
-Clue → Definition, Indicator*, Wordplay | Wordplay, Indicator*, Definition
- 
+Clue → Definition, (Indicator), Wordplay 
+\end_layout
+
+\begin_layout LyX-Code
+       | Wordplay, (Indicator), Definition 
 \end_layout
 
 \begin_layout Standard
@@ -1028,6 +1204,9 @@ Special Operators
 \begin_layout Standard
 I include these two operators first, as they really form the backbone or
  basis of other clues.
+ They are also unique in being implicitly clued, rather than requiring an
+ indicator word to signify their presence.
+ 
 \end_layout
 
 \begin_layout Paragraph
@@ -1129,20 +1308,28 @@ Other Wordplay Operators
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-some sort of leadup
-\end_layout
-
-\end_inset
-
- 
+For the other wordplay operators, we define them in terms of our grammar,
+ as well as discussing their semantic meaning.
 \end_layout
 
 \begin_layout LyX-Code
-Wordplay → Equivalence, Concatenation, Anagram […]
+Wordplay → Words | Concatenation | Anagram | Reversion | Contraction 
+\end_layout
+
+\begin_layout LyX-Code
+          | Selection | Hidden Word | Containment | Subtraction 
+\end_layout
+
+\begin_layout LyX-Code
+          | Homophone
+\end_layout
+
+\begin_layout Standard
+These operators all include an indicator word to show they are being applied
+ (as is far more common with operators in programming language parsing!)
+ Each operator will usually have many different indicators (lists of anagram
+ indicators on the web span multiple hundreds).
+ Only select ones are included in the specification here.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1390,10 +1577,78 @@ Initials → InitialsIndicator, String,
 , String*, InitialsIndicator
 \end_layout
 
+\begin_layout Paragraph
+Hidden word 
+\end_layout
+
+\begin_layout Standard
+The hidden word clue finds a word which appears as a substring (ignoring
+ spaces) inside its operand.
+ These typically only occur once per puzzle, and are always accompanied
+ by a clear indicator.
+ In this example clue:
+\end_layout
+
+\begin_layout LyX-Code
+'Smack which appears in East Anglian ports.(4)' 
+\end_layout
+
+\begin_layout Standard
+the solution to this example is 'TANG', (meaning 'smack' in the sense of
+ 'taste'), and which is concealed (indicated by 'which appears') in 'easT
+ ANGlian ports'.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+HiddenWord → HWIndictator String | String HWIndicator
+\end_layout
+
 \begin_layout Standard
 
 \series bold
 Homophone
+\end_layout
+
+\begin_layout Standard
+Also called 'sounds like', this operator produces homophones of a given
+ word.
+ They may be spelled differently ('right' and 'rite') or the same but said
+ differently ('Polish' and 'polish').
+ This operator is not applied to words that are both spelled and said the
+ same, but with different meanings ('must' as an imperative and 'must' as
+ a noun).
+ 
+\end_layout
+
+\begin_layout Standard
+Often, if clues are straightforward, placement of this operator can determine
+ the spelling of the answer.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+We hear twins shave (4)
+\end_layout
+
+\begin_layout Standard
+yields 'pare' whereas
+\end_layout
+
+\begin_layout LyX-Code
+Twins shave, we hear (4)
+\end_layout
+
+\begin_layout Standard
+yields 'pair'.
+ A formulation with the indicator in the middle, in this case, would result
+ in a strong ambiguity.
+ The homophone indicator is only applied to equivalence words, not to clued
+ wordplay.
+\end_layout
+
+\begin_layout LyX-Code
+Homophone → HomophoneIndicator Words | Words HomophoneIndicator
 \end_layout
 
 \begin_layout Subsubsection
@@ -1411,13 +1666,36 @@ Containment
 
 \begin_layout Standard
 Here are two styles of wordplay which are clued very differently, but are
- actually the same operator, which places one set of letter inside another,
- preserving order, unless some nested indicator allows otherwise.
+ actually the same operator, which places one set of letter inside another.
+ This is either presented as a insertion ('end inside ls') or as a containment
+ ('ls around end').
+ This operation always preserves letter order, unless some nested indicator
+ allows otherwise.
  
 \end_layout
 
 \begin_layout LyX-Code
-Containment → 
+Containment → Wordplay ContainmentIndicator Wordplay  
+\end_layout
+
+\begin_layout LyX-Code
+ContainmentIndicator → 
+\begin_inset Quotes eld
+\end_inset
+
+inside
+\begin_inset Quotes erd
+\end_inset
+
+ | 
+\begin_inset Quotes eld
+\end_inset
+
+around
+\begin_inset Quotes erd
+\end_inset
+
+ [...]
 \end_layout
 
 \begin_layout Paragraph
@@ -1438,17 +1716,15 @@ In a subtraction clue, a number of letters are removed from the target.
 \end_layout
 
 \begin_layout LyX-Code
-Subtraction → SubtractionPreIndictator1 Wordplay (SubtractionPreIndictator2)
- Wordplay 
+Subtraction → SubPreIndictator1 Wordplay (SubPreIndictator2) Wordplay 
 \begin_inset Newline newline
 \end_inset
 
-   | Wordplay SubtractionMidIndictator Wordplay 
+   | Wordplay SubMidIndictator Wordplay 
 \begin_inset Newline newline
 \end_inset
 
-   | Wordplay (SubtractionPostIndictator1) Wordplay SuwantedbtractionPostIndicta
-tor2 
+   | Wordplay (SubPostIndictator1) Wordplay SubPostIndictator2 
 \end_layout
 
 \begin_layout LyX-Code
@@ -1456,7 +1732,7 @@ tor2
 \end_layout
 
 \begin_layout LyX-Code
-SubtractionPreIndictator1 → 
+SubPreIndictator1 → 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1476,7 +1752,7 @@ without
 \end_layout
 
 \begin_layout LyX-Code
-SubtractionPreIndictator2 → 
+SubPreIndictator2 → 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1488,7 +1764,7 @@ from
 \end_layout
 
 \begin_layout LyX-Code
-SubtractionMidIndictator → 
+SubMidIndictator → 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1500,7 +1776,7 @@ without
 \end_layout
 
 \begin_layout LyX-Code
-SubtractionPostIndictator1 → 
+SubPostIndictator1 → 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1512,7 +1788,7 @@ with
 \end_layout
 
 \begin_layout LyX-Code
-SubtractionPostIndictator2 → 
+SubPostIndictator2 → 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1564,49 +1840,226 @@ The letters in the set are thought to be removed in the order in which they’re
  “sting” to get the answer “Dan”.
 \end_layout
 
-\begin_layout Paragraph
-Hidden word 
-\end_layout
-
-\begin_layout Standard
-The hidden-word clue, while not particularly common, is still worthy of
- attention, chiefly because of the way in which it uses the surface meaning
- of the sentence to distract the solver's attention away from the fact that
- the solution is lying before his or her eyes.
- This type of clue involves the concealment of the solution word (or less
- commonly, words) within a string of other words.
- The fact that this has been done is usually communicated indirectly to
- the solver by the hidden-word pointer, which can take one of two forms:
- it can be a word similar in meaning to the inclusion pointers described
- above (such as in, within, inside, etc.), which further complicates the
- solution, or it can be a phrase such 'as we see' or 'appears in'.
- The solution is, of course, a synonym of the definition part of the clue.
- An example of this clue is: 'Smack which appears in East Anglian ports.(4)'
- The solution to this example is 'tang', a word meaning 'smack' (in the
- sense of 'taste'), and which is concealed in 'easT ANGlian ports'.
- 
-\end_layout
-
-\begin_layout LyX-Code
-HiddenWord → HWIndictator String | String HWIndicator
-\end_layout
-
 \begin_layout Subsection
 Meta-references 
 \end_layout
 
 \begin_layout Standard
-Sunday Telegraph on Easter Sunday 2014 had an anagram clue whose answer
- was EASTER SUNDAY, and its definition part was "today".
+Sometimes, clues contain references to that cannot be parsed in isolation,
+ or contain a cluing structure that is incompatiable with the main model
+ of cluing.
+\end_layout
+
+\begin_layout Subsubsection
+Self reference
 \end_layout
 
 \begin_layout Standard
-In a crossword by Araucaria, "Araucaria is" coded for IAM (= "I am") as
- part of an answer.
+A type of clue called an '&lit' clue allows the setter to not include a
+ definition part if the text that makes up the wordplay also can also be
+ read as the definition.
+ Thus in 
+\end_layout
+
+\begin_layout LyX-Code
+Spoil vote! (4)
 \end_layout
 
 \begin_layout Standard
-&Lit
+we have the wordplay Anagram (=spoil) 
+\begin_inset Quotes eld
+\end_inset
+
+vote
+\begin_inset Quotes erd
+\end_inset
+
+ to give 'VETO', as well as the clue as a whole 'spoil vote' meaning 'veto'.
+\end_layout
+
+\begin_layout Subsubsection
+Reference to other clues
+\end_layout
+
+\begin_layout Standard
+Some publications will have clues that reference the answer to othert clues
+ ('8 across.
+ Cake made badly by 7 down.').
+ Sometimes these may also be cyclical (in this example, 7 down would reference
+ 8 across too).
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Contextual References
+\end_layout
+
+\begin_layout Standard
+Sometimes references will refer outside of the crossword itself.
+ For example, The 
+\emph on
+Sunday Telegraph
+\emph default
+ on Easter Sunday 2014 had an anagram clue whose answer was EASTER SUNDAY,
+ and its definition part was "today".
+ In a crossword by setter 
+\emph on
+Araucaria
+\emph default
+, "Araucaria is" coded for IAM (= "I am") as part of an answer.
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Paragraph
+Cryptic crossword clues: generating text with a hidden meaning
+\end_layout
+
+\begin_layout Standard
+David Hardcastle - 2007 
+\end_layout
+
+\begin_layout Paragraph
+The Generation of Cryptic Crossword Clues
+\end_layout
+
+\begin_layout Standard
+G.
+ W.
+ Smith, and J.
+ B.
+ H.
+ du Boulay - 1986 
+\end_layout
+
+\begin_layout Paragraph
+Crossword Compiler-Compilation 
+\end_layout
+
+\begin_layout Standard
+H.
+ Berghel and C.
+ Yi.
+ - 1989 
+\end_layout
+
+\begin_layout Paragraph
+PROVERB: The Probabilistic Cruciverbalist 
+\end_layout
+
+\begin_layout Standard
+Greg A.
+ Keim, Noam M.
+ Shazeer, Michael L.
+ Littman - 1999 
+\end_layout
+
+\begin_layout Paragraph
+Computer Assisted Analysis of Cryptic Crosswords 
+\end_layout
+
+\begin_layout Standard
+P.W.Williams and D.
+ Woodhead - 1977 
+\end_layout
+
+\begin_layout Paragraph
+LACROSS language, formal definitions - good building material
+\end_layout
+
+\begin_layout Standard
+Cryptic crossword clue interpreter M Hart, RH Davis - 1992
+\end_layout
+
+\begin_layout Paragraph
+Microcomputer compilation and solution of crosswords 
+\end_layout
+
+\begin_layout Standard
+RH Davis and E J Juvshol - 1985 
+\end_layout
+
+\begin_layout Paragraph
+Give Us A Clue
+\end_layout
+
+\begin_layout Standard
+Jon G.
+ Hall and Lucia Rapanotti - 2010 
+\end_layout
+
+\begin_layout Paragraph
+A Statistical Study of Failures In Solving Crossword Puzzles
+\end_layout
+
+\begin_layout Standard
+Naranana, 2010 
+\end_layout
+
+\begin_layout Paragraph
+Expertise in cryptic crossword performance
+\end_layout
+
+\begin_layout Standard
+Kathryn Friedlander, Philip Fine, 2009 
+\end_layout
+
+\begin_layout Part
+Progress Report
+\end_layout
+
+\begin_layout Standard
+Throughout this initial phase of the project, I have concentrated primarily
+ in getting someway towards creating a system in Haskell working on a limited
+ subset of clue types, doing end-to-end lexing parsing and evaluating.
+ The reason for this was mainly to spot systematic errors in the way I was
+ approaching the problem, and to identify potential issues with a large-scale
+ implementation.
+\end_layout
+
+\begin_layout Standard
+Indeed, this seems to be the correct method - my early attempts suffered
+ in two ways.
+\end_layout
+
+\begin_layout Enumerate
+I failed to properly utilise Haskell's excellent type system to correctly
+ describe the clues I was parsing, conflating 
+\noun on
+Constructors
+\noun default
+ with 
+\noun on
+Data Types
+\noun default
+, among other issues.
+ This meant I was unable to write subsequent expressions that could evaluate
+ partial clues without having to re-parse.
+\end_layout
+
+\begin_layout Enumerate
+I didn't properly separate out the parsing from the evaluation, trying instead
+ to apply insertions and perform anagrams before having completed the full
+ parse tree.
+ This not only creates messy code, but makes an already complicated and
+ expanding state-space problem (one clue can yield multiple parse trees,
+ each of which can have multiple valid evaluations) even worse.
+ 
+\end_layout
+
+\begin_layout Standard
+I am currently able to parse a clue made up of a subset of the possible
+ operation types (cons, anagram, abbreviation, synonym, hidden word, reversal)
+ into an abstract syntax tree, and then correctly evaluate that tree into
+ all possible values, and then compare those against the definition using
+ a simplified equality measure to prune for valid trees.
+ 
+\end_layout
+
+\begin_layout Standard
+One caveat that this system runs under is that you need to specify the 
 \end_layout
 
 \end_body
