@@ -40,6 +40,14 @@ expand ys = [Leaf (concatWithSpaces ys)]
 	++ (if length ys > 2 then makeInsertionNodes ys else [])
 
 
+--- DISPLAY FUNCTIONS
+
+showTree                :: (Show a) => Tree a -> String
+showTree (DefNode d tree)       =  "Definition: " ++ show d ++ " \n" ++ showTree tree
+showTree x   = show x
+
+
+
 makeConsNodes :: [String] -> [ClueTree]
 makeConsNodes xs = let parts = twoParts xs
                    in concat [[ConsNode x' y' |x' <- (expand (fst part)), y' <- (expand (snd part))] | part <- parts]  
