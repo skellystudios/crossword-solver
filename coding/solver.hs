@@ -13,18 +13,21 @@ data InsertionIndicator = IIndicator [String] deriving Show
 data HWIndicator = HWIndicator [String] deriving Show
 
 
+
+------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
 includeReversals xs = xs ++ [(snd(x),fst(x)) | x <- xs] 
 
 twoParts xs = map (\x -> (head x, (head . tail) x)) (nPartitions 2 xs)
 threeParts xs = map (\x -> (head x, (head . tail) x , (head . tail . tail) x)) (nPartitions 3 xs)
 
+concatWithSpaces (x:[]) = x
+concatWithSpaces (x:xs) = x ++ " " ++ concatWithSpaces xs
+
 nPartitions :: Int -> ([String] -> [[[String]]])
 nPartitions n xs = [xss | xss <- partitions xs, length xss == n]
 
-
 partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
-
 
 makeTree = (makeDefs . words) 
 
@@ -93,19 +96,18 @@ makeHiddenWordNodes :: [String] -> [ClueTree]
 makeHiddenWordNodes xs = let parts = twoParts xs
                   in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] 
 
-
 isHWIndicator ["found","in"] = True
 isHWIndicator _ = False
 
 substr [] = [[]]
-substr (x:xs) = (map ((:) x) (substr xs)) ++ substr xs 
+substr (x:xs) = (map ((:) x) (contiguoussubstr xs)) ++ substr xs 
+
+contiguoussubstr [] = [[]]
+contiguoussubstr (x:xs) = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
 
-concatWithSpaces (x:[]) = x
-concatWithSpaces (x:xs) = x ++ " " ++ concatWithSpaces xs
- 
-clue1 = words "companion shredded corset"
-clue2 = words "notice in flying coat"
+
+--------------------------- EVALUATION ----------------------------
 
 -- Now we evaluate
 eval :: Clue -> [String]
@@ -119,15 +121,19 @@ eval_tree (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree(x)
 eval_tree (HiddenWordNode ind ys) = substr (concat ys)
 
 syn :: String -> [String]
-syn "notice" = ["ack", "acknowledge", "sign"] ++  [show x | x <- [1..50]]
+syn "notice" = ["ack", "acknowledge", "sign"] 
 syn "coat" = ["jacket"]
 syn "companion" = ["friend", "escort", "mate"]
 syn "shredded" = ["changed", "stripped"]
-syn "corset" = ["basque"]  ++  [show x | x <- [1..50]]
-syn "flying" = ["jet"]  ++  [show x | x <- [1..50]]
+syn "corset" = ["basque"]
+syn "flying" = ["jet"] 
 syn _ = []
 
-
+ 
+clue1 = words "companion shredded corset"
+clue2 = words "notice in flying coat"
+clue3 = words "companion found in oklahoma terminal"
+clue4 = 
 
 
 -- Cons node equivalence - write it as a list, don't allow cons node as a child
