@@ -2,7 +2,7 @@ module Solver where
 
 import Data.List
 
-data Clue = DefNode String ClueTree 
+data Clue = DefNode String ClueTree Integer
   deriving Show
 
 data ClueTree = ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String]
@@ -13,6 +13,38 @@ data InsertionIndicator = IIndicator [String] deriving Show
 data HWIndicator = HWIndicator [String] deriving Show
 
 
+-- Memoiszation
+
+data Tree a = Tree (Tree a) a (Tree a)
+instance Functor Tree where
+    fmap f (Tree l m r) = Tree (fmap f l) (f m) (fmap f r)
+
+
+index :: Tree a -> Int -> a
+index (Tree _ m _) 0 = m
+index (Tree l _ r) n = case (n - 1) `divMod` 2 of
+    (q,0) -> index l q
+    (q,1) -> index r q
+
+{-
+nats :: Tree Int
+nats = go 0 1
+    where
+        go !n !s = Tree (go l s') n (go r s')
+            where
+                l = n + s
+                r = l + s
+                s' = s * 2
+toList :: Tree a -> [a]
+toList as = map (index as) [0..]
+
+
+f_tree :: Tree Int
+f_tree = fmap (f fastest_f) nats
+
+fastest_f :: Int -> Int
+fastest_f = index f_tree
+-}
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
 includeReversals xs = xs ++ [(snd(x),fst(x)) | x <- xs] 
@@ -29,11 +61,10 @@ nPartitions n xs = [xss | xss <- partitions xs, length xss == n]
 partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
 
-makeTree = (makeDefs . words) 
 
-makeDefs :: [String] -> [Clue]
-makeDefs xs = let parts = twoParts xs
-			  in concat [[DefNode (concatWithSpaces (fst part)) y' | y' <- (expand (snd part))] | part <- includeReversals (parts)]
+makeDefs :: ([String], Integer) -> [Clue]
+makeDefs (xs, n) = let parts = twoParts xs
+			  in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part))] | part <- includeReversals (parts)]
 
 expand :: [String] -> [ClueTree]
 expand ys = [Leaf (concatWithSpaces ys)] 
@@ -59,6 +90,7 @@ makeAnagramNodes xs = let parts = twoParts xs
 isAnagramWord :: [String] -> Bool
 isAnagramWord ["mixed"] = True
 isAnagramWord ["shredded"] = True
+isAnagramWord ["flying"] = True
 isAnagramWord _ = False
 
 anagrams :: String -> [String]
@@ -105,7 +137,7 @@ contiguoussubstr (x:xs) = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
 -- Now we evaluate
 eval :: Clue -> [String]
-eval x = let DefNode y z = x in Data.List.intersect (syn y) (eval_tree z)
+eval x = let DefNode y z n = x in Data.List.intersect (syn y) (eval_tree z)
 
 eval_tree :: ClueTree -> [String]
 eval_tree (AnagramNode x y) = anagrams(concat(y))
@@ -123,12 +155,14 @@ syn "corset" = ["basque"]
 syn "flying" = ["jet"] 
 syn _ = []
 
+ignore_blanks xs = [x | x <- xs, not (x==[])]
+solve = ignore_blanks . (map eval) . makeDefs
  
-clue1 = words "companion shredded corset"
-clue2 = words "notice in flying coat"
-clue3 = words "companion found in oklahoma terminal"
-clue4 = 
+clue1 = (words "companion shredded corset",7)
+clue2 = (words "notice in flying coat", 6)
+clue3 = (words "companion found in oklahoma terminal", 4)
+
 
 
 -- Cons node equivalence - write it as a list, don't allow cons node as a child
--- Memoiszation
+

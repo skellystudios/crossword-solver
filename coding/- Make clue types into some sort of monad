@@ -1,0 +1,11 @@
+- Make clue types into some sort of monad
+- Clue length as a monad
+- Basically, will Monads make me happy?
+
+- Memoization on a tree - will that work? How?
+
+- Haskell looking up 
+
+- Change across to QuProlog - advantages vs disadvantages?
+
+- DFGs - do I want to do my pruning as part of the grammar, or as part of the evaluation?!??!
