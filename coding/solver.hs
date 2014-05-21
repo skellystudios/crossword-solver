@@ -174,9 +174,12 @@ contiguoussubstr (x:xs) = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
 --------------------------- EVALUATION ----------------------------
 
+-- OK, we need to maybe make this into a MONAD somehow?
+
+
 -- Now we evaluate
 eval :: Clue -> [String]
-eval x = let DefNode y z n = x in Data.List.intersect (syn y) (eval_tree n z)
+eval (DefNode y z n) = eval_tree n z
 
 eval_tree :: Int -> ClueTree  -> [String]
 eval_tree n (AnagramNode x y) = if length(concat(y)) > n then [] else anagrams(concat(y))
@@ -185,6 +188,21 @@ eval_tree n (ConsListNode xs) = map concat (sequence (map (eval_tree n) xs))
 eval_tree n (ConsNode x y) = [x' ++ y' | x' <- eval_tree n x, y' <- eval_tree n y]
 eval_tree n (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree n x, y' <- eval_tree n y]
 eval_tree n (HiddenWordNode ind ys) = substr (concat ys)
+
+
+ignore_blanks xs = [(clue, solutions) | (clue, solutions) <- xs, not (solutions==[])]
+
+
+find_solutions :: [Clue] -> [(Clue, [String])]
+find_solutions xs = map (\x -> (x, eval x)) xs
+
+
+-- AHH I need to check if it's in a word (or phrase) list.
+
+-- OLD solve = ignore_blanks . (map eval) . makeDefs
+
+
+
 
 syn :: String -> [String]
 
@@ -211,8 +229,6 @@ syn "flying" = ["jet", "aeronautics","agile","airline","ascending","astronautics
 
 syn _ = []
 
-ignore_blanks xs = [x | x <- xs, not (x==[])]
-solve = ignore_blanks . (map eval) . makeDefs
  
 clue :: Int -> ([String], Int)
 clue 1 = (words "companion shredded corset",7)
