@@ -109,6 +109,25 @@ expandNoCons ys = [Leaf (concatWithSpaces ys)]
   ++ (if length ys > 2 then makeInsertionNodes ys else [])
 
 
+------------ LENGTH EVALUATION FUNCTIONS -----------------
+
+-- TODO: do a thing wherein we deal with the problem with leaf nodes not evaluating to anything.
+
+minLength (ConsListNode trees) = (sum . map minLength) trees
+minLength (AnagramNode ind strings) = (length . concat) strings
+minLength (HiddenWordNode ind strings) = 2
+minLength (InsertionNode ind tree1 tree2) = (minLength tree1) + (minLength tree2)
+minLength (Leaf string) = let x = minimum ( map length (string : syn string)) in x
+
+
+maxLength (ConsListNode trees) = (sum . map maxLength) trees
+maxLength (AnagramNode ind strings) = (length . concat) strings
+maxLength (HiddenWordNode ind strings) = (length strings) - 2
+maxLength (InsertionNode ind tree1 tree2) = (minLength tree1) + (minLength tree2)
+maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in x
+
+
+---------------- CLUE TYPES
 
 makeConsNodes :: [String] -> [ClueTree]
 makeConsNodes xs = let parts = twoParts xs
@@ -118,6 +137,8 @@ makeConsNodes xs = let parts = twoParts xs
 makeConsListNodes :: [String] -> [ClueTree]
 makeConsListNodes xs = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart | subpart <- part] | part <- partitions xs, (length part) > 1])]
 
+
+-- SUCH THAT sum(map (minLength) xs) <= clueLength and sum(map (maxLength) xs) >= clue
 
 -- ANAGRAMS
  
