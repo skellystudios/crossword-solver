@@ -1,15 +1,18 @@
 module Solver where 
 
 import Data.List
+import Data.String.Utils
+
 
 data Clue = DefNode String ClueTree Int
   deriving Show
 
-data ClueTree = ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String]
+data ClueTree = ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndictator ClueTree ClueTree | HiddenWordNode HWIndicator [String]
   deriving Show
 
 data Anagrind = AIndicator [String] deriving Show
 data InsertionIndicator = IIndicator [String] deriving Show
+data SubtractionIndictator = SIndicator [String] deriving Show
 data HWIndicator = HWIndicator [String] deriving Show
 
 
@@ -103,7 +106,7 @@ expand ys n= [Leaf (concatWithSpaces ys)]
 	++ (if length ys > 2 then makeInsertionNodes ys n else [])
 
 expandNoCons :: [String] -> Int -> [ClueTree]
-expandNoCons ys = [Leaf (concatWithSpaces ys)] 
+expandNoCons ys n = [Leaf (concatWithSpaces ys)] 
   ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
   ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then makeInsertionNodes ys n else [])
@@ -131,11 +134,11 @@ maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in
 
 makeConsNodes :: [String] -> Int -> [ClueTree]
 makeConsNodes xs n = let parts = twoParts xs
-                   in concat [[ConsNode x' y' |x' <- (expand (fst part)), y' <- (expand (snd part))] | part <- parts]  
+                   in concat [[ConsNode x' y' |x' <- (expand (fst part) n), y' <- (expand (snd part) n)] | part <- parts]  
 
 
 makeConsListNodes :: [String] -> Int -> [ClueTree]
-makeConsListNodes xs = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart | subpart <- part] | part <- partitions xs, (length part) > 1]), (sum . map minLength) xs > ]
+makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1]), (sum . map minLength) xs > n]
 
 
 -- SUCH THAT sum(map (minLength) xs) <= clueLength and sum(map (maxLength) xs) >= clue
@@ -165,20 +168,49 @@ anagrams1 (x:xs) ys = (anagrams1 xs (x:ys)) ++ (anagrams1 xs (ys++[x]))
 -- INSERTIONS
 makeInsertionNodes :: [String] -> Int -> [ClueTree]
 makeInsertionNodes xs n = let parts = threeParts xs
-                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x), z' <- (expand z)] 
+                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
 
 
 insertInto :: String -> String -> [String] -- TODO: we don't want to have insertInto 'abc' 'xyz' = abcxyz
 insertInto xs [] = [xs]
 insertInto xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (insertInto xs ys)) 
 
-
 isInsertionWord ["in"] = True
 isInsertionWord _ = False
 
 
+-- SUBTRACTIONS
+makeSubtractionNodes :: [String] -> Int -> [ClueTree]
+makeSubtractionNodes xs n = let parts = threeParts xs
+                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
+
+
+subtractFrom :: String -> String -> [String] -- TODO: we don't want to have insertInto 'abc' 'xyz' = abcxyz
+subtractFrom xs [] = [xs]
+subtractFrom xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (subtractFrom xs ys)) 
+
+
+replace :: Eq a => [a] -> [a] -> [a] -> [a]
+replace old new l = joins new . splitOn old $ l
+
+
+joins :: [a] -> [[a]] -> [a]
+joins delim l = concat (intersperse delim l)
+
+splitOn :: (a -> Bool) -> [a] -> [[a]]
+splitOn _ [] = []
+splitOn f l@(x:xs)
+  | f x = splitOn f xs
+  | otherwise = let (h,t) = break f l in h:(splitOn f t)
+
+
+
+isSubtractionWord ["without"] = True
+isSubtractionWord _ = False
+
+
 -- HIDDEN WORDS
-makeHiddenWordNodes :: [String] -> [ClueTree]
+makeHiddenWordNodes :: [String]  -> Int -> [ClueTree]
 makeHiddenWordNodes xs n = let parts = twoParts xs
                   in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] 
 
