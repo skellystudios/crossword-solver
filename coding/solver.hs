@@ -93,20 +93,20 @@ partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- pa
 
 makeDefs :: ([String], Int) -> [Clue]
 makeDefs (xs, n) = let parts = twoParts xs
-			  in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part))] | part <- includeReversals (parts)]
+			  in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part) n)] | part <- includeReversals (parts)]
 
-expand :: [String] -> [ClueTree]
-expand ys = [Leaf (concatWithSpaces ys)] 
-	++ (if length ys > 1 then makeAnagramNodes ys else [] )
-	++ (if length ys > 1 then makeConsListNodes ys else [])
-	++ (if length ys > 1 then makeHiddenWordNodes ys else [])
-	++ (if length ys > 2 then makeInsertionNodes ys else [])
+expand :: [String] -> Int -> [ClueTree]
+expand ys n= [Leaf (concatWithSpaces ys)] 
+	++ (if length ys > 1 then makeAnagramNodes ys n else [] )
+	++ (if length ys > 1 then makeConsListNodes ys n else [])
+	++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
+	++ (if length ys > 2 then makeInsertionNodes ys n else [])
 
-expandNoCons :: [String] -> [ClueTree]
+expandNoCons :: [String] -> Int -> [ClueTree]
 expandNoCons ys = [Leaf (concatWithSpaces ys)] 
-  ++ (if length ys > 1 then makeAnagramNodes ys else [] )
-  ++ (if length ys > 1 then makeHiddenWordNodes ys else [])
-  ++ (if length ys > 2 then makeInsertionNodes ys else [])
+  ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
+  ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
+  ++ (if length ys > 2 then makeInsertionNodes ys n else [])
 
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
@@ -129,13 +129,13 @@ maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in
 
 ---------------- CLUE TYPES
 
-makeConsNodes :: [String] -> [ClueTree]
-makeConsNodes xs = let parts = twoParts xs
+makeConsNodes :: [String] -> Int -> [ClueTree]
+makeConsNodes xs n = let parts = twoParts xs
                    in concat [[ConsNode x' y' |x' <- (expand (fst part)), y' <- (expand (snd part))] | part <- parts]  
 
 
-makeConsListNodes :: [String] -> [ClueTree]
-makeConsListNodes xs = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart | subpart <- part] | part <- partitions xs, (length part) > 1])]
+makeConsListNodes :: [String] -> Int -> [ClueTree]
+makeConsListNodes xs = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart | subpart <- part] | part <- partitions xs, (length part) > 1]), (sum . map minLength) xs > ]
 
 
 -- SUCH THAT sum(map (minLength) xs) <= clueLength and sum(map (maxLength) xs) >= clue
@@ -143,8 +143,8 @@ makeConsListNodes xs = [ConsListNode xs | xs <- (concat [sequence [expandNoCons 
 -- ANAGRAMS
  
 -- Sometimes need to use synonymns here ??? Maybe anagram subtypes needs to be a special type of subtree
-makeAnagramNodes :: [String] -> [ClueTree]
-makeAnagramNodes xs = let parts = twoParts xs
+makeAnagramNodes :: [String] -> Int -> [ClueTree]
+makeAnagramNodes xs n = let parts = twoParts xs
                   in [AnagramNode (AIndicator x) y | (x,y) <- parts, isAnagramWord(x)] 
 
 isAnagramWord :: [String] -> Bool
@@ -163,8 +163,8 @@ anagrams1 (x:xs) ys = (anagrams1 xs (x:ys)) ++ (anagrams1 xs (ys++[x]))
 
 
 -- INSERTIONS
-makeInsertionNodes :: [String] -> [ClueTree]
-makeInsertionNodes xs = let parts = threeParts xs
+makeInsertionNodes :: [String] -> Int -> [ClueTree]
+makeInsertionNodes xs n = let parts = threeParts xs
                   in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x), z' <- (expand z)] 
 
 
@@ -179,7 +179,7 @@ isInsertionWord _ = False
 
 -- HIDDEN WORDS
 makeHiddenWordNodes :: [String] -> [ClueTree]
-makeHiddenWordNodes xs = let parts = twoParts xs
+makeHiddenWordNodes xs n = let parts = twoParts xs
                   in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] 
 
 isHWIndicator ["found","in"] = True
