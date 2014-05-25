@@ -1,7 +1,7 @@
 module Solver where 
 
 import Data.List
-import Data.String.Utils
+--import Data.String.Utils
 
 
 data Clue = DefNode String ClueTree Int
@@ -16,39 +16,15 @@ data SubtractionIndictator = SIndicator [String] deriving Show
 data HWIndicator = HWIndicator [String] deriving Show
 
 
--- Memoiszation
-
-data Tree a = Tree (Tree a) a (Tree a)
-instance Functor Tree where
-    fmap f (Tree l m r) = Tree (fmap f l) (f m) (fmap f r)
-
-
-index :: Tree a -> Int -> a
-index (Tree _ m _) 0 = m
-index (Tree l _ r) n = case (n - 1) `divMod` 2 of
-    (q,0) -> index l q
-    (q,1) -> index r q
-
-{-
-nats :: Tree Int
-nats = go 0 1
-    where
-        go !n !s = Tree (go l s') n (go r s')
-            where
-                l = n + s
-                r = l + s
-                s' = s * 2
-toList :: Tree a -> [a]
-toList as = map (index as) [0..]
+--- TOOD SECTION
+-- TODO: do a thing wherein we deal with the problem with leaf nodes not evaluating to anything. THIS IS WHERE I CAN USE A MAYBE A MONAD
+-- TODO: Sometimes need to use synonymns when doing anagrams ??? Maybe anagram subtypes needs to be a special type of subtree
+-- TODO: we don't want to have insertInto 'abc' 'xyz' = abcxyz
+-- TODO: Change subtraction eval function to insert, obvs
+-- TODO: AHH I need to check if the answer is in a word (or phrase) list.
+-- TODO: Add some abbreviation function
 
 
-f_tree :: Tree Int
-f_tree = fmap (f fastest_f) nats
-
-fastest_f :: Int -> Int
-fastest_f = index f_tree
-
--}
 
 --- DISPLAY FUNCTIONS
 
@@ -60,6 +36,7 @@ showTree (ConsNode x y) n = spaces n ++ showTreeL x (n+1) ++ showTreeL y (n+1)
 showTree (ConsListNode xs) n = spaces n ++ "Cons \n" ++ concat (map (\x -> (showTreeL x (n+1))) xs)
 showTree (AnagramNode (AIndicator anagrinds) strings) n = spaces n ++ "Anagram (" ++ concatWithSpaces anagrinds ++ ") " ++ concat strings
 showTree (InsertionNode (IIndicator ind) t1 t2) n = spaces n ++ "Insert ("++ concatWithSpaces ind++") \n" ++ showTreeL t1 (n+1) ++ spaces n ++ "into" ++ " \n" ++ showTreeL t2 (n+1)
+showTree (SubtractionNode (SIndicator ind) t1 t2) n = spaces n ++ "Subtract ("++ concatWithSpaces ind++") \n" ++ showTreeL t1 (n+1) ++ spaces n ++ "from" ++ " \n" ++ showTreeL t2 (n+1)
 showTree x n = spaces n ++ show x 
 
 
@@ -111,15 +88,17 @@ expandNoCons ys n = [Leaf (concatWithSpaces ys)]
   ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then makeInsertionNodes ys n else [])
 
+expandJustAbbreviations :: [String] -> Int -> [ClueTree]
+expandJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
+
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
-
--- TODO: do a thing wherein we deal with the problem with leaf nodes not evaluating to anything.
 
 minLength (ConsListNode trees) = (sum . map minLength) trees
 minLength (AnagramNode ind strings) = (length . concat) strings
 minLength (HiddenWordNode ind strings) = 2
 minLength (InsertionNode ind tree1 tree2) = (minLength tree1) + (minLength tree2)
+minLength (SubtractionNode ind tree1 tree2) = maximum[(minLength tree1) - (maxLength tree2),3]
 minLength (Leaf string) = let x = minimum ( map length (string : syn string)) in x
 
 
@@ -127,10 +106,11 @@ maxLength (ConsListNode trees) = (sum . map maxLength) trees
 maxLength (AnagramNode ind strings) = (length . concat) strings
 maxLength (HiddenWordNode ind strings) = (length strings) - 2
 maxLength (InsertionNode ind tree1 tree2) = (minLength tree1) + (minLength tree2)
+maxLength (SubtractionNode ind tree1 tree2) = minimum[(maxLength tree1) - (minLength tree2),3]
 maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in x
 
 
----------------- CLUE TYPES
+---------------- CLUE TYPES ----------------
 
 makeConsNodes :: [String] -> Int -> [ClueTree]
 makeConsNodes xs n = let parts = twoParts xs
@@ -144,8 +124,7 @@ makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCon
 -- SUCH THAT sum(map (minLength) xs) <= clueLength and sum(map (maxLength) xs) >= clue
 
 -- ANAGRAMS
- 
--- Sometimes need to use synonymns here ??? Maybe anagram subtypes needs to be a special type of subtree
+
 makeAnagramNodes :: [String] -> Int -> [ClueTree]
 makeAnagramNodes xs n = let parts = twoParts xs
                   in [AnagramNode (AIndicator x) y | (x,y) <- parts, isAnagramWord(x)] 
@@ -171,7 +150,7 @@ makeInsertionNodes xs n = let parts = threeParts xs
                   in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
 
 
-insertInto :: String -> String -> [String] -- TODO: we don't want to have insertInto 'abc' 'xyz' = abcxyz
+insertInto :: String -> String -> [String] 
 insertInto xs [] = [xs]
 insertInto xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (insertInto xs ys)) 
 
@@ -185,10 +164,11 @@ makeSubtractionNodes xs n = let parts = threeParts xs
                   in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
 
 
-subtractFrom :: String -> String -> [String] -- TODO: we don't want to have insertInto 'abc' 'xyz' = abcxyz
+subtractFrom :: String -> String -> [String] 
 subtractFrom xs [] = [xs]
 subtractFrom xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (subtractFrom xs ys)) 
 
+{-}
 
 replace :: Eq a => [a] -> [a] -> [a] -> [a]
 replace old new l = joins new . splitOn old $ l
@@ -203,7 +183,7 @@ splitOn f l@(x:xs)
   | f x = splitOn f xs
   | otherwise = let (h,t) = break f l in h:(splitOn f t)
 
-
+-}
 
 isSubtractionWord ["without"] = True
 isSubtractionWord _ = False
@@ -227,8 +207,6 @@ contiguoussubstr (x:xs) = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
 --------------------------- EVALUATION ----------------------------
 
--- OK, we need to maybe make this into a MONAD somehow?
-
 
 -- Now we evaluate
 eval :: Clue -> [String]
@@ -240,6 +218,7 @@ eval_tree n (Leaf x) = syn x ++ [x]
 eval_tree n (ConsListNode xs) = map concat (sequence (map (eval_tree n) xs))
 eval_tree n (ConsNode x y) = [x' ++ y' | x' <- eval_tree n x, y' <- eval_tree n y]
 eval_tree n (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree n x, y' <- eval_tree n y]
+eval_tree n (SubtractionNode ind x y) = concat[subtractFrom x' y' | x' <- eval_tree n x, y' <- eval_tree n y]
 eval_tree n (HiddenWordNode ind ys) = substr (concat ys)
 
 
@@ -250,12 +229,13 @@ find_solutions :: [Clue] -> [(Clue, [String])]
 find_solutions xs = map (\x -> (x, eval x)) xs
 
 
--- AHH I need to check if it's in a word (or phrase) list.
+
+
+--------------------------- DICTIONARY CORNER ----------------------------
+
+
 
 -- OLD solve = ignore_blanks . (map eval) . makeDefs
-
-
-
 
 syn :: String -> [String]
 
