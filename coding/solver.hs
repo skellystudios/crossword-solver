@@ -7,12 +7,13 @@ import Data.List
 data Clue = DefNode String ClueTree Int
   deriving Show
 
-data ClueTree = ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndictator ClueTree ClueTree | HiddenWordNode HWIndicator [String]
+data ClueTree = ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ClueTree
   deriving Show
 
 data Anagrind = AIndicator [String] deriving Show
 data InsertionIndicator = IIndicator [String] deriving Show
-data SubtractionIndictator = SIndicator [String] deriving Show
+data SubtractionIndicator = SIndicator [String] deriving Show
+data ReversalIndicator = RIndicator [String] deriving Show
 data HWIndicator = HWIndicator [String] deriving Show
 
 
@@ -23,8 +24,10 @@ data HWIndicator = HWIndicator [String] deriving Show
 -- TODO: Change subtraction eval function to insert, obvs
 -- TODO: AHH I need to check if the answer is in a word (or phrase) list.
 -- TODO: Add some abbreviation function
-
-
+-- TODO: Reversal clues
+-- TODO: First/last letter clues
+-- TODO: Before/after clues
+-- TODO: Only create definitions where the thing we're defining is in our wordlist -> MASSIVE IMPROVEMENT!!!
 
 --- DISPLAY FUNCTIONS
 
@@ -72,21 +75,36 @@ partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- pa
 
 
 makeDefs :: ([String], Int) -> [Clue]
-makeDefs (xs, n) = let parts = twoParts xs
-			  in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part) n)] | part <- includeReversals (parts)]
+makeDefs (xs, n) = makeNoIndicatorDefs (xs, n) ++ makIndicatorDefs (xs, n)
+
+makeNoIndicatorDefs :: ([String], Int) -> [Clue]
+makeNoIndicatorDefs (xs, n) = let parts = twoParts xs
+        in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part) n)] | part <- includeReversals (parts)]
+
+makIndicatorDefs :: ([String], Int) -> [Clue]
+makIndicatorDefs (xs, n) = let parts = threeParts xs
+        in concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (x,y,z) <- (parts), isDefIndicator(y)] 
+        ++ concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (z,y,x) <- (parts), isDefIndicator(y)]
+
+
+isDefIndicator ["in"] = True
+isDefIndicator ["is"] = True
+isDefIndicator _ = False
 
 expand :: [String] -> Int -> [ClueTree]
 expand ys n= [Leaf (concatWithSpaces ys)] 
 	++ (if length ys > 1 then makeAnagramNodes ys n else [] )
 	++ (if length ys > 1 then makeConsListNodes ys n else [])
 	++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
-	++ (if length ys > 2 then makeInsertionNodes ys n else [])
+  ++ (if length ys > 2 then makeInsertionNodes ys n else [])
+  ++ (if length ys > 1 then makeReversalNodes ys n else [])
 
 expandNoCons :: [String] -> Int -> [ClueTree]
 expandNoCons ys n = [Leaf (concatWithSpaces ys)] 
   ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
   ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then makeInsertionNodes ys n else [])
+  ++ (if length ys > 1 then makeReversalNodes ys n else [])
 
 expandJustAbbreviations :: [String] -> Int -> [ClueTree]
 expandJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
@@ -99,6 +117,7 @@ minLength (AnagramNode ind strings) = (length . concat) strings
 minLength (HiddenWordNode ind strings) = 2
 minLength (InsertionNode ind tree1 tree2) = (minLength tree1) + (minLength tree2)
 minLength (SubtractionNode ind tree1 tree2) = maximum[(minLength tree1) - (maxLength tree2),3]
+minLength (ReversalNode ind tree) = minLength tree
 minLength (Leaf string) = let x = minimum ( map length (string : syn string)) in x
 
 
@@ -107,6 +126,7 @@ maxLength (AnagramNode ind strings) = (length . concat) strings
 maxLength (HiddenWordNode ind strings) = (length strings) - 2
 maxLength (InsertionNode ind tree1 tree2) = (minLength tree1) + (minLength tree2)
 maxLength (SubtractionNode ind tree1 tree2) = minimum[(maxLength tree1) - (minLength tree2),3]
+maxLength (ReversalNode ind tree) = maxLength tree
 maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in x
 
 
@@ -118,7 +138,7 @@ makeConsNodes xs n = let parts = twoParts xs
 
 
 makeConsListNodes :: [String] -> Int -> [ClueTree]
-makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1]), (sum . map minLength) xs > n]
+makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1]), (sum . map minLength) xs >= n]
 
 
 -- SUCH THAT sum(map (minLength) xs) <= clueLength and sum(map (maxLength) xs) >= clue
@@ -127,22 +147,19 @@ makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCon
 
 makeAnagramNodes :: [String] -> Int -> [ClueTree]
 makeAnagramNodes xs n = let parts = twoParts xs
-                  in [AnagramNode (AIndicator x) y | (x,y) <- parts, isAnagramWord(x)] 
+                  in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x)] 
 
 isAnagramWord :: [String] -> Bool
 isAnagramWord ["mixed"] = True
 isAnagramWord ["shredded"] = True
 isAnagramWord ["flying"] = True
+isAnagramWord ["twisted"] = True
+isAnagramWord ["fancy"] = True
 isAnagramWord _ = False
 
 anagrams :: String -> [String]
-anagrams x = anagrams1 x []
-
-anagrams1 :: String -> String -> [String]
-anagrams1 [] ys = [ys]
---anagrams1 (x:[]) ys = [x:ys, ys ++ [x]]
-anagrams1 (x:xs) ys = (anagrams1 xs (x:ys)) ++ (anagrams1 xs (ys++[x]))
-
+anagrams [] = [[]]
+anagrams xs = [x:ys | x<-xs, ys <- anagrams(delete x xs)]
 
 -- INSERTIONS
 makeInsertionNodes :: [String] -> Int -> [ClueTree]
@@ -188,6 +205,15 @@ splitOn f l@(x:xs)
 isSubtractionWord ["without"] = True
 isSubtractionWord _ = False
 
+-- REVERSALS
+makeReversalNodes :: [String] -> Int -> [ClueTree]
+makeReversalNodes xs n  = let parts = twoParts xs
+                  in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (expand y n)]  
+
+isRIndicator ["returned"] = True
+isRIndicator _ = False
+
+
 
 -- HIDDEN WORDS
 makeHiddenWordNodes :: [String]  -> Int -> [ClueTree]
@@ -207,10 +233,12 @@ contiguoussubstr (x:xs) = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
 --------------------------- EVALUATION ----------------------------
 
+check_eval :: Clue -> [String]
+check_eval x = let DefNode y z n = x in Data.List.intersect (syn y) (eval_tree n z)
 
 -- Now we evaluate
 eval :: Clue -> [String]
-eval (DefNode y z n) = eval_tree n z
+eval (DefNode y z n) = eval_tree n z 
 
 eval_tree :: Int -> ClueTree  -> [String]
 eval_tree n (AnagramNode x y) = if length(concat(y)) > n then [] else anagrams(concat(y))
@@ -220,6 +248,7 @@ eval_tree n (ConsNode x y) = [x' ++ y' | x' <- eval_tree n x, y' <- eval_tree n 
 eval_tree n (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree n x, y' <- eval_tree n y]
 eval_tree n (SubtractionNode ind x y) = concat[subtractFrom x' y' | x' <- eval_tree n x, y' <- eval_tree n y]
 eval_tree n (HiddenWordNode ind ys) = substr (concat ys)
+eval_tree n (ReversalNode ind ys) = map reverse (eval_tree n ys)
 
 
 ignore_blanks xs = [(clue, solutions) | (clue, solutions) <- xs, not (solutions==[])]
@@ -229,13 +258,14 @@ find_solutions :: [Clue] -> [(Clue, [String])]
 find_solutions xs = map (\x -> (x, eval x)) xs
 
 
+-- solve = ignore_blanks . (map eval) . makeDefs
+solve c =  map (check_eval) (makeDefs c)
 
 
 --------------------------- DICTIONARY CORNER ----------------------------
 
 
 
--- OLD solve = ignore_blanks . (map eval) . makeDefs
 
 syn :: String -> [String]
 
@@ -247,6 +277,11 @@ syn "companion" = ["friend", "escort", "mate"]
 syn "shredded" = ["changed", "stripped"]
 syn "corset" = ["basque"]
 syn "flying" = ["jet"] 
+syn "new" = ["n"] 
+syn "member" = ["leg"] 
+syn "woman" = ["angela"] 
+syn "pause" = ["hesitate"] 
+syn "ballet" = ["swanlake"] 
 
 {-
 
@@ -267,8 +302,10 @@ clue :: Int -> ([String], Int)
 clue 1 = (words "companion shredded corset",7)
 clue 2 = (words "notice in flying coat", 6)
 clue 3 = (words "companion found in oklahoma terminal", 4)
+clue 4 = (words "a new member returned a woman", 6)
+clue 5 = (words "pause at these i fancy", 8) -- Everyman 3526, clue 1
+clue 6 = (words "ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
 
 
 
--- Cons node equivalence - write it as a list, don't allow cons node as a child
 
