@@ -1,8 +1,9 @@
 module Solver where 
 
 import Data.List
+import Wordlist
 --import Data.String.Utils
-
+ 
 
 data Clue = DefNode String ClueTree Int
   deriving Show

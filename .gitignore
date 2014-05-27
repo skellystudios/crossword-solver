@@ -1,2 +1,3 @@
 dict/*.aur
 dict/*.hs
+*.o
