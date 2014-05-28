@@ -1,4 +1,4 @@
-f = open('wordlist')
+f = open('wordlist_100k')
 
 dictionary = {}
 
@@ -12,7 +12,7 @@ def write_output_string():
     f2.write('wordlist = Data.Set.fromList [')
     string = ""
     for line in f:
-        out = line.decode('utf-8', 'ignore')
+        out = line #.decode('utf-8', 'ignore')
         string += "\"" + out[:-2] + "\", "
         limit += 1
         if limit > 1000*1000: 

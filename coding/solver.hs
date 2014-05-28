@@ -1,6 +1,7 @@
 module Solver where 
 
-import Data.List
+import Data.List 
+import qualified Data.Set
 import Wordlist
 --import Data.String.Utils
  
@@ -80,12 +81,12 @@ makeDefs (xs, n) = makeNoIndicatorDefs (xs, n) ++ makIndicatorDefs (xs, n)
 
 makeNoIndicatorDefs :: ([String], Int) -> [Clue]
 makeNoIndicatorDefs (xs, n) = let parts = twoParts xs
-        in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part) n)] | part <- includeReversals (parts)]
+        in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part) n), Data.Set.member (concatWithSpaces (fst part)) wordlist2] | part <- includeReversals (parts)]
 
 makIndicatorDefs :: ([String], Int) -> [Clue]
 makIndicatorDefs (xs, n) = let parts = threeParts xs
-        in concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (x,y,z) <- (parts), isDefIndicator(y)] 
-        ++ concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (z,y,x) <- (parts), isDefIndicator(y)]
+        in concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (x,y,z) <- (parts), isDefIndicator(y), Data.Set.member (concatWithSpaces x) wordlist2] 
+        ++ concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (z,y,x) <- (parts), isDefIndicator(y), Data.Set.member (concatWithSpaces x) wordlist2]
 
 
 isDefIndicator ["in"] = True
@@ -222,6 +223,7 @@ makeHiddenWordNodes xs n = let parts = twoParts xs
                   in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] 
 
 isHWIndicator ["found","in"] = True
+isHWIndicator ["needed","by"] = True
 isHWIndicator _ = False
 
 substr [] = [[]]
@@ -235,7 +237,8 @@ contiguoussubstr (x:xs) = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 --------------------------- EVALUATION ----------------------------
 
 check_eval :: Clue -> [String]
-check_eval x = let DefNode y z n = x in Data.List.intersect (syn y) (eval_tree n z)
+-- check_eval x = let DefNode y z n = x in Data.List.intersect (syn y) ((eval_tree n z))
+check_eval (DefNode y z n) = Data.Set.toList (Data.Set.intersection wordlist2 (Data.Set.fromList (eval_tree n z)))
 
 -- Now we evaluate
 eval :: Clue -> [String]
@@ -266,6 +269,7 @@ solve c =  map (check_eval) (makeDefs c)
 --------------------------- DICTIONARY CORNER ----------------------------
 
 
+wordlist2 = Data.Set.union (Data.Set.fromList ["swanlake", "ballet", "coat", "jacket", "flyer","airman" ]) wordlist
 
 
 syn :: String -> [String]
@@ -283,6 +287,7 @@ syn "member" = ["leg"]
 syn "woman" = ["angela"] 
 syn "pause" = ["hesitate"] 
 syn "ballet" = ["swanlake"] 
+syn "flyer" = ["airman"]
 
 {-
 
@@ -304,9 +309,9 @@ clue 1 = (words "companion shredded corset",7)
 clue 2 = (words "notice in flying coat", 6)
 clue 3 = (words "companion found in oklahoma terminal", 4)
 clue 4 = (words "a new member returned a woman", 6)
-clue 5 = (words "pause at these i fancy", 8) -- Everyman 3526, clue 1
+clue 5 = (words "pause at these i fancy", 8) -- Everyman 3526, clue 1   ["athetise","hesitate"] 
 clue 6 = (words "ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
+clue 7 = (words "flyer needed by funfair manager", 6)
 
-
-
+-- 3.4 GB memory used
 
