@@ -1,3 +1,8 @@
 dict/*.aur
 dict/*.hs
 *.o
+Wordlist.hs
+*/Wordlist*
+*/wordlist*
+Wordlist*
+wordlist*
