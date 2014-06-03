@@ -106,19 +106,17 @@ isDefIndicator ["is"] = True
 isDefIndicator _ = False
 
 expand :: [String] -> Int -> [ClueTree]
-expand ys n= [Leaf (concatWithSpaces ys)] 
-	++ (if length ys > 1 then makeAnagramNodes ys n else [] )
-	++ (if length ys > 1 then makeConsListNodes ys n else [])
-	++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
-  ++ (if length ys > 2 then makeInsertionNodes ys n else [])
-  ++ (if length ys > 1 then makeReversalNodes ys n else [])
+expand ys n= (if length ys > 1 then makeConsListNodes ys n else [])
+	++ (expandNoCons ys n)
 
 expandNoCons :: [String] -> Int -> [ClueTree]
 expandNoCons ys n = [Leaf (concatWithSpaces ys)] 
   ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
   ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then makeInsertionNodes ys n else [])
+  -- ++ (if length ys > 2 then makeConsIndicatorNodes ys n else [])
   ++ (if length ys > 1 then makeReversalNodes ys n else [])
+  ++ (if length ys > 1 then makeFirstLetterNodes ys n else [])
 
 expandJustAbbreviations :: [String] -> Int -> [ClueTree]
 expandJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
@@ -155,6 +153,13 @@ makeConsNodes xs n = let parts = twoParts xs
 makeConsListNodes :: [String] -> Int -> [ClueTree]
 makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1]), (sum . map minLength) xs >= n]
 
+makeConsIndicatorNodes :: [String] -> Int -> [ClueTree]
+makeConsIndicatorNodes xs n = let parts = threeParts xs
+                   in concat [[ConsNode x' y' |(x, ind, y) <- parts, x' <- (expand x n), y' <- (expand y n), isAnagramWord(ind)] | part <- parts]  
+
+
+isConsIndicator ["on"] = True
+isConsIndicator _ = False
 
 -- SUCH THAT sum(map (minLength) xs) <= clueLength and sum(map (maxLength) xs) >= clue
 
@@ -170,7 +175,7 @@ isAnagramWord ["shredded"] = True
 isAnagramWord ["flying"] = True
 isAnagramWord ["twisted"] = True
 isAnagramWord ["fancy"] = True
-isAnagramWord ["at sea"] = True
+isAnagramWord ["at","sea"] = True
 isAnagramWord _ = False
 
 anagrams :: String -> [String]
@@ -301,6 +306,7 @@ eval_tree n (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree 
 eval_tree n (SubtractionNode ind x y) = concat[subtractFrom x' y' | x' <- eval_tree n x, y' <- eval_tree n y]
 eval_tree n (HiddenWordNode ind ys) = [x | x <- substr (concat ys), (length x) > 0, (length x) <= n]
 eval_tree n (ReversalNode ind ys) = map reverse (eval_tree n ys)
+eval_tree n (FirstLetterNode ind ys) = [firstLetter ys]
 
 eval_trees :: Int -> [ClueTree] -> [String]
 eval_trees n (c:[]) = eval_tree n c
@@ -330,7 +336,8 @@ wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tu
 
 
 syn :: String -> [String]
- {-
+
+-- {-
 
 syn "notice" = ["ack", "acknowledge", "sign"] 
 syn "coat" = ["jacket"]
@@ -350,8 +357,7 @@ syn "put food in this" = ["tuckerbag"]
 
 -- -}
 
-
--- {-
+ {-
 
 syn "notice" = ["ack", "account","acquaintance","admonition","advertisement","advice","advisory","alarm","analysis","announcement","annunciation","appreciation","assiduity","attend","attention","awareness","behold","blackmail","blue book","briefing","bulletin","call for","call","care","caution","caveat","censure","circular","claim","cognizance","comment","commentary","communication","communique","conceive","concentration","consciousness","consideration","contribution","credible","criticism","critique","data","datum","declaration","descry","detect","diligence","directive","directory","discern","discharge","discover","dismissal","dispatch","distinguish","dope","draft","drain","draught","draughtsman","draughty","duty","ear","earnestness","edict","editorial","encyclical","enlightenment","enunciation","espial","espionage","espy","evidence","exaction","example","extortion","facts","feel","find","glimpse","gloss","goods","guidebook","handout","hark","heed","hint","identify","imposition","impost","indent","info","injunction","insight","inspect","instruction","intelligence","intentness","interdict","interest","item","ken","know","knowledge","leader","lesson","levy","light","look on","look","lookout","make out","mandate","manifesto","mark","memo","memorandum","mention","message","mind","monition","moral","note","notice","notice","account","acknowledge","acquaintance","admonish","admonishment","admonition","advert","advertence","advertency","advice","advise","alarm","alertness","allude","analysis","animadvert","announce","announcement","annunciation","apperception","appreciation","appreciativeness","apprehension","approval","assiduity","assiduousness","attend","attend to","attention","attention span","attentiveness","awareness","behold","bench warrant","blackmail","blue book","book review","briefing","bulletin","bulletin board","call","call for","capias","care","catch sight of","caution","caveat","censure","circular","claim","clap eyes on","cognition","cognizance","comment","commentary","commentation","communication","communique","concentration","concern","consciousness","consideration","contribution","critical bibliography","critical journal","critical notice","critical review","criticism","critique","data","datum","death warrant","declaration","demand","demand for","descry","detect","deterrent example","diligence","directive","directory","discern","discover","dispatch","distinguish","draft","drain","duty","ear","earnestness","edict","editorial","encyclical","enlightenment","enunciation","espial","espionage","espy","evidence","exaction","example","extortion","extortionate demand","facts","factual information","familiarization","fieri facias","final notice","final warning","gen","general information","give heed to","give notice","glimpse","gloss","grasp","guidebook","habere facias possessionem","handout","hard information","have in sight","heavy demand","heed","heedfulness","hint","identify","imposition","impost","incidental information","indent","info","inform","information","injunction","insight","insistent demand","instruction","intelligence","intentiveness","intentness","interdict","intimation","ken","knowledge","lay eyes on","leader","leading article","lesson","levy","light","literary criticism","look","look on","look upon","looking","lookout","make out","mandamus","mandate","mandatory injunction","manifesto","mark","memo","mention","message","mind","mindfulness","mittimus","monition","moral","nisi prius","noesis","nonnegotiable demand","note","notification","notify","object lesson","observance","observation","observe","order","pay attention to","perceive","perception","pick out","pick up","position paper","precept","presentation","press release","process","proclamation","program","programma","prohibitory injunction","promotional material","pronouncement","pronunciamento","proof","public notice","publication","publicity","realization","recognition","recognize","refer","regard","regardfulness","release","remark","report","requirement","requisition","respect","review","running commentary","rush","rush order","search warrant","see","sense","sensibility","sidelight","sight","spot","spy","spying","statement","take heed of","take in","take note","take note of","take notice","take notice of","tax","taxing","tend","the dope","the goods","the know","the scoop","thought","threat","tip-off","transmission","tribute","twig","ukase","ultimatum","understanding","verbum sapienti","view","viewing","warn","warning","warning piece","warrant","warrant of arrest","warrant of attorney","watch","watching","white book","white paper","witness","witnessing","word","writ","write-up","notification","object lesson","observance","observation","observe","order","pamphlet","perceive","perception","pick out","pick up","pipe","position paper","poster","precept","presentation","process","proclamation","program","pronouncement","proof","publication","publicity","puff","push","realization","recognition","recognize","regard","release","remark","reminder","report","requirement","requisition","resignation","respect","review","reviewer","rush","savor","scoop","seal","search warrant","see","sense","sensibility","sidelight","sight","sign","spot","spy","spying","statement","take in","take notice","tax","taxing","tend","thought","threat","tip off","transmission","tribute","twig","ukase","ultimatum","view","warning","warrant","watch","white paper","witness","word to the wise","word","writ","write up"]
 syn "coat" = ["bedaub","bedizen","begild","besmear","blanket","boot","bristle","buff","butter","calcimine","cap","cloak","coat","coat","Eton jacket","Leatherette","Leatheroid","Mao jacket","anorak","apply paint","bedaub","bedizen","begild","besmear","blanket","blazer","blouse","body coat","bolero","bomber jacket","bonnet","boot","breech","bristle","brush on paint","butter","calcimine","cap","capillament","capuchin","car coat","chaqueta","chesterfield","chromogen","cilium","claw hammer","claw-hammer coat","cloak","coat of paint","coating","coif","collop","color","color filter","color gelatin","colorant","coloring","complexion","cover","coverage","covering","covert","coverture","cowl","cowling","curtain","cut","cutaway coat","cuticle","dab","daub","dead-color","deal","deep-dye","dermis","dinner jacket","dip","disk","distemper","double-dye","doublet","drape","drapery","dress coat","drier","duffel","dye","dyestuff","emblazon","enamel","engild","exterior paint","face","facing","fast-dye","fell","feuille","film","fingertip coat","fitted coat","flap","flat coat","flat wash","fleece","flesh","floor enamel","foil","fold","fresco","frock","frock coat","fur","furring","gild","glaze","gloss","gown","grain","greatcoat","ground","guise","hair","hanging","hat","hide","hood","horsehair","housing","hue","illuminate","imbue","imitation fur","imitation leather","ingrain","integument","interior paint","jacket","japan","jerkin","jumper","jupe","lacquer","lamella","lamina","laminated glass","laminated wood","lap","lay on","lay on color","layer","leaf","leather","leather paper","loden coat","mackinaw","mane","mantle","mask","medium","membrane","mess jacket","midicoat","monkey jacket","opaque color","outer layer","outer skin","overcoat","overlay","paint","pall","pane","panel","parget","parka","patina","pea jacket","peel","pellicle","pelt","peltry","pigment","pile","plait","plank","plate","plating","ply","plywood","prime","prime coat","primer","priming","pubescence","pubic hair","rasher","rawhide","reefer","revetment","rind","sack","safety glass","san benito","scale","screen","scum","setula","shade","shadow","shag","sheath","sheet","shellac","shelter","shield","shirt","shoe","shroud","ski jacket","skin","skins","slab","slap on","slat","slather","sleeve waistcoat","slice","slop on paint","smear","smear on","smoking jacket","sock","spiketail coat","spread","spread on","spread with","stain","stipple","stocking","swallowtail","tabard","table","tablet","tail coat","tails","tar","tegument","tempera","thinner","tinct","tinction","tincture","tinge","tint","tone","topcoat","transparent color","turpentine","turps","undercoat","undercoating","vair","varnish","vehicle","veil","veneer","vestment","wafer","wash","wash coat","watch coat","whitewash","windbreaker","wool","woolly","coating","coif","collop","color","coloring","cover","covering","covert","cowl","curtain","cut","cuticle","dab","daub","deal","dermis","dip","disk","distemper","drape","drapery","drier","dye","emblazon","emblem","enamel","face","facing","fell","film","flap","fleece","flesh","foil","fold","fresco","fur","gild","glaze","gloss","gown","grain","ground","guise","hair","hanging","hat","hide","hood","horsehair","housing","hue","illuminate","imbue","ingrain","integument","jacket","lacquer","lap","lay it on thick","lay on","leaf","leather","mane","mantle","mask","medium","membrane","overcoat","paint","pall","pane","panel","parget","patina","peel","pellicle","pelt","pigment","pile","plait","plank","plaster","plate","plating","ply","plywood","powder","prime","primer","priming","rasher","rawhide","rind","safety glass","scale","screen","scum","seta","shade","shadow","shag","sheath","sheet","shellac","shelter","shield","shoe","shroud","skin","slab","slap on","slat","slather","slice","smear","sock","spread","stain","stipple","table","tablet","tar","tempera","thinner","tincture","tinge","tint","tone","turpentine","undercoat","varnish","vehicle","veil","veneer","vestment","wafer","wash","whitewash","wool"] 
@@ -375,6 +381,6 @@ clue 4 = ("a new member returned a woman", 6)
 clue 5 = ("pause at these i fancy", 8) -- Everyman 3526, clue 1   ["athetise","hesitate"] 
 clue 6 = ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
 clue 7 = ("flyer needed by funfair manager", 6)
-clue 8 = ("put food in this stuff on barge at sea", 9)
--- 3.4 GB memory used
+clue 8 = ("put food in this stuff on barge at sea", 9) -- Why doesn't this work?
+clue 9 = ("notice supervisor is going nuts at first", 4)
 
