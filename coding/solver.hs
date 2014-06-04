@@ -114,7 +114,7 @@ expandNoCons ys n = [Leaf (concatWithSpaces ys)]
   ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
   ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then makeInsertionNodes ys n else [])
-  -- ++ (if length ys > 2 then makeConsIndicatorNodes ys n else [])
+  ++ (if length ys > 2 then makeConsIndicatorNodes ys n else [])
   ++ (if length ys > 1 then makeReversalNodes ys n else [])
   ++ (if length ys > 1 then makeFirstLetterNodes ys n else [])
 
@@ -132,6 +132,7 @@ minLength (SubtractionNode ind tree1 tree2) = maximum[(minLength tree1) - (maxLe
 minLength (ReversalNode ind tree) = minLength tree
 minLength (Leaf string) = let x = minimum ( map length (string : syn string)) in x
 minLength (FirstLetterNode ind strings) = length strings
+minLength (ConsNode one two) = minLength one + minLength two
 
 
 maxLength (ConsListNode trees) = (sum . map maxLength) trees
@@ -142,6 +143,7 @@ maxLength (SubtractionNode ind tree1 tree2) = minimum[(maxLength tree1) - (minLe
 maxLength (ReversalNode ind tree) = maxLength tree
 maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in x
 maxLength (FirstLetterNode ind strings) = length strings
+maxLength (ConsNode one two) = maxLength one + maxLength two
 
 ---------------- CLUE TYPES ----------------
 
@@ -153,9 +155,11 @@ makeConsNodes xs n = let parts = twoParts xs
 makeConsListNodes :: [String] -> Int -> [ClueTree]
 makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1]), (sum . map minLength) xs >= n]
 
+-- Make cons indicator and then filter them out afterwards
+
 makeConsIndicatorNodes :: [String] -> Int -> [ClueTree]
 makeConsIndicatorNodes xs n = let parts = threeParts xs
-                   in concat [[ConsNode x' y' |(x, ind, y) <- parts, x' <- (expand x n), y' <- (expand y n), isAnagramWord(ind)] | part <- parts]  
+                   in concat [[ConsNode x' y' |(x, ind, y) <- parts, x' <- (expand x n), y' <- (expand y n), isConsIndicator(ind)] | part <- parts]  
 
 
 isConsIndicator ["on"] = True
@@ -301,8 +305,8 @@ eval_tree :: Int -> ClueTree  -> [String]
 eval_tree n (AnagramNode x y) = if length(concat(y)) > n then [] else anagrams(concat(y))
 eval_tree n (Leaf x) = filter (\x -> length x <= n) (syn x ++ [x])
 eval_tree n (ConsListNode xs) = eval_trees n xs --map concat (sequence (map (eval_tree n) xs))
-eval_tree n (ConsNode x y) = [x' ++ y' | x' <- eval_tree n x, y' <- eval_tree n y]
-eval_tree n (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree n x, y' <- eval_tree n y, (length x') + (length y') <= n]
+eval_tree n (ConsNode x y) = [x' ++ y' | x' <- eval_tree n x, y' <- eval_tree (n - length x') y]
+eval_tree n (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree n x, y' <- eval_tree (n - (length x')) y]
 eval_tree n (SubtractionNode ind x y) = concat[subtractFrom x' y' | x' <- eval_tree n x, y' <- eval_tree n y]
 eval_tree n (HiddenWordNode ind ys) = [x | x <- substr (concat ys), (length x) > 0, (length x) <= n]
 eval_tree n (ReversalNode ind ys) = map reverse (eval_tree n ys)
