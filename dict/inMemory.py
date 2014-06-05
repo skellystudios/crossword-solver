@@ -1,6 +1,20 @@
-f = open('mobythes3.aur')
+import sys 
+
+f = open('dict/mobythes3.aur')
 
 dictionary = {}
+
+
+def create_sublists(x):
+    out = []
+    for i in range(1, len(x)):
+        for j in range(2, len(x)+1):
+            if i<j:
+                out.append(x[i:j])
+    return out
+
+def join_sublists(lists):
+    return map ((lambda x :' '.join(x).lower()), lists)
 
 def extract_to_dictionary():
 
@@ -25,19 +39,26 @@ def add_or_append(key, value):
    
 
 def write_output_string():
-    f2 = open('out.hs','w')
-    
-    f2.write('import qualified Data.Map as Map \n')
-    f2.write('mapManual = \n')
-    for key in dictionary.keys():
-        string = "     Map.insert  \"" + key + "\" ["
-        for defn in dictionary[key]:
-            string = string + "\"" + defn + "\","
-        string = string[:-1]
-        string = string + "]\n"
-        f2.write(string)
 
-    f2.write('Map.insert "xxx" [] $ Map.empty')
+    wordset =  join_sublists(create_sublists(sys.argv))
+
+    f2 = open('Thesaurus.hs','w')
+    f2.write('module Thesaurus (thesaurus) where\n')
+    f2.write('import qualified Data.Map as Map \n')
+    f2.write('thesaurus = ')
+
+     
+    for key in dictionary.keys():
+
+        if len(sys.argv) < 2 or key in wordset:
+            string = "     Map.insert  \"" + key + "\" ["
+            for defn in dictionary[key]:
+                string = string + "\"" + defn + "\","
+            string = string[:-1]
+            string = string + "] $ \n"
+            f2.write(string)
+
+    f2.write('    Map.insert "xxx" [] $ Map.empty')
     f2.close()
 
 

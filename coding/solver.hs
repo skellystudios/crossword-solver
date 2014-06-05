@@ -2,7 +2,15 @@ module Solver where
 
 import Data.List 
 import qualified Data.Set
+import qualified Data.Map as Map
+import System.Environment   
+  
 import Wordlist
+import Thesaurus
+import Anagram
+
+
+
 --import Data.String.Utils
  
 
@@ -11,7 +19,7 @@ import Wordlist
 data Parse = DefNode String ClueTree Int
   deriving Show
 
-data ClueTree = ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ClueTree | FirstLetterNode FLIndicator [String]
+data ClueTree = ConsIndicatorLeaf [String] | ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ClueTree | FirstLetterNode FLIndicator [String] | LastLetterNode LLIndicator [String]
   deriving Show
 
 data Answer = Answer String Parse deriving Show
@@ -22,6 +30,7 @@ data SubtractionIndicator = SIndicator [String] deriving Show
 data ReversalIndicator = RIndicator [String] deriving Show
 data HWIndicator = HWIndicator [String] deriving Show
 data FLIndicator = FLIndicator [String] deriving Show
+data LLIndicator = LLIndicator [String] deriving Show
 
 data Constrains = MaxLength MinLength
 data MaxLength = D Int
@@ -42,7 +51,17 @@ data MinLength = Int
 -- TODO: Before/after clues
 -- TODO: Sometimes need to use synonymns when doing anagrams ??? Maybe anagram subtypes needs to be a special type of subtree
 
+-- WRITE UP / RESEARCH: 
+
+-- TODO: Write something about reverses and trees for output - and implications for type system.
+-- TODO: Garbage Collection, write about it.
+-- TODO: Concurrency - make it fun!
+-- TODO: Look up Suffix trees to compress thesaurus
+
 --- DISPLAY FUNCTIONS
+
+
+
 
 showDef :: Parse -> String
 showDef (DefNode d tree n) = "Definition: " ++ show d ++ " \n" ++ showTree tree 1 ++ " \n\n" 
@@ -93,16 +112,18 @@ parse (xs, n) = makeNoIndicatorDefs (words xs, n) ++ makIndicatorDefs (words xs,
 
 makeNoIndicatorDefs :: ([String], Int) -> [Parse]
 makeNoIndicatorDefs (xs, n) = let parts = twoParts xs
-        in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part) n), Data.Set.member (concatWithSpaces (fst part)) wordlist_extended] | part <- includeReversals (parts)]
+        in concat [[DefNode (concatWithSpaces (fst part)) y' n| y' <- (expand (snd part) n), isInWordlist (concatWithSpaces (fst part)) ] | part <- includeReversals (parts)]
 
 makIndicatorDefs :: ([String], Int) -> [Parse]
 makIndicatorDefs (xs, n) = let parts = threeParts xs
-        in concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (x,y,z) <- (parts), isDefIndicator(y), Data.Set.member (concatWithSpaces x) wordlist_extended] 
-        ++ concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (z,y,x) <- (parts), isDefIndicator(y), Data.Set.member (concatWithSpaces x) wordlist_extended]
+        in concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (x,y,z) <- (parts), isDefIndicator(y), isInWordlist (concatWithSpaces x) ] 
+        ++ concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (z,y,x) <- (parts), isDefIndicator(y), isInWordlist (concatWithSpaces x) ]
 
 
 isDefIndicator ["in"] = True
+isDefIndicator ["for"] = True
 isDefIndicator ["is"] = True
+isDefIndicator ["makes"] = True
 isDefIndicator _ = False
 
 expand :: [String] -> Int -> [ClueTree]
@@ -111,12 +132,14 @@ expand ys n= (if length ys > 1 then makeConsListNodes ys n else [])
 
 expandNoCons :: [String] -> Int -> [ClueTree]
 expandNoCons ys n = [Leaf (concatWithSpaces ys)] 
+  ++ (if length ys == 1 then makeConsIndicatorNodes ys n else [])
   ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
   ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then makeInsertionNodes ys n else [])
-  ++ (if length ys > 2 then makeConsIndicatorNodes ys n else [])
+--  ++ (if length ys > 2 then makeConsIndicatorNodes ys n else [])
   ++ (if length ys > 1 then makeReversalNodes ys n else [])
   ++ (if length ys > 1 then makeFirstLetterNodes ys n else [])
+  ++ (if length ys > 1 then makeLastLetterNodes ys n else [])
 
 expandJustAbbreviations :: [String] -> Int -> [ClueTree]
 expandJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
@@ -132,18 +155,22 @@ minLength (SubtractionNode ind tree1 tree2) = maximum[(minLength tree1) - (maxLe
 minLength (ReversalNode ind tree) = minLength tree
 minLength (Leaf string) = let x = minimum ( map length (string : syn string)) in x
 minLength (FirstLetterNode ind strings) = length strings
+minLength (LastLetterNode ind strings) = length strings
 minLength (ConsNode one two) = minLength one + minLength two
+minLength (ConsIndicatorLeaf xs) = 0
 
 
 maxLength (ConsListNode trees) = (sum . map maxLength) trees
 maxLength (AnagramNode ind strings) = (length . concat) strings
 maxLength (HiddenWordNode ind strings) = (length strings) - 2
-maxLength (InsertionNode ind tree1 tree2) = (minLength tree1) + (minLength tree2)
+maxLength (InsertionNode ind tree1 tree2) = (maxLength tree1) + (maxLength tree2)
 maxLength (SubtractionNode ind tree1 tree2) = minimum[(maxLength tree1) - (minLength tree2),3]
 maxLength (ReversalNode ind tree) = maxLength tree
 maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in x
 maxLength (FirstLetterNode ind strings) = length strings
+maxLength (LastLetterNode ind strings) = length strings
 maxLength (ConsNode one two) = maxLength one + maxLength two
+maxLength (ConsIndicatorLeaf xs) = 0
 
 ---------------- CLUE TYPES ----------------
 
@@ -153,13 +180,15 @@ makeConsNodes xs n = let parts = twoParts xs
 
 
 makeConsListNodes :: [String] -> Int -> [ClueTree]
-makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1]), (sum . map minLength) xs >= n]
+makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . map minLength) xs >= n]
 
 -- Make cons indicator and then filter them out afterwards
 
 makeConsIndicatorNodes :: [String] -> Int -> [ClueTree]
-makeConsIndicatorNodes xs n = let parts = threeParts xs
-                   in concat [[ConsNode x' y' |(x, ind, y) <- parts, x' <- (expand x n), y' <- (expand y n), isConsIndicator(ind)] | part <- parts]  
+makeConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorLeaf xs] else []
+
+-- makeConsIndicatorNodes xs n = let parts = threeParts xs
+--                    in concat [[ConsNode x' y' |(x, ind, y) <- parts, x' <- (expand x n), y' <- (expand y n), isConsIndicator(ind)] | part <- parts]  
 
 
 isConsIndicator ["on"] = True
@@ -174,13 +203,7 @@ makeAnagramNodes xs n = let parts = twoParts xs
                   in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x)] 
 
 isAnagramWord :: [String] -> Bool
-isAnagramWord ["mixed"] = True
-isAnagramWord ["shredded"] = True
-isAnagramWord ["flying"] = True
-isAnagramWord ["twisted"] = True
-isAnagramWord ["fancy"] = True
-isAnagramWord ["at","sea"] = True
-isAnagramWord _ = False
+isAnagramWord xs = Data.Set.member (concatWithSpaces xs) anagramIndicators
 
 anagrams :: String -> [String]
 anagrams [] = [[]]
@@ -190,7 +213,7 @@ anagrams xs = [x:ys | x<-xs, ys <- anagrams(delete x xs)]
 makeInsertionNodes :: [String] -> Int -> [ClueTree]
 makeInsertionNodes xs n = let parts = threeParts xs
                   in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
-
+                  ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
 
 insertInto :: String -> String -> [String] 
 insertInto xs [] = [xs]
@@ -199,6 +222,9 @@ insertInto xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (insertInto xs ys))
 isInsertionWord ["in"] = True
 isInsertionWord _ = False
 
+isReverseInsertionWord ["crossing"] = True
+isReverseInsertionWord ["around"] = True
+isReverseInsertionWord _ = False
 
 -- SUBTRACTIONS
 makeSubtractionNodes :: [String] -> Int -> [ClueTree]
@@ -247,6 +273,7 @@ makeHiddenWordNodes xs n = let parts = twoParts xs
 
 isHWIndicator ["found","in"] = True
 isHWIndicator ["needed","by"] = True
+isHWIndicator ["from"] = True
 isHWIndicator _ = False
 
 substr [] = [[]]
@@ -265,7 +292,24 @@ makeFirstLetterNodes xs n = let parts = twoParts xs
 firstLetter = map head
 
 isFLIndicator ["at", "first"] = True
+isFLIndicator ["first"] = True
+isFLIndicator ["head"] = True
+isFLIndicator ["first", "of"] = True
 isFLIndicator _ = False
+
+
+
+
+-- LAST LETTERS
+makeLastLetterNodes :: [String]  -> Int -> [ClueTree]
+makeLastLetterNodes xs n = let parts = twoParts xs
+                  in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x), (length y) <= n]
+
+lastLetter = map tail
+
+isLLIndicator ["in", "the ", "end"] = True
+isLLIndicator ["first", "of"] = True
+isLLIndicator _ = False
 
 
 --------------------------- EVALUATION ----------------------------
@@ -283,7 +327,7 @@ check_valid_words ::  [Answer] -> [Answer]
 check_valid_words = filter check_valid_word
 
 check_valid_word :: Answer -> Bool
-check_valid_word (Answer x (DefNode y z n)) = Data.Set.member x wordlist_extended
+check_valid_word (Answer x (DefNode y z n)) = isInWordlist x 
 
 constrain_lengths :: [Answer] -> [Answer]
 constrain_lengths = filter constrain_length
@@ -311,6 +355,8 @@ eval_tree n (SubtractionNode ind x y) = concat[subtractFrom x' y' | x' <- eval_t
 eval_tree n (HiddenWordNode ind ys) = [x | x <- substr (concat ys), (length x) > 0, (length x) <= n]
 eval_tree n (ReversalNode ind ys) = map reverse (eval_tree n ys)
 eval_tree n (FirstLetterNode ind ys) = [firstLetter ys]
+eval_tree n (LastLetterNode ind ys) = [lastLetter ys]
+eval_tree n (ConsIndicatorLeaf x) = [""]
 
 eval_trees :: Int -> [ClueTree] -> [String]
 eval_trees n (c:[]) = eval_tree n c
@@ -336,46 +382,44 @@ solve_clue = (solve . clue)
 --------------------------- DICTIONARY CORNER ----------------------------
 
 
+isInWordlist x = Data.Set.member x wordlist_extended
 wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this"]) wordlist
 
 
 syn :: String -> [String]
 
--- {-
 
-syn "notice" = ["ack", "acknowledge", "sign"] 
-syn "coat" = ["jacket"]
-syn "companion" = ["friend", "escort", "mate"]
-syn "shredded" = ["changed", "stripped"]
-syn "corset" = ["basque"]
-syn "flying" = ["jet"] 
-syn "new" = ["n"] 
-syn "member" = ["leg"] 
-syn "woman" = ["angela"] 
-syn "pause" = ["hesitate"] 
-syn "ballet" = ["swanlake"] 
-syn "flyer" = ["airman"] 
-syn "stuff" = ["tuck"]
-syn "put food in this" = ["tuckerbag"]
-
-
--- -}
-
- {-
-
-syn "notice" = ["ack", "account","acquaintance","admonition","advertisement","advice","advisory","alarm","analysis","announcement","annunciation","appreciation","assiduity","attend","attention","awareness","behold","blackmail","blue book","briefing","bulletin","call for","call","care","caution","caveat","censure","circular","claim","cognizance","comment","commentary","communication","communique","conceive","concentration","consciousness","consideration","contribution","credible","criticism","critique","data","datum","declaration","descry","detect","diligence","directive","directory","discern","discharge","discover","dismissal","dispatch","distinguish","dope","draft","drain","draught","draughtsman","draughty","duty","ear","earnestness","edict","editorial","encyclical","enlightenment","enunciation","espial","espionage","espy","evidence","exaction","example","extortion","facts","feel","find","glimpse","gloss","goods","guidebook","handout","hark","heed","hint","identify","imposition","impost","indent","info","injunction","insight","inspect","instruction","intelligence","intentness","interdict","interest","item","ken","know","knowledge","leader","lesson","levy","light","look on","look","lookout","make out","mandate","manifesto","mark","memo","memorandum","mention","message","mind","monition","moral","note","notice","notice","account","acknowledge","acquaintance","admonish","admonishment","admonition","advert","advertence","advertency","advice","advise","alarm","alertness","allude","analysis","animadvert","announce","announcement","annunciation","apperception","appreciation","appreciativeness","apprehension","approval","assiduity","assiduousness","attend","attend to","attention","attention span","attentiveness","awareness","behold","bench warrant","blackmail","blue book","book review","briefing","bulletin","bulletin board","call","call for","capias","care","catch sight of","caution","caveat","censure","circular","claim","clap eyes on","cognition","cognizance","comment","commentary","commentation","communication","communique","concentration","concern","consciousness","consideration","contribution","critical bibliography","critical journal","critical notice","critical review","criticism","critique","data","datum","death warrant","declaration","demand","demand for","descry","detect","deterrent example","diligence","directive","directory","discern","discover","dispatch","distinguish","draft","drain","duty","ear","earnestness","edict","editorial","encyclical","enlightenment","enunciation","espial","espionage","espy","evidence","exaction","example","extortion","extortionate demand","facts","factual information","familiarization","fieri facias","final notice","final warning","gen","general information","give heed to","give notice","glimpse","gloss","grasp","guidebook","habere facias possessionem","handout","hard information","have in sight","heavy demand","heed","heedfulness","hint","identify","imposition","impost","incidental information","indent","info","inform","information","injunction","insight","insistent demand","instruction","intelligence","intentiveness","intentness","interdict","intimation","ken","knowledge","lay eyes on","leader","leading article","lesson","levy","light","literary criticism","look","look on","look upon","looking","lookout","make out","mandamus","mandate","mandatory injunction","manifesto","mark","memo","mention","message","mind","mindfulness","mittimus","monition","moral","nisi prius","noesis","nonnegotiable demand","note","notification","notify","object lesson","observance","observation","observe","order","pay attention to","perceive","perception","pick out","pick up","position paper","precept","presentation","press release","process","proclamation","program","programma","prohibitory injunction","promotional material","pronouncement","pronunciamento","proof","public notice","publication","publicity","realization","recognition","recognize","refer","regard","regardfulness","release","remark","report","requirement","requisition","respect","review","running commentary","rush","rush order","search warrant","see","sense","sensibility","sidelight","sight","spot","spy","spying","statement","take heed of","take in","take note","take note of","take notice","take notice of","tax","taxing","tend","the dope","the goods","the know","the scoop","thought","threat","tip-off","transmission","tribute","twig","ukase","ultimatum","understanding","verbum sapienti","view","viewing","warn","warning","warning piece","warrant","warrant of arrest","warrant of attorney","watch","watching","white book","white paper","witness","witnessing","word","writ","write-up","notification","object lesson","observance","observation","observe","order","pamphlet","perceive","perception","pick out","pick up","pipe","position paper","poster","precept","presentation","process","proclamation","program","pronouncement","proof","publication","publicity","puff","push","realization","recognition","recognize","regard","release","remark","reminder","report","requirement","requisition","resignation","respect","review","reviewer","rush","savor","scoop","seal","search warrant","see","sense","sensibility","sidelight","sight","sign","spot","spy","spying","statement","take in","take notice","tax","taxing","tend","thought","threat","tip off","transmission","tribute","twig","ukase","ultimatum","view","warning","warrant","watch","white paper","witness","word to the wise","word","writ","write up"]
-syn "coat" = ["bedaub","bedizen","begild","besmear","blanket","boot","bristle","buff","butter","calcimine","cap","cloak","coat","coat","Eton jacket","Leatherette","Leatheroid","Mao jacket","anorak","apply paint","bedaub","bedizen","begild","besmear","blanket","blazer","blouse","body coat","bolero","bomber jacket","bonnet","boot","breech","bristle","brush on paint","butter","calcimine","cap","capillament","capuchin","car coat","chaqueta","chesterfield","chromogen","cilium","claw hammer","claw-hammer coat","cloak","coat of paint","coating","coif","collop","color","color filter","color gelatin","colorant","coloring","complexion","cover","coverage","covering","covert","coverture","cowl","cowling","curtain","cut","cutaway coat","cuticle","dab","daub","dead-color","deal","deep-dye","dermis","dinner jacket","dip","disk","distemper","double-dye","doublet","drape","drapery","dress coat","drier","duffel","dye","dyestuff","emblazon","enamel","engild","exterior paint","face","facing","fast-dye","fell","feuille","film","fingertip coat","fitted coat","flap","flat coat","flat wash","fleece","flesh","floor enamel","foil","fold","fresco","frock","frock coat","fur","furring","gild","glaze","gloss","gown","grain","greatcoat","ground","guise","hair","hanging","hat","hide","hood","horsehair","housing","hue","illuminate","imbue","imitation fur","imitation leather","ingrain","integument","interior paint","jacket","japan","jerkin","jumper","jupe","lacquer","lamella","lamina","laminated glass","laminated wood","lap","lay on","lay on color","layer","leaf","leather","leather paper","loden coat","mackinaw","mane","mantle","mask","medium","membrane","mess jacket","midicoat","monkey jacket","opaque color","outer layer","outer skin","overcoat","overlay","paint","pall","pane","panel","parget","parka","patina","pea jacket","peel","pellicle","pelt","peltry","pigment","pile","plait","plank","plate","plating","ply","plywood","prime","prime coat","primer","priming","pubescence","pubic hair","rasher","rawhide","reefer","revetment","rind","sack","safety glass","san benito","scale","screen","scum","setula","shade","shadow","shag","sheath","sheet","shellac","shelter","shield","shirt","shoe","shroud","ski jacket","skin","skins","slab","slap on","slat","slather","sleeve waistcoat","slice","slop on paint","smear","smear on","smoking jacket","sock","spiketail coat","spread","spread on","spread with","stain","stipple","stocking","swallowtail","tabard","table","tablet","tail coat","tails","tar","tegument","tempera","thinner","tinct","tinction","tincture","tinge","tint","tone","topcoat","transparent color","turpentine","turps","undercoat","undercoating","vair","varnish","vehicle","veil","veneer","vestment","wafer","wash","wash coat","watch coat","whitewash","windbreaker","wool","woolly","coating","coif","collop","color","coloring","cover","covering","covert","cowl","curtain","cut","cuticle","dab","daub","deal","dermis","dip","disk","distemper","drape","drapery","drier","dye","emblazon","emblem","enamel","face","facing","fell","film","flap","fleece","flesh","foil","fold","fresco","fur","gild","glaze","gloss","gown","grain","ground","guise","hair","hanging","hat","hide","hood","horsehair","housing","hue","illuminate","imbue","ingrain","integument","jacket","lacquer","lap","lay it on thick","lay on","leaf","leather","mane","mantle","mask","medium","membrane","overcoat","paint","pall","pane","panel","parget","patina","peel","pellicle","pelt","pigment","pile","plait","plank","plaster","plate","plating","ply","plywood","powder","prime","primer","priming","rasher","rawhide","rind","safety glass","scale","screen","scum","seta","shade","shadow","shag","sheath","sheet","shellac","shelter","shield","shoe","shroud","skin","slab","slap on","slat","slather","slice","smear","sock","spread","stain","stipple","table","tablet","tar","tempera","thinner","tincture","tinge","tint","tone","turpentine","undercoat","varnish","vehicle","veil","veneer","vestment","wafer","wash","whitewash","wool"] 
-syn "companion" = ["friend", "escort", "mate"]
-syn "shredded" = ["chalky","cleft","cloven","cracked","crushed","cut","dusty","farinaceous","fine","flaky","furfuraceous","grated","ground","impalpable","lacerated","mangled","mealy","milled","mutilated","powdered","powdery","pulverized","quartered","ragged","rent","scaly","scurfy","severed","shredded","shredded","branny","chalklike","chalky","cleft","cloven","comminute","comminuted","cracked","crushed","cut","detrital","detrited","disintegrated","dusty","efflorescent","farinaceous","fine","flaky","floury","furfuraceous","gone to dust","grated","ground","impalpable","in pieces","in shreds","lacerate","lacerated","levigated","mangled","mealy","milled","mutilated","pestled","powdered","powdery","pulverant","pulverized","pulverulent","quartered","ragged","reduced to powder","rent","riven","scaly","scobicular","scobiform","scurfy","severed","sharded","slit","splintered","split","tattered","torn","triturated","slit","split","tattered","torn"]
-syn "corset" = ["advocate","arm","back","backbone","backing","bandeau","bearer","bra","brace","bracer","bracket","brassiere","buttress","cane","carrier","cervix","corset","corset","advocate","alpenstock","arm","athletic supporter","back","backbone","backing","bandeau","bearer","bra","brace","bracer","bracket","brassiere","buttress","cane","carrier","cervix","corselet","crook","crutch","foundation garment","fulcrum","girdle","guy","guywire","jock","jockstrap","mainstay","maintainer","mast","neck","prop","reinforce","reinforcement","reinforcer","rest","resting place","rigging","shoulder","shroud","spine","sprit","staff","standing rigging","stave","stay","stays","stick","stiffener","strengthener","support","supporter","sustainer","upholder","walking stick","crook","crutch","foundation garment","fulcrum","girdle","guy","guywire","jock","mainstay","mast","neck","petticoat","prop","reinforcement","rest","resting place","rigging","shoulder","shroud","spine","staff","stave","stay","stick","strengthener","support","supporter","sustainer","undergarments","upholder","walking stick"]
-syn "flying" = ["jet", "aeronautics","agile","airline","ascending","astronautics","axial","back","backward","ballooning","breakneck","brittle","capricious","changeable","corruptible","cruising","cursory","dashing","deciduous","descending","dissolving","double quick","downward","drifting","dying","ecstatic","ephemeral","evanescent","expeditious","express","fading","fast","feverish","fickle","fleet","fleeting","flight","flitting","flowing","fluent","fluttering","fly-by-night","flying","flying","aeronautics","agile","air service","airborne","airline","ascending","astronautics","aviation","axial","back","back-flowing","backward","ballooning","blind flying","breakneck","brittle","capricious","changeable","cloud-seeding","commercial aviation","contact flying","corruptible","cruising","cursory","dashing","deciduous","descending","disappearing","dissolving","double-quick","down-trending","downward","drifting","dying","eagle-winged","ephemeral","evanescent","evaporating","expeditious","express","fading","fast","festinate","feverish","fickle","fleet","fleeting","flight","flitting","flowing","fluent","fluttering","fly-by-night","fragile","frail","fugacious","fugitive","furious","galloping","general aviation","gliding","going","gyrational","gyratory","hair-trigger","hasty","headlong","hovering","hurried","hustling","immediate","impermanent","impetuous","impulsive","inconstant","instant","insubstantial","jet-propelled","last-minute","light of heel","light-footed","lively","melting","mercurial","momentary","mortal","mounting","mutable","nimble","nimble-footed","nondurable","nonpermanent","on the spot","passing","perishable","pilotage","plunging","precipitate","progressive","prompt","quick","quick as lightning","quick as thought","rapid","reckless","reflowing","refluent","regressive","retrogressive","rising","rocket-propelled","rotary","rotational","rotatory","running","rushing","sailing","sailplaning","short-lived","sideward","sinking","slap-bang","slapdash","snap","snappy","soaring","spanking","speedy","streaming","superficial","swift","temporal","temporary","transient","transitive","transitory","undurable","unenduring","unstable","up-trending","upward","urgent","vanishing","volant","volatile","volitant","winged","winging","fragile","frail","fugacious","fugitive","furious","galloping","going","gyrational","hair trigger","hasty","headlong","hurried","immediate","impermanent","impetuous","impulsive","inconstant","instant","insubstantial","last minute","light footed","lively","melting","mercurial","momentary","mortal","mounting","mutable","nimble footed","nimble","nonpermanent","on the spot","passing","perishable","pilotage","plunging","precipitate","progressive","prompt","quick","rapid","reckless","refluent","regressive","retrogressive","rising","rotary","running","rushing","sailing","short lived","sideward","sinking","slapdash","snap","snappy","soaring","spanking","speedy","streaming","superficial","swift","temporal","temporary","transient","transitive","transitory","undurable","unstable","upward","urgent","vanishing","volatile","winged"]
+manual_syn "notice" = ["ack", "acknowledge", "sign"] 
+manual_syn "coat" = ["jacket"]
+manual_syn "companion" = ["friend", "escort", "mate"]
+manual_syn "shredded" = ["changed", "stripped"]
+manual_syn "corset" = ["basque"]
+manual_syn "flying" = ["jet"] 
+manual_syn "new" = ["n"] 
+manual_syn "member" = ["leg"] 
+manual_syn "woman" = ["angela"] 
+manual_syn "pause" = ["hesitate"] 
+manual_syn "ballet" = ["swanlake"] 
+manual_syn "flyer" = ["airman"] 
+manual_syn "stuff" = ["tuck"]
+manual_syn "put food in this" = ["tuckerbag"]
+manual_syn _ = []
 
 
+-- syn _ = []
+syn ('t':'o':' ':xs) = syn xs
+syn x = thes x ++ abbreviation x ++ manual_syn x
 
----}
+thes x = case (Map.lookup x thesaurus) of 
+  Nothing -> []
+  Just x -> x
 
-syn _ = []
+abbreviation "river" = ["r"]
+abbreviation "one" = ["i"]
+abbreviation _ = []
 
+
+-- ghc: internal error: scavenge_stack: weird activation record found on stack: 2004205701
  
 clue :: Int -> (String, Int)
 clue 1 = ("companion shredded corset",6)
@@ -387,4 +431,7 @@ clue 6 = ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
 clue 7 = ("flyer needed by funfair manager", 6)
 clue 8 = ("put food in this stuff on barge at sea", 9) -- Why doesn't this work?
 clue 9 = ("notice supervisor is going nuts at first", 4)
+clue 10 = ("animal makes mistake crossing one river", 7)
+clue 11 = ("maria not a fickle lover", 9)
+clue 12 = ("hope for high praise", 6)
 
