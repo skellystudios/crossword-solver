@@ -19,7 +19,7 @@ import Anagram
 data Parse = DefNode String ClueTree Int
   deriving Show
 
-data ClueTree = ConsIndicatorLeaf [String] | ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ClueTree | FirstLetterNode FLIndicator [String] | LastLetterNode LLIndicator [String]
+data ClueTree = ConsIndicatorLeaf [String] | ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ClueTree | FirstLetterNode FLIndicator [String] | LastLetterNode LLIndicator [String] | PartialNode PartialIndicator ClueTree
   deriving Show
 
 data Answer = Answer String Parse deriving Show
@@ -140,6 +140,7 @@ expandNoCons ys n = [Leaf (concatWithSpaces ys)]
   ++ (if length ys > 1 then makeReversalNodes ys n else [])
   ++ (if length ys > 1 then makeFirstLetterNodes ys n else [])
   ++ (if length ys > 1 then makeLastLetterNodes ys n else [])
+  ++ (if length ys > 1 then makePartialNodes ys n else [])
 
 expandJustAbbreviations :: [String] -> Int -> [ClueTree]
 expandJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
@@ -157,6 +158,7 @@ minLength (Leaf string) = let x = minimum ( map length (string : syn string)) in
 minLength (FirstLetterNode ind strings) = length strings
 minLength (LastLetterNode ind strings) = length strings
 minLength (ConsNode one two) = minLength one + minLength two
+minLength (PartialNode tree) = 1
 minLength (ConsIndicatorLeaf xs) = 0
 
 
@@ -170,6 +172,7 @@ maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in
 maxLength (FirstLetterNode ind strings) = length strings
 maxLength (LastLetterNode ind strings) = length strings
 maxLength (ConsNode one two) = maxLength one + maxLength two
+minLength (PartialNode tree) = (maxLength tree) - 1
 maxLength (ConsIndicatorLeaf xs) = 0
 
 ---------------- CLUE TYPES ----------------
@@ -311,6 +314,18 @@ isLLIndicator ["in", "the ", "end"] = True
 isLLIndicator ["first", "of"] = True
 isLLIndicator _ = False
 
+
+
+-- LAST LETTERS
+makePartialNodes :: [String]  -> Int -> [ClueTree]
+makePartialNodes xs n = let parts = twoParts xs
+                  in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (expand y n)]
+
+top_tail_substrings = map tail   -- TODO: FIX THIS!!!!
+
+isPartialIndicator ["mostly"] = True
+isPartialIndicator ["almost"] = True
+isLLIndicator _ = False
 
 --------------------------- EVALUATION ----------------------------
 
