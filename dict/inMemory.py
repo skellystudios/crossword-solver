@@ -41,7 +41,7 @@ def add_or_append(key, value):
 def write_output_string():
 
     wordset =  join_sublists(create_sublists(sys.argv))
-
+    print wordset
     f2 = open('Thesaurus.hs','w')
     f2.write('module Thesaurus (thesaurus) where\n')
     f2.write('import qualified Data.Map as Map \n')

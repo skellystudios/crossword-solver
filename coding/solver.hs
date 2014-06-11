@@ -1,6 +1,6 @@
 module Solver where 
 
-import Data.List 
+import Data.List  
 import qualified Data.Set
 import qualified Data.Map as Map
 import System.Environment   
@@ -31,6 +31,7 @@ data ReversalIndicator = RIndicator [String] deriving Show
 data HWIndicator = HWIndicator [String] deriving Show
 data FLIndicator = FLIndicator [String] deriving Show
 data LLIndicator = LLIndicator [String] deriving Show
+data PartialIndicator = PartialIndicator [String] deriving Show
 
 data Constrains = MaxLength MinLength
 data MaxLength = D Int
@@ -42,6 +43,7 @@ data MinLength = Int
 
 -- TODO: A function that makes a printed clue markup version (Clue -> String) [ah, but hard, as we don't create a total parse tree including subs etc, at the end]
 -- TODO: Conditional eval on insertion node should be smarter 
+-- TODO: Do some sort of statistical evaluation to determine the cost function. Or, like, machine learn it?
 
 -- TODO: do a thing wherein we deal with the problem with leaf nodes not evaluating to anything. THIS IS WHERE I CAN USE A MAYBE A MONAD
 -- TODO: we don't want to have insertInto 'abc' 'xyz' = abcxyz
@@ -158,7 +160,7 @@ minLength (Leaf string) = let x = minimum ( map length (string : syn string)) in
 minLength (FirstLetterNode ind strings) = length strings
 minLength (LastLetterNode ind strings) = length strings
 minLength (ConsNode one two) = minLength one + minLength two
-minLength (PartialNode tree) = 1
+minLength (PartialNode ind tree) = 1
 minLength (ConsIndicatorLeaf xs) = 0
 
 
@@ -172,8 +174,28 @@ maxLength (Leaf string) = let x = maximum ( map length (string : syn string)) in
 maxLength (FirstLetterNode ind strings) = length strings
 maxLength (LastLetterNode ind strings) = length strings
 maxLength (ConsNode one two) = maxLength one + maxLength two
-minLength (PartialNode tree) = (maxLength tree) - 1
+maxLength (PartialNode ind tree) = (maxLength tree) - 1
 maxLength (ConsIndicatorLeaf xs) = 0
+
+-------------- COST EVALUATION -------------
+
+cost_parse (DefNode s tree n) = cost tree
+
+cost :: ClueTree -> Int
+cost (ConsListNode trees) = 70 * (length trees) + sum (map cost trees) 
+cost (AnagramNode ind strings) = 10
+cost (HiddenWordNode ind strings) = 50
+cost (InsertionNode ind tree1 tree2) = 60 + cost tree1 + cost tree2  -- TODO: weight against complex insertions?
+cost (SubtractionNode ind tree1 tree2) = 30 + cost tree1 + cost tree2
+cost (ReversalNode ind tree) = 20 + cost tree
+cost (Leaf string) = 30
+cost (FirstLetterNode ind strings) = 20
+cost (LastLetterNode ind strings) = 20
+cost (ConsNode one two) = 150
+cost (PartialNode ind tree) = 60 + cost tree
+cost (ConsIndicatorLeaf xs) = 0
+
+
 
 ---------------- CLUE TYPES ----------------
 
@@ -238,6 +260,12 @@ makeSubtractionNodes xs n = let parts = threeParts xs
 subtractFrom :: String -> String -> [String] 
 subtractFrom xs [] = [xs]
 subtractFrom xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (subtractFrom xs ys)) 
+
+
+-- remove (x:xs) (y:ys) = if (x==y) then 
+
+
+--replace old new = intercalate new . Data.List.Split.splitOn old
 
 {-}
 
@@ -308,7 +336,7 @@ makeLastLetterNodes :: [String]  -> Int -> [ClueTree]
 makeLastLetterNodes xs n = let parts = twoParts xs
                   in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x), (length y) <= n]
 
-lastLetter = map tail
+lastLetter = concat . (map tail)
 
 isLLIndicator ["in", "the ", "end"] = True
 isLLIndicator ["first", "of"] = True
@@ -321,11 +349,20 @@ makePartialNodes :: [String]  -> Int -> [ClueTree]
 makePartialNodes xs n = let parts = twoParts xs
                   in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (expand y n)]
 
-top_tail_substrings = map tail   -- TODO: FIX THIS!!!!
+top_tail_substrings :: String -> [String]
+top_tail_substrings x =  top_substrings x ++ tail_substrings x
+
+top_substrings :: String -> [String]
+top_substrings (x:[]) = []  
+top_substrings (x:xs) = [[x]] ++ (map  (\y -> [x] ++ y) (top_substrings xs))
+
+
+tail_substrings :: String -> [String]
+tail_substrings = (map reverse) . top_substrings . reverse
 
 isPartialIndicator ["mostly"] = True
 isPartialIndicator ["almost"] = True
-isLLIndicator _ = False
+isPartialIndicator _ = False
 
 --------------------------- EVALUATION ----------------------------
 
@@ -371,6 +408,7 @@ eval_tree n (HiddenWordNode ind ys) = [x | x <- substr (concat ys), (length x) >
 eval_tree n (ReversalNode ind ys) = map reverse (eval_tree n ys)
 eval_tree n (FirstLetterNode ind ys) = [firstLetter ys]
 eval_tree n (LastLetterNode ind ys) = [lastLetter ys]
+eval_tree n (PartialNode ind y) = concat [top_tail_substrings y | y <- eval_tree n y]
 eval_tree n (ConsIndicatorLeaf x) = [""]
 
 eval_trees :: Int -> [ClueTree] -> [String]
@@ -390,6 +428,8 @@ find_solutions xs = map (\x -> (x, eval x)) xs
 
 -- solve = ignore_blanks . (map eval) . parse
 -- solve c =  map (check_eval) (parse c)
+
+possible_words = (check_valid_words . constrain_lengths  . evaluate . parse)
 
 solve = (check_synonyms . check_valid_words . constrain_lengths  . evaluate . parse)
 
@@ -418,6 +458,9 @@ manual_syn "ballet" = ["swanlake"]
 manual_syn "flyer" = ["airman"] 
 manual_syn "stuff" = ["tuck"]
 manual_syn "put food in this" = ["tuckerbag"]
+manual_syn "home counties" = ["se"]
+manual_syn "school" = ["groom"]
+manual_syn "good" = ["g"]
 manual_syn _ = []
 
 
@@ -449,4 +492,6 @@ clue 9 = ("notice supervisor is going nuts at first", 4)
 clue 10 = ("animal makes mistake crossing one river", 7)
 clue 11 = ("maria not a fickle lover", 9)
 clue 12 = ("hope for high praise", 6)
+
+main = solve_clue 8
 
