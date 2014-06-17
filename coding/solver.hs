@@ -17,21 +17,21 @@ import Anagram
 
 
 data Parse = DefNode String ClueTree Int
-  deriving Show
+  deriving (Show, Eq, Ord)
 
 data ClueTree = ConsIndicatorLeaf [String] | ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ClueTree | FirstLetterNode FLIndicator [String] | LastLetterNode LLIndicator [String] | PartialNode PartialIndicator ClueTree
-  deriving Show
+   deriving (Show, Eq, Ord)
 
-data Answer = Answer String Parse deriving Show
+data Answer = Answer String Parse deriving (Show, Eq, Ord)
 
-data Anagrind = AIndicator [String] deriving Show
-data InsertionIndicator = IIndicator [String] deriving Show
-data SubtractionIndicator = SIndicator [String] deriving Show
-data ReversalIndicator = RIndicator [String] deriving Show
-data HWIndicator = HWIndicator [String] deriving Show
-data FLIndicator = FLIndicator [String] deriving Show
-data LLIndicator = LLIndicator [String] deriving Show
-data PartialIndicator = PartialIndicator [String] deriving Show
+data Anagrind = AIndicator [String] deriving (Show, Eq, Ord)
+data InsertionIndicator = IIndicator [String] deriving (Show, Eq, Ord)
+data SubtractionIndicator = SIndicator [String] deriving (Show, Eq, Ord)
+data ReversalIndicator = RIndicator [String] deriving (Show, Eq, Ord)
+data HWIndicator = HWIndicator [String] deriving (Show, Eq, Ord)
+data FLIndicator = FLIndicator [String] deriving (Show, Eq, Ord)
+data LLIndicator = LLIndicator [String] deriving (Show, Eq, Ord)
+data PartialIndicator = PartialIndicator [String] deriving (Show, Eq, Ord)
 
 data Constrains = MaxLength MinLength
 data MaxLength = D Int
@@ -182,13 +182,13 @@ maxLength (ConsIndicatorLeaf xs) = 0
 cost_parse (DefNode s tree n) = cost tree
 
 cost :: ClueTree -> Int
-cost (ConsListNode trees) = 70 * (length trees) + sum (map cost trees) 
+cost (ConsListNode trees) = 20 * (length trees) + sum (map cost trees) 
 cost (AnagramNode ind strings) = 10
-cost (HiddenWordNode ind strings) = 50
-cost (InsertionNode ind tree1 tree2) = 60 + cost tree1 + cost tree2  -- TODO: weight against complex insertions?
+cost (HiddenWordNode ind strings) = 40
+cost (InsertionNode ind tree1 tree2) = 40 + cost tree1 + cost tree2  -- TODO: weight against complex insertions?
 cost (SubtractionNode ind tree1 tree2) = 30 + cost tree1 + cost tree2
 cost (ReversalNode ind tree) = 20 + cost tree
-cost (Leaf string) = 30
+cost (Leaf string) = 80 * length (words string)
 cost (FirstLetterNode ind strings) = 20
 cost (LastLetterNode ind strings) = 20
 cost (ConsNode one two) = 150
@@ -225,7 +225,7 @@ isConsIndicator _ = False
 
 makeAnagramNodes :: [String] -> Int -> [ClueTree]
 makeAnagramNodes xs n = let parts = twoParts xs
-                  in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x)] 
+                  in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x), (length . concat) y <= n] 
 
 isAnagramWord :: [String] -> Bool
 isAnagramWord xs = Data.Set.member (concatWithSpaces xs) anagramIndicators
@@ -373,8 +373,6 @@ check_eval :: Parse -> [Answer]
 check_eval (DefNode y z n) = map (\x -> Answer x (DefNode y z n)) (Data.Set.toList (Data.Set.intersection wordlist_extended (Data.Set.fromList (eval_tree n z))))
 
 
-
-
 check_valid_words ::  [Answer] -> [Answer]
 check_valid_words = filter check_valid_word
 
@@ -429,11 +427,17 @@ find_solutions xs = map (\x -> (x, eval x)) xs
 -- solve = ignore_blanks . (map eval) . parse
 -- solve c =  map (check_eval) (parse c)
 
+sort_most_likely = (map (snd) . sort . map (\x -> (cost_parse x, x)))
+
+
 possible_words = (check_valid_words . constrain_lengths  . evaluate . parse)
 
-solve = (check_synonyms . check_valid_words . constrain_lengths  . evaluate . parse)
+solve = (head . check_synonyms . check_valid_words . constrain_lengths  . evaluate . sort_most_likely . parse)
 
 solve_clue = (solve . clue)
+
+
+
 --------------------------- DICTIONARY CORNER ----------------------------
 
 
@@ -494,4 +498,42 @@ clue 11 = ("maria not a fickle lover", 9)
 clue 12 = ("hope for high praise", 6)
 
 main = solve_clue 8
+
+
+
+
+
+maximum' :: (Ord a) => [a] -> a  
+maximum' [] = error "maximum of empty list"  
+maximum' [x] = x  
+maximum' (x:xs)   
+    | x > maxTail = x  
+    | otherwise = maxTail  
+    where maxTail = maximum' xs  
+
+
+replicate' :: (Num i, Ord i) => i -> a -> [a]  
+replicate' n x  
+    | n <= 0    = []  
+    | otherwise = x:replicate' (n-1) x  
+
+take' :: (Num i, Ord i) => i -> [a] -> [a]  
+take' n _  
+    | n <= 0   = []  
+take' _ []     = []  
+take' n (x:xs) = x : take' (n-1) xs  
+
+zip' :: [a] -> [b] -> [(a,b)]  
+zip' _ [] = []  
+zip' [] _ = []  
+zip' (x:xs) (y:ys) = (x,y):zip' xs ys  
+
+elem' :: (Eq a) => a -> [a] -> Bool  
+elem' a [] = False  
+elem' a (x:xs)  
+    | a == x    = True  
+    | otherwise = a `elem'` xs   
+
+
+  
 
