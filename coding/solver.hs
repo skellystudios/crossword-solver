@@ -39,6 +39,9 @@ data MinLength = Int
 
 
 --- TOOD SECTION
+
+-- TODO: Pre-process anagrams and pass them through
+
 -- TODO: Preprocessing to weight to most likely: first (map c) will be lazy
 
 -- TODO: A function that makes a printed clue markup version (Clue -> String) [ah, but hard, as we don't create a total parse tree including subs etc, at the end]
@@ -49,8 +52,6 @@ data MinLength = Int
 -- TODO: we don't want to have insertInto 'abc' 'xyz' = abcxyz
 -- TODO: Change subtraction eval function from insert, obvs
 -- TODO: Add some abbreviation function
--- TODO: First/last letter clues
--- TODO: Before/after clues
 -- TODO: Sometimes need to use synonymns when doing anagrams ??? Maybe anagram subtypes needs to be a special type of subtree
 
 -- WRITE UP / RESEARCH: 
@@ -500,40 +501,4 @@ clue 12 = ("hope for high praise", 6)
 main = solve_clue 8
 
 
-
-
-
-maximum' :: (Ord a) => [a] -> a  
-maximum' [] = error "maximum of empty list"  
-maximum' [x] = x  
-maximum' (x:xs)   
-    | x > maxTail = x  
-    | otherwise = maxTail  
-    where maxTail = maximum' xs  
-
-
-replicate' :: (Num i, Ord i) => i -> a -> [a]  
-replicate' n x  
-    | n <= 0    = []  
-    | otherwise = x:replicate' (n-1) x  
-
-take' :: (Num i, Ord i) => i -> [a] -> [a]  
-take' n _  
-    | n <= 0   = []  
-take' _ []     = []  
-take' n (x:xs) = x : take' (n-1) xs  
-
-zip' :: [a] -> [b] -> [(a,b)]  
-zip' _ [] = []  
-zip' [] _ = []  
-zip' (x:xs) (y:ys) = (x,y):zip' xs ys  
-
-elem' :: (Eq a) => a -> [a] -> Bool  
-elem' a [] = False  
-elem' a (x:xs)  
-    | a == x    = True  
-    | otherwise = a `elem'` xs   
-
-
-  
-
+qualified
