@@ -41,6 +41,7 @@ data MinLength = Int
 --- TOOD SECTION
 
 -- TODO: Pre-process anagrams and pass them through
+-- TODO: Check beginning of words while processing to check for valid words - can we pass partial words down the cons chain? (i.e. if we've already generated 3 letters from the first one, then give words minus the first three letters)
 
 -- TODO: Preprocessing to weight to most likely: first (map c) will be lazy
 
@@ -502,3 +503,56 @@ main = solve_clue 8
 
 
 qualified
+
+showStruct :: MyStruct -> IO ()
+showStruct ss = peek ss >>= print
+ 
+data MyStructType = MyStructType CInt CChar
+  deriving (Show, Read, Eq)
+type MyStruct = Ptr MyStructType
+ 
+instance Storable MyStructType where
+  sizeOf _ = 8
+  alignment = sizeOf
+  peek ptr = do
+    a <- peekByteOff ptr 0
+    b <- peekByteOff ptr 4
+    return (MyStructType a b)
+
+
+
+dist :: Point -> Point -> Double
+dist v1 v2 = norm2 (v1 - v2)
+
+distA :: Atom -> Atom -> Double
+distA = dist `on` coord
+
+
+joinContexts ps = (self, nonSelf)
+  where self = map fst ps
+        context = concat $ map snd ps
+        totalContext = nubBy duplicate context
+        nonSelf = deleteFirstsBy duplicate totalContext self
+
+
+
+sequential a1 a2 = chainID a1     == chainID a2
+               && (resSeq  a1 + 1 == resSeq  a2)
+
+type Chain = [Atom]
+
+chains' :: ([Atom] -> [Atom]) -> [Atom] -> [Chain]
+chains' c []  = [c [] ]
+chains' c [a] = [c [a]]
+chains' c (a1:bs@(a2:as))
+    | sequential a1 a2 =         chains' c' bs
+    | otherwise        = (c' []):chains' id bs
+  where c' = c . (a1:)
+
+-- The actual function I use
+chains :: [Atom] -> [Chain]
+chains = chains' id
+       . sortBy (comparing chainID `thenBy` comparing resSeq)
+  where thenBy = mappend
+
+  
