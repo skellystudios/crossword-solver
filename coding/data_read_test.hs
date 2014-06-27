@@ -5,13 +5,13 @@ import qualified Data.Map as Map
 import System.IO.Unsafe
 
 read_wordlist = do
-    ls <- fmap Text.lines (Text.readFile "straight-wordlist")
+    ls <- fmap Text.lines (Text.readFile "data/straight-wordlist")
     (return . string_read . toString . head) ls
     
 wordlist = unsafePerformIO $ do read_wordlist
 
 read_thesaurus = do
-    ls <- fmap Text.lines (Text.readFile "thesaurus")
+    ls <- fmap Text.lines (Text.readFile "data/thesaurus-list")
     (return . Map.fromList . map_read . toString . head) ls
     
 
