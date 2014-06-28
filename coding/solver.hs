@@ -1,12 +1,11 @@
-module Solver where 
+module Main where 
 
 import Data.List  
 import qualified Data.Set
 import qualified Data.Map as Map
 import System.Environment   
   
-import Wordlist
-import Thesaurus
+import Wordlists
 import Anagram
 
 
@@ -65,6 +64,9 @@ data MinLength = Int
 --- DISPLAY FUNCTIONS
 
 
+
+main = do print (solve_clue 11)
+          
 
 
 showDef :: Parse -> String
@@ -499,60 +501,8 @@ clue 10 = ("animal makes mistake crossing one river", 7)
 clue 11 = ("maria not a fickle lover", 9)
 clue 12 = ("hope for high praise", 6)
 
-main = solve_clue 8
-
-
-qualified
-
-showStruct :: MyStruct -> IO ()
-showStruct ss = peek ss >>= print
- 
-data MyStructType = MyStructType CInt CChar
-  deriving (Show, Read, Eq)
-type MyStruct = Ptr MyStructType
- 
-instance Storable MyStructType where
-  sizeOf _ = 8
-  alignment = sizeOf
-  peek ptr = do
-    a <- peekByteOff ptr 0
-    b <- peekByteOff ptr 4
-    return (MyStructType a b)
 
 
 
-dist :: Point -> Point -> Double
-dist v1 v2 = norm2 (v1 - v2)
-
-distA :: Atom -> Atom -> Double
-distA = dist `on` coord
-
-
-joinContexts ps = (self, nonSelf)
-  where self = map fst ps
-        context = concat $ map snd ps
-        totalContext = nubBy duplicate context
-        nonSelf = deleteFirstsBy duplicate totalContext self
-
-
-
-sequential a1 a2 = chainID a1     == chainID a2
-               && (resSeq  a1 + 1 == resSeq  a2)
-
-type Chain = [Atom]
-
-chains' :: ([Atom] -> [Atom]) -> [Atom] -> [Chain]
-chains' c []  = [c [] ]
-chains' c [a] = [c [a]]
-chains' c (a1:bs@(a2:as))
-    | sequential a1 a2 =         chains' c' bs
-    | otherwise        = (c' []):chains' id bs
-  where c' = c . (a1:)
-
--- The actual function I use
-chains :: [Atom] -> [Chain]
-chains = chains' id
-       . sortBy (comparing chainID `thenBy` comparing resSeq)
-  where thenBy = mappend
 
   
