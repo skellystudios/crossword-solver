@@ -852,6 +852,7 @@ anagramIndicators = Data.Set.fromList [
   "cavalier",
   "cavort",
   "change",
+  "changes shape",
   "characters",
   "chemistry",
   "chew",
