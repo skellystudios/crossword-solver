@@ -1,0 +1,43 @@
+MAIN BODY WRITEUP STRUCTURE
+
+1. Naive Implementation
+	1. Discussion of different clue types
+	2. State space and performance
+	3. Loading in an unsafe IO manner
+	4. Discussion of the Anagram Nodes -> could we thread it?
+
+2. Simplifications in the Cons nodes
+
+3. Matching the Human Solver's thought process
+
+	1. Constrain length while parsing
+	2. Constrain length while solving
+	3. Constrain against known wordlist
+	4. Constrain against synonymns
+	5. Constrain based on initial letters of the word
+
+4. State space considerations and solving based on most probable parse trees
+	
+	1. Evaluation functions
+	2. Weighting based on ML and arg minimization
+
+5. A benchmarking suite and performance against it
+	
+	1. Clues from real newspapers
+	2. A solution markup and automated verification => is answer enough or do we just want to provide a method
+	3. Rating clues on a scale / on multiple scales
+
+6. Data considerations
+
+	1. Corpus / wordlist
+	2. Conjugated forms -> match case
+	3. Knowledge -> capital of Paris
+	4. Derived knowledge -> Qulog to create knowlegebase?
+
+7. Extension activities
+
+	1. Solving an entire grid using partial letters
+	2. Using partial information to create best guesses
+	3. Automated learning 
+
+	
