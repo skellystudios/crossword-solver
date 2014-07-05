@@ -4,16 +4,12 @@ import Data.List
 import qualified Data.Set
 import qualified Data.Map as Map
 import System.Environment   
+import Data.Char
   
 import Wordlists
 import Anagram
-
-
-
---import Data.String.Utils
  
-
-
+data Clue = Clue (String, Int)
 
 data Parse = DefNode String ClueTree Int
   deriving (Show, Eq, Ord)
@@ -39,36 +35,47 @@ data MinLength = Int
 
 --- TOOD SECTION
 
--- TODO: Pre-process anagrams and pass them through
--- TODO: Check beginning of words while processing to check for valid words - can we pass partial words down the cons chain? (i.e. if we've already generated 3 letters from the first one, then give words minus the first three letters)
+-- DATA
+-- Get a bunch of benchmark clues (100K?)
+-- Find all indicator words from the internet pls
 
--- TODO: Preprocessing to weight to most likely: first (map c) will be lazy
+-- LARGE-SCALE STRUCTURAL STUFF
+-- Make a testing suite (separate module)
+-- Structure this whole shebang into modules
+-- Make 'knowledge' an extra input into syn
+-- Replace 'Cons' with Concat everywhere
+-- Rename the evaluation functions to a consistent naming structure(?)
 
--- TODO: A function that makes a printed clue markup version (Clue -> String) [ah, but hard, as we don't create a total parse tree including subs etc, at the end]
--- TODO: Conditional eval on insertion node should be smarter 
--- TODO: Do some sort of statistical evaluation to determine the cost function. Or, like, machine learn it?
+-- WHOLE GRID SOLVING
+-- Whole grid solving and representation
+-- Don't remove non-valid words and non-synonyms, just score them worse
+-- Allow us to ask for the top n answers, and divide score by sum(score) to give probabilities
+-- Repeated function application to solve whole grid
+-- Create a data structure for that grid
 
--- TODO: do a thing wherein we deal with the problem with leaf nodes not evaluating to anything. THIS IS WHERE I CAN USE A MAYBE A MONAD
--- TODO: we don't want to have insertInto 'abc' 'xyz' = abcxyz
--- TODO: Change subtraction eval function from insert, obvs
--- TODO: Add some abbreviation function
--- TODO: Sometimes need to use synonymns when doing anagrams ??? Maybe anagram subtypes needs to be a special type of subtree
+-- IMPORTANT FOR CORRECTNESS
+-- Do a thing wherein we deal with the problem with leaf nodes not evaluating to anything. THIS IS WHERE I CAN USE A MAYBE A MONAD
+-- Ditto with invalid subtractions. This is pretty important!
+-- Sometimes need to use synonymns when doing anagrams ??? Maybe anagram subtypes needs to be a special type of subtree
 
--- WRITE UP / RESEARCH: 
+-- EFFICIENCIES AND UPGRADES
+-- Improve subtraction clues evaluation mechanism
+-- Pre-process anagrams and pass them through (??? WILL THIS BE USEFUL - RUN SOME TESTS)
+-- Check beginning of words while processing to check for valid words - can we pass partial words down the cons chain? (i.e. if we've already generated 3 letters from the first one, then give words minus the first three letters)
+-- Conditional eval on insertion node should be smarter 
 
--- TODO: Write something about reverses and trees for output - and implications for type system.
--- TODO: Garbage Collection, write about it.
--- TODO: Concurrency - make it fun!
--- TODO: Look up Suffix trees to compress thesaurus
+-- WRITE UP / RESEARCH
+-- Write something about reverses and trees for output - and implications for type system.
+-- Garbage Collection, write about it.
+-- Concurrency - make it fun!
+-- Look up Suffix trees to compress thesaurus
+-- Could do some sort of statistical evaluation to determine the cost function. Or, like, machine learn it?
 
 --- DISPLAY FUNCTIONS
-
-
+-- A function that makes a printed clue markup version (Clue -> String) [ah, but hard, as we don't create a total parse tree including subs etc, at the end]
 
 main = do print (solve_clue 11)
           
-
-
 showDef :: Parse -> String
 showDef (DefNode d tree n) = "Definition: " ++ show d ++ " \n" ++ showTree tree 1 ++ " \n\n" 
 
@@ -90,14 +97,12 @@ print_this def = (putStr . showDef) def
 
 print_all defs = mapM print_this defs
 
-
-
-{- 
-  map putStr (map showDef (parse clue3))
--}
+answer_string (Answer x y) = x
+just_answers = map answer_string
 
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
+
 includeReversals xs = xs ++ [(snd(x),fst(x)) | x <- xs] 
 
 twoParts xs = map (\x -> (head x, (head . tail) x)) (nPartitions 2 xs)
@@ -113,8 +118,8 @@ partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
 
 
-parse :: (String, Int) -> [Parse]
-parse (xs, n) = makeNoIndicatorDefs (words xs, n) ++ makIndicatorDefs (words xs, n)
+parse :: Clue -> [Parse]
+parse (Clue (xs, n)) = makeNoIndicatorDefs (words xs, n) ++ makIndicatorDefs (words xs, n)
 
 makeNoIndicatorDefs :: ([String], Int) -> [Parse]
 makeNoIndicatorDefs (xs, n) = let parts = twoParts xs
@@ -142,7 +147,7 @@ expandNoCons ys n = [Leaf (concatWithSpaces ys)]
   ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
   ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then makeInsertionNodes ys n else [])
---  ++ (if length ys > 2 then makeConsIndicatorNodes ys n else [])
+-- ++ (if length ys > 2 then makeConsIndicatorNodes ys n else [])
   ++ (if length ys > 1 then makeReversalNodes ys n else [])
   ++ (if length ys > 1 then makeFirstLetterNodes ys n else [])
   ++ (if length ys > 1 then makeLastLetterNodes ys n else [])
@@ -150,6 +155,10 @@ expandNoCons ys n = [Leaf (concatWithSpaces ys)]
 
 expandJustAbbreviations :: [String] -> Int -> [ClueTree]
 expandJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
+
+
+lowercase :: Clue -> Clue
+lowercase (Clue (xs, n)) = Clue (map toLower xs, n)
 
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
@@ -189,7 +198,7 @@ cost :: ClueTree -> Int
 cost (ConsListNode trees) = 20 * (length trees) + sum (map cost trees) 
 cost (AnagramNode ind strings) = 10
 cost (HiddenWordNode ind strings) = 40
-cost (InsertionNode ind tree1 tree2) = 40 + cost tree1 + cost tree2  -- TODO: weight against complex insertions?
+cost (InsertionNode ind tree1 tree2) = 40 + cost tree1 + cost tree2  -- weight against complex insertions?
 cost (SubtractionNode ind tree1 tree2) = 30 + cost tree1 + cost tree2
 cost (ReversalNode ind tree) = 20 + cost tree
 cost (Leaf string) = 80 * length (words string)
@@ -199,9 +208,6 @@ cost (ConsNode one two) = 150
 cost (PartialNode ind tree) = 60 + cost tree
 cost (ConsIndicatorLeaf xs) = 0
 
-
-
----------------- CLUE TYPES ----------------
 
 makeConsNodes :: [String] -> Int -> [ClueTree]
 makeConsNodes xs n = let parts = twoParts xs
@@ -217,7 +223,7 @@ makeConsIndicatorNodes :: [String] -> Int -> [ClueTree]
 makeConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorLeaf xs] else []
 
 -- makeConsIndicatorNodes xs n = let parts = threeParts xs
---                    in concat [[ConsNode x' y' |(x, ind, y) <- parts, x' <- (expand x n), y' <- (expand y n), isConsIndicator(ind)] | part <- parts]  
+--                 in concat [[ConsNode x' y' |(x, ind, y) <- parts, x' <- (expand x n), y' <- (expand y n), isConsIndicator(ind)] | part <- parts]  
 
 
 isConsIndicator ["on"] = True
@@ -252,7 +258,9 @@ isInsertionWord ["in"] = True
 isInsertionWord _ = False
 
 isReverseInsertionWord ["crossing"] = True
+isReverseInsertionWord ["contains"] = True
 isReverseInsertionWord ["around"] = True
+isReverseInsertionWord ["about"] = True
 isReverseInsertionWord _ = False
 
 -- SUBTRACTIONS
@@ -262,31 +270,20 @@ makeSubtractionNodes xs n = let parts = threeParts xs
 
 
 subtractFrom :: String -> String -> [String] 
-subtractFrom xs [] = [xs]
-subtractFrom xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (subtractFrom xs ys)) 
+subtractFrom xs ys = let n = (find_in xs ys 0 0) in if n == -1 then [] else remove_from ys n (length xs)
 
+remove_from ys 0 0 = ys
+remove_from (y:ys) 0 m = remove_from ys 0 (m-1)
+remove_from (y:ys) n m = y:(remove_from ys (n-1) m)
 
--- remove (x:xs) (y:ys) = if (x==y) then 
-
-
---replace old new = intercalate new . Data.List.Split.splitOn old
-
-{-}
-
-replace :: Eq a => [a] -> [a] -> [a] -> [a]
-replace old new l = joins new . splitOn old $ l
-
-
-joins :: [a] -> [[a]] -> [a]
-joins delim l = concat (intersperse delim l)
-
-splitOn :: (a -> Bool) -> [a] -> [[a]]
-splitOn _ [] = []
-splitOn f l@(x:xs)
-  | f x = splitOn f xs
-  | otherwise = let (h,t) = break f l in h:(splitOn f t)
-
--}
+find_in [] ys n f = n
+find_in xs [] n f = -1
+find_in (x:xs) (y:ys) n 0 = if x==y 
+              then find_in xs ys n 1 
+              else find_in (x:xs) (ys) (n+1) 0
+find_in (x:xs) (y:ys) n 1 = if x==y 
+              then find_in xs ys n 1
+              else -1
 
 isSubtractionWord ["without"] = True
 isSubtractionWord _ = False
@@ -297,6 +294,7 @@ makeReversalNodes xs n  = let parts = twoParts xs
                   in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (expand y n)]  
 
 isRIndicator ["returned"] = True
+isRIndicator ["about"] = True
 isRIndicator _ = False
 
 
@@ -326,6 +324,7 @@ makeFirstLetterNodes xs n = let parts = twoParts xs
 
 firstLetter = map head
 
+isFLIndicator ["leader"] = True
 isFLIndicator ["at", "first"] = True
 isFLIndicator ["first"] = True
 isFLIndicator ["head"] = True
@@ -368,9 +367,27 @@ isPartialIndicator ["mostly"] = True
 isPartialIndicator ["almost"] = True
 isPartialIndicator _ = False
 
+
+
+--------------------- KNOWN LETTER CONSTRAINS ---------------------
+
+
+fits :: String -> String -> Bool
+fits [] [] = True
+fits [] (y:ys) = False
+fits (x:xs) [] = False
+fits (x:xs) (y:ys) = if x=='?' then (fits xs ys) else 
+                        if x==y then (fits xs ys) else
+                          False
+
+answerFits ::  String -> Answer -> Bool
+answerFits fitstring (Answer x y)  = fits fitstring x
+
+stripFits :: String -> [Answer] -> [Answer]
+stripFits s = filter (answerFits s) 
+
+
 --------------------------- EVALUATION ----------------------------
-
-
 
 check_eval :: Parse -> [Answer]
 -- check_eval x = let DefNode y z n = x in Data.List.intersect (syn y) ((eval_tree n z))
@@ -423,34 +440,19 @@ eval_trees n (c:clues_left) =
 
 evaluate :: [Parse] -> [Answer]
 evaluate = concat . (map eval) 
-{-
-find_solutions :: [Clue] -> [(Clue, [String])]
-find_solutions xs = map (\x -> (x, eval x)) xs
---}
-
--- solve = ignore_blanks . (map eval) . parse
--- solve c =  map (check_eval) (parse c)
 
 sort_most_likely = (map (snd) . sort . map (\x -> (cost_parse x, x)))
 
-
 possible_words = (check_valid_words . constrain_lengths  . evaluate . parse)
 
-solve = (head . check_synonyms . check_valid_words . constrain_lengths  . evaluate . sort_most_likely . parse)
+solve = (head . check_synonyms . check_valid_words . constrain_lengths  . evaluate . sort_most_likely . parse . lowercase) 
 
 solve_clue = (solve . clue)
 
-
-
 --------------------------- DICTIONARY CORNER ----------------------------
-
 
 isInWordlist x = Data.Set.member x wordlist_extended
 wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this"]) wordlist
-
-
-syn :: String -> [String]
-
 
 manual_syn "notice" = ["ack", "acknowledge", "sign"] 
 manual_syn "coat" = ["jacket"]
@@ -469,10 +471,13 @@ manual_syn "put food in this" = ["tuckerbag"]
 manual_syn "home counties" = ["se"]
 manual_syn "school" = ["groom"]
 manual_syn "good" = ["g"]
+manual_syn "small worker" = ["ant"]
+manual_syn "hospital department" = ["ent"]
+manual_syn "fondness" = ["endearment"]
 manual_syn _ = []
 
 
--- syn _ = []
+syn :: String -> [String]
 syn ('t':'o':' ':xs) = syn xs
 syn x = thes x ++ abbreviation x ++ manual_syn x
 
@@ -482,27 +487,25 @@ thes x = case (Map.lookup x thesaurus) of
 
 abbreviation "river" = ["r"]
 abbreviation "one" = ["i"]
+abbreviation "very" = ["v"]
+abbreviation "caught" = ["c"]
+abbreviation "nationalist" = ["n"]
 abbreviation _ = []
-
 
 -- ghc: internal error: scavenge_stack: weird activation record found on stack: 2004205701
  
-clue :: Int -> (String, Int)
-clue 1 = ("companion shredded corset",6)
-clue 2 = ("notice in flying coat", 6)
-clue 3 = ("companion found in oklahoma terminal", 4)
-clue 4 = ("a new member returned a woman", 6)
-clue 5 = ("pause at these i fancy", 8) -- Everyman 3526, clue 1   ["athetise","hesitate"] 
-clue 6 = ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
-clue 7 = ("flyer needed by funfair manager", 6)
-clue 8 = ("put food in this stuff on barge at sea", 9) -- Why doesn't this work?
-clue 9 = ("notice supervisor is going nuts at first", 4)
-clue 10 = ("animal makes mistake crossing one river", 7)
-clue 11 = ("maria not a fickle lover", 9)
-clue 12 = ("hope for high praise", 6)
-
-
-
-
+clue :: Int -> Clue
+clue 1 = Clue ("companion shredded corset",6)
+clue 2 = Clue ("notice in flying coat", 6)
+clue 3 = Clue ("companion found in oklahoma terminal", 4)
+clue 4 = Clue ("a new member returned a woman", 6)
+clue 5 = Clue ("pause at these i fancy", 8) -- Everyman 3526, clue 1   ["athetise","hesitate"] 
+clue 6 = Clue ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
+clue 7 = Clue ("flyer needed by funfair manager", 6)
+clue 8 = Clue ("put food in this stuff on barge at sea", 9) -- Why doesn't this work?
+clue 9 = Clue ("notice supervisor is going nuts at first", 4)
+clue 10 = Clue ("animal makes mistake crossing one river", 7)
+clue 11 = Clue ("maria not a fickle lover", 9)
+clue 12 = Clue ("hope for high praise", 6)  
 
   
