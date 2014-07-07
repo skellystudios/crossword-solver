@@ -509,3 +509,6 @@ clue 11 = Clue ("maria not a fickle lover", 9)
 clue 12 = Clue ("hope for high praise", 6)  
 
   
+
+
+  -- REGEX ((\d*)\s(.+)\s\((\d*)\)\n(.*)\n(.*))\n
