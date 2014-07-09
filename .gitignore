@@ -6,3 +6,5 @@ Wordlist.hs
 */wordlist*
 Wordlist*
 wordlist*
+*.bin
+*.hi
