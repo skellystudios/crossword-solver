@@ -1,10 +1,8 @@
+*.DS_Store
 dict/*.aur
 dict/*.hs
 *.o
-Wordlist.hs
-*/Wordlist*
-*/wordlist*
-Wordlist*
-wordlist*
 *.bin
 *.hi
+coding/dict/*k
+*archive*
