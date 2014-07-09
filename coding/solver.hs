@@ -5,32 +5,16 @@ import qualified Data.Set
 import qualified Data.Map as Map
 import System.Environment   
 import Data.Char
+import Data.Binary
   
 import Wordlists
 import Anagram
+import Benchmarks
+import Types
+
+
  
-data Clue = Clue (String, Int)
 
-data Parse = DefNode String ClueTree Int
-  deriving (Show, Eq, Ord)
-
-data ClueTree = ConsIndicatorLeaf [String] | ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ClueTree | FirstLetterNode FLIndicator [String] | LastLetterNode LLIndicator [String] | PartialNode PartialIndicator ClueTree
-   deriving (Show, Eq, Ord)
-
-data Answer = Answer String Parse deriving (Show, Eq, Ord)
-
-data Anagrind = AIndicator [String] deriving (Show, Eq, Ord)
-data InsertionIndicator = IIndicator [String] deriving (Show, Eq, Ord)
-data SubtractionIndicator = SIndicator [String] deriving (Show, Eq, Ord)
-data ReversalIndicator = RIndicator [String] deriving (Show, Eq, Ord)
-data HWIndicator = HWIndicator [String] deriving (Show, Eq, Ord)
-data FLIndicator = FLIndicator [String] deriving (Show, Eq, Ord)
-data LLIndicator = LLIndicator [String] deriving (Show, Eq, Ord)
-data PartialIndicator = PartialIndicator [String] deriving (Show, Eq, Ord)
-
-data Constrains = MaxLength MinLength
-data MaxLength = D Int
-data MinLength = Int
 
 
 --- TOOD SECTION
@@ -45,6 +29,7 @@ data MinLength = Int
 -- Make 'knowledge' an extra input into syn
 -- Replace 'Cons' with Concat everywhere
 -- Rename the evaluation functions to a consistent naming structure(?)
+-- Multiple word clues!
 
 -- WHOLE GRID SOLVING
 -- Whole grid solving and representation
@@ -54,6 +39,7 @@ data MinLength = Int
 -- Create a data structure for that grid
 
 -- IMPORTANT FOR CORRECTNESS
+-- find_in DOESNT'T WORK!!!
 -- Do a thing wherein we deal with the problem with leaf nodes not evaluating to anything. THIS IS WHERE I CAN USE A MAYBE A MONAD
 -- Ditto with invalid subtractions. This is pretty important!
 -- Sometimes need to use synonymns when doing anagrams ??? Maybe anagram subtypes needs to be a special type of subtree
@@ -270,7 +256,7 @@ makeSubtractionNodes xs n = let parts = threeParts xs
 
 
 subtractFrom :: String -> String -> [String] 
-subtractFrom xs ys = let n = (find_in xs ys 0 0) in if n == -1 then [] else remove_from ys n (length xs)
+subtractFrom xs ys = let n = (find_in xs ys 0 0) in if n == -1 then [] else [remove_from ys n (length xs)]
 
 remove_from ys 0 0 = ys
 remove_from (y:ys) 0 m = remove_from ys 0 (m-1)
