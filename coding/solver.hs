@@ -11,13 +11,17 @@ import Wordlists
 import Anagram
 import Benchmarks
 import Types
-
-
- 
+import Utils
+import Indicators
+import Evaluation
+import Dictionary
 
 
 
 --- TOOD SECTION
+
+-- Come up with a name 
+-- Come up with a cryptic clue for the thesis title: as Jack Devlin for help!
 
 -- DATA
 -- Get a bunch of benchmark clues (100K?)
@@ -94,15 +98,11 @@ includeReversals xs = xs ++ [(snd(x),fst(x)) | x <- xs]
 twoParts xs = map (\x -> (head x, (head . tail) x)) (nPartitions 2 xs)
 threeParts xs = map (\x -> (head x, (head . tail) x , (head . tail . tail) x)) (nPartitions 3 xs)
 
-concatWithSpaces (x:[]) = x
-concatWithSpaces (x:xs) = x ++ " " ++ concatWithSpaces xs
-
 nPartitions :: Int -> ([String] -> [[[String]]])
 nPartitions n xs = [xss | xss <- partitions xs, length xss == n]
 
 partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
-
 
 parse :: Clue -> [Parse]
 parse (Clue (xs, n)) = makeNoIndicatorDefs (words xs, n) ++ makIndicatorDefs (words xs, n)
@@ -117,11 +117,7 @@ makIndicatorDefs (xs, n) = let parts = threeParts xs
         ++ concat [[DefNode (concatWithSpaces x) z' n| z' <- (expand z n)] | (z,y,x) <- (parts), isDefIndicator(y), isInWordlist (concatWithSpaces x) ]
 
 
-isDefIndicator ["in"] = True
-isDefIndicator ["for"] = True
-isDefIndicator ["is"] = True
-isDefIndicator ["makes"] = True
-isDefIndicator _ = False
+
 
 expand :: [String] -> Int -> [ClueTree]
 expand ys n= (if length ys > 1 then makeConsListNodes ys n else [])
@@ -212,8 +208,7 @@ makeConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorLeaf xs] 
 --                 in concat [[ConsNode x' y' |(x, ind, y) <- parts, x' <- (expand x n), y' <- (expand y n), isConsIndicator(ind)] | part <- parts]  
 
 
-isConsIndicator ["on"] = True
-isConsIndicator _ = False
+
 
 -- SUCH THAT sum(map (minLength) xs) <= clueLength and sum(map (maxLength) xs) >= clue
 
@@ -226,9 +221,6 @@ makeAnagramNodes xs n = let parts = twoParts xs
 isAnagramWord :: [String] -> Bool
 isAnagramWord xs = Data.Set.member (concatWithSpaces xs) anagramIndicators
 
-anagrams :: String -> [String]
-anagrams [] = [[]]
-anagrams xs = [x:ys | x<-xs, ys <- anagrams(delete x xs)]
 
 -- INSERTIONS
 makeInsertionNodes :: [String] -> Int -> [ClueTree]
@@ -236,18 +228,8 @@ makeInsertionNodes xs n = let parts = threeParts xs
                   in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
                   ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
 
-insertInto :: String -> String -> [String] 
-insertInto xs [] = [xs]
-insertInto xs (y:ys) = [y:(xs ++ ys)] ++ (map ((:) y) (insertInto xs ys)) 
 
-isInsertionWord ["in"] = True
-isInsertionWord _ = False
 
-isReverseInsertionWord ["crossing"] = True
-isReverseInsertionWord ["contains"] = True
-isReverseInsertionWord ["around"] = True
-isReverseInsertionWord ["about"] = True
-isReverseInsertionWord _ = False
 
 -- SUBTRACTIONS
 makeSubtractionNodes :: [String] -> Int -> [ClueTree]
@@ -255,51 +237,16 @@ makeSubtractionNodes xs n = let parts = threeParts xs
                   in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
 
 
-subtractFrom :: String -> String -> [String] 
-subtractFrom xs ys = let n = (find_in xs ys 0 0) in if n == -1 then [] else [remove_from ys n (length xs)]
-
-remove_from ys 0 0 = ys
-remove_from (y:ys) 0 m = remove_from ys 0 (m-1)
-remove_from (y:ys) n m = y:(remove_from ys (n-1) m)
-
-find_in [] ys n f = n
-find_in xs [] n f = -1
-find_in (x:xs) (y:ys) n 0 = if x==y 
-              then find_in xs ys n 1 
-              else find_in (x:xs) (ys) (n+1) 0
-find_in (x:xs) (y:ys) n 1 = if x==y 
-              then find_in xs ys n 1
-              else -1
-
-isSubtractionWord ["without"] = True
-isSubtractionWord _ = False
-
 -- REVERSALS
 makeReversalNodes :: [String] -> Int -> [ClueTree]
 makeReversalNodes xs n  = let parts = twoParts xs
                   in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (expand y n)]  
-
-isRIndicator ["returned"] = True
-isRIndicator ["about"] = True
-isRIndicator _ = False
-
 
 
 -- HIDDEN WORDS
 makeHiddenWordNodes :: [String]  -> Int -> [ClueTree]
 makeHiddenWordNodes xs n = let parts = twoParts xs
                   in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] --, (length (concat y)) > n 
-
-isHWIndicator ["found","in"] = True
-isHWIndicator ["needed","by"] = True
-isHWIndicator ["from"] = True
-isHWIndicator _ = False
-
-substr [] = [[]]
-substr (x:xs) = (map ((:) x) (contiguoussubstr xs)) ++ substr xs 
-
-contiguoussubstr [] = [[]]
-contiguoussubstr (x:xs) = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
 
 
@@ -308,28 +255,12 @@ makeFirstLetterNodes :: [String]  -> Int -> [ClueTree]
 makeFirstLetterNodes xs n = let parts = twoParts xs
                   in [FirstLetterNode (FLIndicator x) y | (x,y) <- includeReversals(parts), isFLIndicator(x), (length y) <= n]
 
-firstLetter = map head
-
-isFLIndicator ["leader"] = True
-isFLIndicator ["at", "first"] = True
-isFLIndicator ["first"] = True
-isFLIndicator ["head"] = True
-isFLIndicator ["first", "of"] = True
-isFLIndicator _ = False
-
-
 
 
 -- LAST LETTERS
 makeLastLetterNodes :: [String]  -> Int -> [ClueTree]
 makeLastLetterNodes xs n = let parts = twoParts xs
                   in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x), (length y) <= n]
-
-lastLetter = concat . (map tail)
-
-isLLIndicator ["in", "the ", "end"] = True
-isLLIndicator ["first", "of"] = True
-isLLIndicator _ = False
 
 
 
@@ -338,20 +269,6 @@ makePartialNodes :: [String]  -> Int -> [ClueTree]
 makePartialNodes xs n = let parts = twoParts xs
                   in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (expand y n)]
 
-top_tail_substrings :: String -> [String]
-top_tail_substrings x =  top_substrings x ++ tail_substrings x
-
-top_substrings :: String -> [String]
-top_substrings (x:[]) = []  
-top_substrings (x:xs) = [[x]] ++ (map  (\y -> [x] ++ y) (top_substrings xs))
-
-
-tail_substrings :: String -> [String]
-tail_substrings = (map reverse) . top_substrings . reverse
-
-isPartialIndicator ["mostly"] = True
-isPartialIndicator ["almost"] = True
-isPartialIndicator _ = False
 
 
 
@@ -398,34 +315,6 @@ check_synonyms = filter check_synonym
 check_synonym :: Answer -> Bool
 check_synonym (Answer string (DefNode def clue n)) = Data.Set.member string (Data.Set.fromList (syn def))  
 
--- Now we evaluate
-eval :: Parse -> [Answer]
-eval (DefNode y z n) = let constraints = (n, n) in [Answer x (DefNode y z n) | x <- eval_tree n z] 
-
-eval_tree :: Int -> ClueTree  -> [String]
-eval_tree n (AnagramNode x y) = if length(concat(y)) > n then [] else anagrams(concat(y))
-eval_tree n (Leaf x) = filter (\x -> length x <= n) (syn x ++ [x])
-eval_tree n (ConsListNode xs) = eval_trees n xs --map concat (sequence (map (eval_tree n) xs))
-eval_tree n (ConsNode x y) = [x' ++ y' | x' <- eval_tree n x, y' <- eval_tree (n - length x') y]
-eval_tree n (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree n x, y' <- eval_tree (n - (length x')) y]
-eval_tree n (SubtractionNode ind x y) = concat[subtractFrom x' y' | x' <- eval_tree n x, y' <- eval_tree n y]
-eval_tree n (HiddenWordNode ind ys) = [x | x <- substr (concat ys), (length x) > 0, (length x) <= n]
-eval_tree n (ReversalNode ind ys) = map reverse (eval_tree n ys)
-eval_tree n (FirstLetterNode ind ys) = [firstLetter ys]
-eval_tree n (LastLetterNode ind ys) = [lastLetter ys]
-eval_tree n (PartialNode ind y) = concat [top_tail_substrings y | y <- eval_tree n y]
-eval_tree n (ConsIndicatorLeaf x) = [""]
-
-eval_trees :: Int -> [ClueTree] -> [String]
-eval_trees n (c:[]) = eval_tree n c
-eval_trees n (c:clues_left) =
-  let starts = eval_tree n c
-  in concatMap f starts 
-  where f start =  map (\x -> start ++ x) (eval_trees (n - (length start)) clues_left)
-
-
-evaluate :: [Parse] -> [Answer]
-evaluate = concat . (map eval) 
 
 sort_most_likely = (map (snd) . sort . map (\x -> (cost_parse x, x)))
 
@@ -433,56 +322,18 @@ possible_words = (check_valid_words . constrain_lengths  . evaluate . parse)
 
 solve = (head . check_synonyms . check_valid_words . constrain_lengths  . evaluate . sort_most_likely . parse . lowercase) 
 
+solve_no_syn = (head . check_valid_words . constrain_lengths  . evaluate . sort_most_likely . parse . lowercase) 
+
 solve_clue = (solve . clue)
 
 --------------------------- DICTIONARY CORNER ----------------------------
 
-isInWordlist x = Data.Set.member x wordlist_extended
-wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this"]) wordlist
-
-manual_syn "notice" = ["ack", "acknowledge", "sign"] 
-manual_syn "coat" = ["jacket"]
-manual_syn "companion" = ["friend", "escort", "mate"]
-manual_syn "shredded" = ["changed", "stripped"]
-manual_syn "corset" = ["basque"]
-manual_syn "flying" = ["jet"] 
-manual_syn "new" = ["n"] 
-manual_syn "member" = ["leg"] 
-manual_syn "woman" = ["angela"] 
-manual_syn "pause" = ["hesitate"] 
-manual_syn "ballet" = ["swanlake"] 
-manual_syn "flyer" = ["airman"] 
-manual_syn "stuff" = ["tuck"]
-manual_syn "put food in this" = ["tuckerbag"]
-manual_syn "home counties" = ["se"]
-manual_syn "school" = ["groom"]
-manual_syn "good" = ["g"]
-manual_syn "small worker" = ["ant"]
-manual_syn "hospital department" = ["ent"]
-manual_syn "fondness" = ["endearment"]
-manual_syn _ = []
-
-
-syn :: String -> [String]
-syn ('t':'o':' ':xs) = syn xs
-syn x = thes x ++ abbreviation x ++ manual_syn x
-
-thes x = case (Map.lookup x thesaurus) of 
-  Nothing -> []
-  Just x -> x
-
-abbreviation "river" = ["r"]
-abbreviation "one" = ["i"]
-abbreviation "very" = ["v"]
-abbreviation "caught" = ["c"]
-abbreviation "nationalist" = ["n"]
-abbreviation _ = []
 
 -- ghc: internal error: scavenge_stack: weird activation record found on stack: 2004205701
  
 clue :: Int -> Clue
-clue 1 = Clue ("companion shredded corset",6)
-clue 2 = Clue ("notice in flying coat", 6)
+clue 1 = Clue ("companion shredded corset",6) -- ESCORT
+clue 2 = Clue ("notice in flying coat", 6) -- JACKET
 clue 3 = Clue ("companion found in oklahoma terminal", 4)
 clue 4 = Clue ("a new member returned a woman", 6)
 clue 5 = Clue ("pause at these i fancy", 8) -- Everyman 3526, clue 1   ["athetise","hesitate"] 
@@ -494,7 +345,7 @@ clue 10 = Clue ("animal makes mistake crossing one river", 7)
 clue 11 = Clue ("maria not a fickle lover", 9)
 clue 12 = Clue ("hope for high praise", 6)  
 
-  
+grid = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
 
 
   -- REGEX ((\d*)\s(.+)\s\((\d*)\)\n(.*)\n(.*))\n

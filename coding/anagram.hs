@@ -581,6 +581,7 @@ anagramIndicators = Data.Set.fromList [
   "rocky",
   "rogue",
   "rollicking",
+  "rolls",
   "rotten",
   "roughly",
   "round",
