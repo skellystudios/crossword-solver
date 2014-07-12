@@ -1,5 +1,13 @@
-module Anagram (anagramIndicators) where
-import Data.Set (Set,fromList)
+module Anagram where
+
+import qualified Data.Set 
+
+import Utils
+
+isAnagramWord :: [String] -> Bool
+isAnagramWord xs = Data.Set.member (concatWithSpaces xs) anagramIndicators
+
+
 anagramIndicators = Data.Set.fromList [
   "abandoned",
   "abnormal",

@@ -3,6 +3,7 @@ module Evaluation where
 import Data.Char
 import Data.Binary
 import Data.List 
+import qualified Data.Set
 
 import Utils
 import Types
@@ -14,7 +15,8 @@ eval :: Parse -> [Answer]
 eval (DefNode y z n) = let constraints = (n, n) in [Answer x (DefNode y z n) | x <- eval_tree n z] 
 
 eval_tree :: Int -> ClueTree  -> [String]
-eval_tree n (AnagramNode x y) = if length(concat(y)) > n then [] else anagrams(concat(y))
+eval_tree n (AnagramNode x y) = let y' = (concat y) in 
+								if length y' > n then [] else  (delete y') . anagrams  $ y'
 eval_tree n (Leaf x) = filter (\x -> length x <= n) (syn x ++ [x])
 eval_tree n (ConsListNode xs) = eval_trees n xs --map concat (sequence (map (eval_tree n) xs))
 eval_tree n (ConsNode x y) = [x' ++ y' | x' <- eval_tree n x, y' <- eval_tree (n - length x') y]
@@ -38,12 +40,9 @@ eval_trees n (c:clues_left) =
 evaluate :: [Parse] -> [Answer]
 evaluate = concat . (map eval) 
 
-
-
 anagrams :: String -> [String]
 anagrams [] = [[]]
-anagrams xs = [x:ys | x<-xs, ys <- anagrams(delete x xs)]
-
+anagrams xs = [x:ys | x<- nub xs, ys <- anagrams $ delete x xs]
 
 insertInto :: String -> String -> [String] 
 insertInto xs [] = [xs]
@@ -90,3 +89,7 @@ top_substrings (x:xs) = [[x]] ++ (map  (\y -> [x] ++ y) (top_substrings xs))
 
 tail_substrings :: String -> [String]
 tail_substrings = (map reverse) . top_substrings . reverse
+
+check_eval :: Parse -> [Answer]
+-- check_eval x = let DefNode y z n = x in Data.List.intersect (syn y) ((eval_tree n z))
+check_eval (DefNode y z n) = map (\x -> Answer x (DefNode y z n)) (Data.Set.toList (Data.Set.intersection wordlist_extended (Data.Set.fromList (eval_tree n z))))
