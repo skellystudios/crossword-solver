@@ -2,6 +2,7 @@ module Indicators where
 
 
 isDefIndicator ["in"] = True
+isDefIndicator ["to", "make", "a"] = True
 isDefIndicator ["for"] = True
 isDefIndicator ["is"] = True
 isDefIndicator ["providing"] = True
