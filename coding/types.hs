@@ -23,3 +23,7 @@ data PartialIndicator = PartialIndicator [String] deriving (Show, Eq, Ord)
 data Constrains = MaxLength MinLength
 data MaxLength = D Int
 data MinLength = Int
+
+
+get_parse (Answer s p) = p
+get_solution (Answer s p) = s
