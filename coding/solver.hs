@@ -18,9 +18,20 @@ import Dictionary
 import Display
 import LengthFunctions
 
+-- import GHC
+
+-- import Control.Deepseq
 
 
-main = do print $  solve_clue 11
+-- ghc -prof -auto-all solver.hs
+-- ghc-pkg list base
+
+
+main = do 
+       -- GHC.Profiling.stopProfTimer
+        print $  solve_clue 11
+      --  GHC.Profiling.startProfTimer
+        print $  solve_clue 11
          -- print $ {-# SCC "second" #-} (map solve clues)
    
 
