@@ -98,6 +98,23 @@ th
 \end_layout
 
 \begin_layout Part
+Introduction to the Problem / Field
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Lots of stuff here please
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
 Literature Review
 \end_layout
 
@@ -123,7 +140,7 @@ A crossword is a puzzle, usually published in newspapers or magazines.
  Any contiguous run of more than one white square, either down (vertically)
  or across (horizontally, left to right) is a space for a word, to be written.
  These are marked by numbers in the initial square (the top-leftmost one),
- and refered to by those numbers, and the direction (e.g.
+ and referred to by those numbers, and the direction (e.g.
  '5 down', '8 across').
  Horizontal runs can overlap vertical runs, and at the points at which they
  do, each of the two words, when written in, must have the same letter in
@@ -186,9 +203,9 @@ Cryptic
 clues are less straight-forward, appearing on the surface to be a valid
  syntactic utterance in English, but actually consisting of a definition
  (as in the Straight clue) and some wordplay which the solver can use to
- arrvive at the same answer as with the definition by apply a series of
- transformations and operations.
- The challange is that the definition and the wordplay are not clearly separated
+ arrive at the same answer as with the definition by apply a series of transform
+ations and operations.
+ The challenge is that the definition and the wordplay are not clearly separated
 , and that there are multiple ways to apply to the transformations, but
  with only on yielding the correct answer.
  
@@ -214,7 +231,7 @@ Generation of Cryptic Clues
 \end_layout
 
 \begin_layout Standard
-The largest body of work that exists is centred around the generation of
+The largest body of work that exists is centered around the generation of
  cryptic clues, focused largely around analysis of how string literals from
  a pre-determined answer can be transformed by set clueing patterns, as
  well as some work around measures of the quality of generated clues.
@@ -239,7 +256,7 @@ Interpreting Clues
 
 \begin_layout Standard
 The next set are the select few who have done prior, similar investigations
- into interpreting cryptic clues, with some work put into formalising definition
+ into interpreting cryptic clues, with some work put into formalizing definition
 s and notation for the sorts of clue types that appear in the majority of
  cryptic crosswords, and some attempts at solving based on these interpretations.
  
@@ -337,7 +354,7 @@ Lack of Standardization
 Although all cryptic crossword share some common conventions, there are
  no fixed rules shared between publications for what can and can’t be a
  clue, indicator etc..
- Although most publications have internal guidelines or styleguides, these
+ Although most publications have internal guidelines or style-guides, these
  are not accessible to the solver, and some publications (such as the 
 \emph on
 Guardian
@@ -389,7 +406,7 @@ Ximenes on the Art of the Crossword Puzzle
 \emph default
 .
  The book contains many in-depth guidelines about what a fair clue entails,
- summed up by his successer Azed (Jonathan Crowther, born 1942):
+ summed up by his successor Azed (Jonathan Crowther, born 1942):
 \end_layout
 
 \begin_layout Quote
@@ -431,7 +448,7 @@ Independent
 Guardian
 \emph default
 ).
- No crossword in a major UK newspaper is 'strictly Ximinean'.
+ No crossword in a major UK newspaper is 'strictly Ximenean'.
  
 \end_layout
 
@@ -464,12 +481,12 @@ Programming Language Analogues
 Much of the current work on interpreting crosswords draws on work by Backus,
  Naur and Chomsky in creating a specification for the grammar of crosswords.
  While these frameworks are useful for describing many different languages,
- interpretations of the grammar of cryptic crosswords seem to be peversely
- somewhat closer to mathematical and programming lanaguges than to natural
- langauge.
+ interpretations of the grammar of cryptic crosswords seem to be perversely
+ somewhat closer to mathematical and programming languages than to natural
+ language.
  In some ways, the cryptic clue as a whole can be thought of as a program
  that generates the output string as its answer.
- The wordplay section is analagous to a program, and the definition section
+ The wordplay section is analogous to a program, and the definition section
  of a clue could be thought of as a checksum to verify the final answer.
 \end_layout
 
@@ -492,7 +509,7 @@ itive features such as lookbacks, lookaheads and backtracking.
  Most major programming languages are parsed without these features, allowing
  information to flow in one direction from the lexer to the parser.
  To parse a cryptic crossword, lexing and parsing need to take place simultaneou
-sly in a process refered to as called 
+sly in a process referred to as called 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1241,7 +1258,7 @@ Metal guide (4) [= LEAD]
 \begin_layout Standard
 However, even in this simple example we see that this equivalence relationship
  is not at all straightforward.
- While 'guide' and 'lead' are synonymns (as verbs in the present tense),
+ While 'guide' and 'lead' are synonyms (as verbs in the present tense),
  it's not true that 'lead' is a synonym for 'metal'.
  We must also include 'for example' in this relationship too, which causes
  us to have to discard reflexivity.
@@ -1287,7 +1304,7 @@ Concatenation
 While not strictly necessary for this grammar (as we have included a concatenati
 on in our metasemantics, we could define multiple definitions of each operator
  in the form Operator → Indicator, Wordplay, (Wordplay)*), it makes sense
- to add this explicitly as it mirrors the structure of an explaination of
+ to add this explicitly as it mirrors the structure of an explanation of
  a computer solution (i.e.
  the parse tree).
 \end_layout
@@ -1299,8 +1316,8 @@ Concatenation → Wordplay (ConcatIndicator) Wordplay
 \begin_layout Standard
 This represents a key tool for cluers to create more complex wordplay clues
  in the form of a charade, where two or more parts can be split out (sometimes
- syllablically as in 'bath', 'tub', or sometimes otherwise 'bat','htub')
- and clued seperately, and then later joined to form the overall solution.
+ syllabically as in 'bath', 'tub', or sometimes otherwise 'bat','htub')
+ and clued separately, and then later joined to form the overall solution.
 \end_layout
 
 \begin_layout Subsection
@@ -1430,7 +1447,7 @@ n – is meant to help the solver.
 
 \begin_layout Standard
 Even so, most setters that claim to be Ximenean will allow small abbreviations
- and contractions (sto be defined later) to be included in their clues.
+ and contractions (to be defined later) to be included in their clues.
  We therefore must define a new class which includes String Literals as
  well as the abbreviation where appropriate.
  
@@ -1534,7 +1551,7 @@ Selection
 
 \begin_layout Standard
 There are three similar operators here: A pair which select even or odd
- letters respectively, and one which takes intial letters across multiple
+ letters respectively, and one which takes initial letters across multiple
  words.
  These are rarely, if ever, applied to anything other than pure strings.
  The initials indicator needs to be applied to an argument consisting of
@@ -1846,7 +1863,7 @@ Meta-references
 
 \begin_layout Standard
 Sometimes, clues contain references to that cannot be parsed in isolation,
- or contain a cluing structure that is incompatiable with the main model
+ or contain a cluing structure that is incompatible with the main model
  of cluing.
 \end_layout
 
@@ -1882,7 +1899,7 @@ Reference to other clues
 \end_layout
 
 \begin_layout Standard
-Some publications will have clues that reference the answer to othert clues
+Some publications will have clues that reference the answer to other clues
  ('8 across.
  Cake made badly by 7 down.').
  Sometimes these may also be cyclical (in this example, 7 down would reference
@@ -1910,6 +1927,248 @@ Araucaria
 \end_layout
 
 \begin_layout Section
+Convention 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Do some shit here, yeah?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Words
+\end_layout
+
+\begin_layout Part
+Naive Approach - 
+\end_layout
+
+\begin_layout Section
+Parsing and Evaluating everything 
+\end_layout
+
+\begin_layout Section
+Discussion of different clue types 
+\end_layout
+
+\begin_layout Subsection
+Any interesting ones of note 
+\end_layout
+
+\begin_layout Section
+State space and performance analysis 
+\end_layout
+
+\begin_layout Subsection
+By length of clue 
+\end_layout
+
+\begin_layout Subsection
+Show difference from particularly complex or overloaded operators
+\end_layout
+
+\begin_layout Part
+Optimisations
+\end_layout
+
+\begin_layout Section
+Algebraic + computational simplifications 
+\end_layout
+
+\begin_layout Subsection
+Pruning out equivalent trees (Canonicalization) 
+\end_layout
+
+\begin_layout Subsection
+Discussion of lazy evaluation 
+\end_layout
+
+\begin_layout Subsubsection
+e.g.
+ Anagram Nodes - should we pre-compute and thread through the program?
+\end_layout
+
+\begin_layout Subsection
+Analysis of improved solution with respect to state space etc.
+\end_layout
+
+\begin_layout Section
+Further heuristic simplification - 
+\end_layout
+
+\begin_layout Subsection
+matching the Human Solver's thought process 
+\end_layout
+
+\begin_layout Subsection
+Constrain length while parsing maximum and minimum 
+\end_layout
+
+\begin_layout Subsection
+Constrain length while solving 
+\end_layout
+
+\begin_layout Subsection
+Constain against known letters 
+\end_layout
+
+\begin_layout Subsection
+Constrain against known wordlist 
+\end_layout
+
+\begin_layout Subsection
+Constrain against synonyms 
+\end_layout
+
+\begin_layout Subsection
+Analysis of improved solution with respect to state space etc.
+\end_layout
+
+\begin_layout Section
+Solving based on most probable parse trees 
+\end_layout
+
+\begin_layout Subsection
+Evaluation functions 
+\end_layout
+
+\begin_layout Subsubsection
+Current weighting just ‘works’ 
+\end_layout
+
+\begin_layout Subsubsection
+Could generate weighting based on ML + cost minimization 
+\end_layout
+
+\begin_layout Subsubsection
+Providing a weighted list of possible answers
+\end_layout
+
+\begin_layout Section
+Analysis of Single clue solving against benchmarks 
+\end_layout
+
+\begin_layout Subsection
+Accuracy given data Accuracy 
+\end_layout
+
+\begin_layout Subsection
+assuming reasonable data could be acquired 
+\end_layout
+
+\begin_layout Subsection
+Computation required and feasibility in the real world 
+\end_layout
+
+\begin_layout Subsection
+Discussion of parallelization 
+\end_layout
+
+\begin_layout Part
+Whole Grid Solving
+\end_layout
+
+\begin_layout Section
+Whole Grid Solving
+\end_layout
+
+\begin_layout Subsection
+By permutations of all possible parses (dull but effective?) 
+\end_layout
+
+\begin_layout Subsection
+Lazy evaluation (massive branching issues?) 
+\end_layout
+
+\begin_layout Subsection
+Repeated function application (probabilistic convergence) probabilistically
+ constrain against likely evidence from other clue
+\end_layout
+
+\begin_layout Subsubsection
+Convergence not guaranteed!
+\end_layout
+
+\begin_layout Section
+Solving with missing information 
+\end_layout
+
+\begin_layout Subsection
+Human as an oracle 
+\end_layout
+
+\begin_layout Subsection
+Generating probable solutions with missing data 
+\end_layout
+
+\begin_layout Subsubsection
+“if Lear means/is a King...” 
+\end_layout
+
+\begin_layout Section
+Deployment as a web app
+\end_layout
+
+\begin_layout Part
+Appendix 
+\end_layout
+
+\begin_layout Section
+Data considerations 
+\end_layout
+
+\begin_layout Subsection
+Corpus / wordlist 
+\end_layout
+
+\begin_layout Subsubsection
+Loading in an unsafe IO manner 
+\end_layout
+
+\begin_layout Subsubsection
+Conjugated forms -> we should match tense, plurality etc.
+ Expanding out keywords (e.g.
+ Anagram indicators) 
+\end_layout
+
+\begin_layout Subsection
+Knowledge -> capital of Paris 
+\end_layout
+
+\begin_layout Subsection
+Derived knowledge -> Qulog to create knowlegebase?
+\end_layout
+
+\begin_layout Subsection
+Unsupervised learned?
+\end_layout
+
+\begin_layout Section
+A benchmarking suite to check performance + accuracy
+\end_layout
+
+\begin_layout Subsection
+Clues from real newspapers 
+\end_layout
+
+\begin_layout Subsection
+A solution markup and automated verification => is answer enough or do we
+ just want to provide a method 
+\end_layout
+
+\begin_layout Subsection
+Rating clues on a scale / on multiple scales 
+\end_layout
+
+\begin_layout Part
 References
 \end_layout
 
@@ -2004,104 +2263,6 @@ Expertise in cryptic crossword performance
 
 \begin_layout Standard
 Kathryn Friedlander, Philip Fine, 2009 
-\end_layout
-
-\begin_layout Part
-Progress Report
-\end_layout
-
-\begin_layout Standard
-Throughout this initial phase of the project, I have concentrated primarily
- in getting someway towards creating a system in Haskell working on a limited
- subset of clue types, doing end-to-end lexing parsing and evaluating.
- The reason for this was mainly to spot systematic errors in the way I was
- approaching the problem, and to identify potential issues with a large-scale
- implementation.
-\end_layout
-
-\begin_layout Standard
-Indeed, this seems to be the correct method - my early attempts suffered
- in two ways.
-\end_layout
-
-\begin_layout Enumerate
-I failed to properly utilise Haskell's excellent type system to correctly
- describe the clues I was parsing, conflating 
-\noun on
-Constructors
-\noun default
- with 
-\noun on
-Data Types
-\noun default
-, among other issues.
- This meant I was unable to write subsequent expressions that could evaluate
- partial clues without having to re-parse.
-\end_layout
-
-\begin_layout Enumerate
-I didn't properly separate out the parsing from the evaluation, trying instead
- to apply insertions and perform anagrams before having completed the full
- parse tree.
- This not only creates messy code, but makes an already complicated and
- expanding state-space problem (one clue can yield multiple parse trees,
- each of which can have multiple valid evaluations) even worse.
- 
-\end_layout
-
-\begin_layout Standard
-I am currently able to parse a clue made up of a subset of the possible
- operation types (cons, anagram, abbreviation, synonym, hidden word, reversal)
- into an abstract syntax tree, and then correctly evaluate that tree into
- all possible values, and then compare those against the definition using
- a simplified equality measure to prune for valid trees.
- 
-\end_layout
-
-\begin_layout Standard
-One caveat that this system runs under is that you need to specify the thesaurus
- definitions manually in Haskell.
- I tried to generated Haskell clauses for the synonym definitions, but the
- 200+mb file was bigger than Haskell could process.
- I am confident that some Haskell magic can remedy this - if not, then I
- don't believe that this challenges the integrity of the project: a working
- system could first create a custom thesaurus file in a Haskell readable
- format before passing the string to Haskell for parsing and evaluation.
- I have also not done any work on collecting the sorts of troublesome data
- I reference in my report.
- That is a very large task indeed, and way beyond the scope of what I am
- doing.
- In place of this, I propose to act as an oracle, ruling on the truth value
- of facts where approriate.
- 
-\end_layout
-
-\begin_layout Standard
-The biggest challenges I see before me right now are dealing with the state
- space as my cluing options expand, and possibly translating this into a
- logic language like QuLog.
- I have made some small steps towards an initial implementation of some
- of the parsing in Prolog, and need to solidify this to work out how viable
- and useful it will be to the project as a whole.
-\end_layout
-
-\begin_layout Standard
-I also plan to do further reading into context-sensitive grammars (for example
- via DFGs) to see if I they could help in what I see as the real next phase
- of this project, which is optimising the process to be less sensitive to
- growing clue length and complexity.
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-— Michael Skelly
 \end_layout
 
 \end_body
