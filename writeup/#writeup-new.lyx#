@@ -1968,44 +1968,7 @@ Our strategy for solving a given clue has to take into account the inherent
  abiguity in the structure of cryptic crosswords - ambiguity in the formulation
  of the problem (which part is the definition and which the wordplay?),
  ambiguity in the parsing of the wordplay, and ambiguity in the different
- ways a parse can be evaluated (for example there are 720 anagrams of 'ambled'
- of which 6 are dictionary words).
-\end_layout
-
-\begin_layout Standard
-In order to evaluate, measure and optimise each of these independently,
- we split the structure of our program into three parts:
-\end_layout
-
-\begin_layout LyX-Code
-solve = filter (valid_word) .
- evaluate .
- parse .
- formulate
-\end_layout
-
-\begin_layout Standard
-where the types are given below:
-\end_layout
-
-\begin_layout LyX-Code
-formulate  :: Clue → [Formulation]
-\end_layout
-
-\begin_layout LyX-Code
-parse      :: [Formulation] → [Parse]
-\end_layout
-
-\begin_layout LyX-Code
-evaluate   :: [Parse] → [Solution]
-\end_layout
-
-\begin_layout LyX-Code
-valid_word :: Solution → Boolean
-\end_layout
-
-\begin_layout Standard
-
+ ways a parse can be evaluated (for example 
 \end_layout
 
 \begin_layout Subsection

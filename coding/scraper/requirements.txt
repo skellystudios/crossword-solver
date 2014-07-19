@@ -1,0 +1,6 @@
+BeautifulSoup==3.2.1
+beautifulsoup4==4.3.2
+lxml==3.3.5
+vboxapi==1.0
+virtualenv==1.11.6
+wsgiref==0.1.2
