@@ -14,6 +14,7 @@ isConsIndicator ["on"] = True
 isConsIndicator _ = False
 
 isInsertionWord ["in"] = True
+isInsertionWord ["involved in"] = True
 isInsertionWord ["admitted to"] = True
 isInsertionWord _ = False
 
