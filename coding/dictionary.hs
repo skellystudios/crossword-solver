@@ -34,8 +34,11 @@ manual_syn "church" = ["c"]
 manual_syn "wine" = ["aseti"]
 manual_syn "providing" = ["if"]
 manual_syn "theme" = ["leitmotif"]
+manual_syn "not public" = ["secret"]
 manual_syn _ = []
 
+
+is_syn x y = elem x (syn y)
 
 syn :: String -> [String]
 syn ('t':'o':' ':xs) = syn xs

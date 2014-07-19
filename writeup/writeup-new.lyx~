@@ -1737,7 +1737,11 @@ Subtraction → SubPreIndictator1 Wordplay (SubPreIndictator2) Wordplay
 \begin_inset Newline newline
 \end_inset
 
-   | Wordplay SubMidIndictator Wordplay 
+   | Wordplay SubM
+\noun on
+function 
+\noun default
+idIndictator Wordplay 
 \begin_inset Newline newline
 \end_inset
 
@@ -1948,11 +1952,195 @@ Words
 \end_layout
 
 \begin_layout Part
-Naive Approach - 
+Naive Approach 
 \end_layout
 
 \begin_layout Section
 Parsing and Evaluating everything 
+\end_layout
+
+\begin_layout Subsection
+Overview
+\end_layout
+
+\begin_layout Standard
+Our strategy for solving a given clue has to take into account the inherent
+ abiguity in the structure of cryptic crosswords - ambiguity in the formulation
+ of the problem (which part is the definition and which the wordplay?),
+ ambiguity in the parsing of the wordplay, and ambiguity in the different
+ ways a parse can be evaluated (for example there are 720 anagrams of 'ambled'
+ of which 6 are dictionary words).
+\end_layout
+
+\begin_layout Standard
+In order to evaluate, measure and optimise each of these independently,
+ we split the structure of our program into three parts:
+\end_layout
+
+\begin_layout LyX-Code
+solve = filter (valid_word) .
+ evaluate .
+ parse .
+ formulate
+\end_layout
+
+\begin_layout Standard
+where the types are given below:
+\end_layout
+
+\begin_layout LyX-Code
+formulate  :: Clue → [Formulation]
+\end_layout
+
+\begin_layout LyX-Code
+parse      :: [Formulation] → [Parse]
+\end_layout
+
+\begin_layout LyX-Code
+evaluate   :: [Parse] → [Solution]
+\end_layout
+
+\begin_layout LyX-Code
+valid_word :: Solution → Boolean
+\end_layout
+
+\begin_layout Subsection
+Tokenisation
+\end_layout
+
+\begin_layout Standard
+The first step in the lexical analysis phase of a parse usually consists
+ of tokenisation.
+ This is the process of grouping characters together into functional groups
+ called 
+\noun on
+tokens
+\noun default
+, to later pass to the parser to peform the semantic analysis on.
+ Tokens consist of a 
+\noun on
+lexeme
+\noun default
+ the string of characters known to be of a certain type, and the value they
+ represent (for example 
+\noun on
+integer 3
+\noun default
+ or 
+\noun on
+variable name 
+\noun default
+available_credit).
+ The process is often split into two stages.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+The Scanner
+\end_layout
+
+\begin_layout Standard
+The first is the 
+\noun on
+scanner: 
+\noun default
+this is often a finite state machine, which will consumer characters based
+ on rules to produce potential lexemes.
+ Some more simple scanners can operate under greedy assumptions (called
+ the Maximal Munch principle by R.G.G.
+ Cattel), and some require backtracking (for example, the language 
+\noun on
+C
+\noun default
+).
+ Due to the complexity and ambiguity of the language of cryptic crossword
+ clues, it is not possible to produce an accurate scanner that produces
+ anything other than a trivial tagging of lexical elements
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+It would, of course, be possible to produce a trivial parser for most languages,
+ in which we lex every character or group of letters to a function with
+ the value of itself, so instead of the desired 
+\noun on
+variable 
+\noun default
+x 
+\noun on
+equals integer 3 
+\noun default
+we could instead simply parse to 
+\noun on
+function 
+\noun default
+x 
+\noun on
+function 
+\noun default
+= 
+\noun on
+function 3
+\noun default
+, and leave it to the rest of the pipeline to determine that 
+\noun on
+function 3
+\noun default
+ is a constant function which always yields the integer literal 3, but this
+ misses the point of having a scanner separately.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+The Evaluator
+\end_layout
+
+\begin_layout Standard
+This stage of the tokeniser 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Yeha, finish this.
+ This point is probably less interesting Maybe the above sections should
+ be merged together?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Scannerless Parsing
+\end_layout
+
+\begin_layout Standard
+Some parsers, traditionally often ones for simple languages such as 
+\end_layout
+
+\begin_layout Subsection
+d5
+\end_layout
+
+\begin_layout Standard
+In order to parse a clue, we must first decide on a separation between the
+ definition part of the clue and the wordplay part of the clue.
+ As discussed earlier, 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+did we?
+\end_layout
+
+\end_inset
+
+the clue 
 \end_layout
 
 \begin_layout Section
@@ -2130,7 +2318,7 @@ Corpus / wordlist
 \end_layout
 
 \begin_layout Subsubsection
-Loading in an unsafe IO manner 
+Loading in an unsafe IO manner can 
 \end_layout
 
 \begin_layout Subsubsection
@@ -2263,6 +2451,15 @@ Expertise in cryptic crossword performance
 
 \begin_layout Standard
 Kathryn Friedlander, Philip Fine, 2009 
+\end_layout
+
+\begin_layout Standard
+Cattell, R.
+ G.
+ G.
+ “Formalization and Automatic Derivation of Code Generators”.
+ PhD thesis, 1978.
+ Carnegie Mellon University, Pittsburgh, Pennsylvania, USA 
 \end_layout
 
 \end_body

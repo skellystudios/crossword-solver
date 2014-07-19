@@ -6,3 +6,4 @@ dict/*.hs
 *.hi
 coding/dict/*k
 *archive*
+coding/scraper/.env/
