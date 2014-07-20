@@ -4,6 +4,7 @@ import Data.Set
 import Data.Map as Map
 
 import Wordlists
+import Abbreviation
 
 isInWordlist x = Data.Set.member x wordlist_extended
 wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this"]) wordlist
@@ -42,15 +43,16 @@ is_syn x y = elem x (syn y)
 
 syn :: String -> [String]
 syn ('t':'o':' ':xs) = syn xs
-syn x = thes x ++ abbreviation x ++ manual_syn x
+syn x = thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
 
 thes x = case (Map.lookup x thesaurus) of 
   Nothing -> []
   Just x -> x
 
-abbreviation "river" = ["r"]
-abbreviation "one" = ["i"]
-abbreviation "very" = ["v"]
-abbreviation "caught" = ["c"]
-abbreviation "nationalist" = ["n"]
-abbreviation _ = []
+abbreviation' "spades" = ["s"]
+abbreviation' "river" = ["r"]
+abbreviation' "one" = ["i"]
+abbreviation' "very" = ["v"]
+abbreviation' "caught" = ["c"]
+abbreviation' "nationalist" = ["n"]
+abbreviation' _ = []

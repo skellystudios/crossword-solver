@@ -17,15 +17,25 @@ import Evaluation
 import Dictionary
 import Display
 import LengthFunctions
+import Guardian
+import Abbreviation
 
 -- import GHC
 
 -- import Control.Deepseq
-
+--  \(Clue \("[\w\s]*",(\d[\d,]+)\), "\w*"\),
+-- \(Clue \("[\w—\s]*",\d,[\d,]*\), "\w*"\),
 
 -- ghc -prof -auto-all solver.hs
 -- ghc-pkg list base
 
+{-
+
+SELECT CONCAT("\"",WORD,"\" = [", GROUP_CONCAT( CONCAT("\"",abbreviation,"\"")),"]") 
+FROM (SELECT DISTINCT word, abbreviation FROM abbreviations) ab
+GROUP BY word;
+
+-}
 
 main = do 
        -- GHC.Profiling.stopProfTimer
@@ -51,12 +61,12 @@ parse (Clue (xs, n)) = makeNoIndicatorDefs (words xs, n) ++ makIndicatorDefs (wo
 
 makeNoIndicatorDefs :: ([String], Int) -> [Parse]
 makeNoIndicatorDefs (xs, n) = let parts = twoParts xs
-        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), y' <- (expand (snd part) n)]
+        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), isInWordlist(concatWithSpaces (fst part)), y' <- (expand (snd part) n)]
 
 makIndicatorDefs :: ([String], Int) -> [Parse]
 makIndicatorDefs (xs, n) = let parts = threeParts xs
-        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isDefIndicator(y), z' <- (expand z n)] 
-        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isDefIndicator(y), z' <- (expand z n)]
+        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (expand z n)] 
+        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces z), isDefIndicator(y), z' <- (expand z n)]
 
 expand :: [String] -> Int -> [ClueTree]
 expand ys n= (if length ys > 1 then makeConsListNodes ys n else [])
@@ -105,7 +115,7 @@ makeConsNodes :: [String] -> Int -> [ClueTree]
 makeConsNodes xs n = let parts = twoParts xs
                    in concat [[ConsNode x' y' |x' <- (expand (fst part) n), y' <- (expand (snd part) n)] | part <- parts]  
 makeConsListNodes :: [String] -> Int -> [ClueTree]
-makeConsListNodes xs n = [ConsListNode xs | xs <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . map minLength) xs >= n]
+makeConsListNodes xs n = [ConsListNode ys | ys <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
 
 makeConsIndicatorNodes :: [String] -> Int -> [ClueTree]
 makeConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorLeaf xs] else []
@@ -168,6 +178,9 @@ answerFits fitstring (Answer x y)  = fits fitstring x
 stripFits :: String -> [Answer] -> [Answer]
 stripFits s = filter (answerFits s) 
 
+answerPart :: Answer -> String
+answerPart (Answer x y) = x
+
 --------------------------- EVALUATION ----------------------------
 
 check_valid_words ::  [Answer] -> [Answer]
@@ -175,6 +188,13 @@ check_valid_words = filter check_valid_word
 
 check_valid_word :: Answer -> Bool
 check_valid_word (Answer x (DefNode y z n)) = isInWordlist x 
+
+constrain_parse_lengths :: [Parse] -> [Parse]
+constrain_parse_lengths = filter constrain_parse_length
+
+constrain_parse_length :: Parse -> Bool
+constrain_parse_length (DefNode def clue n) = (minLength clue >= n) && (maxLength clue <= n) 
+
 
 constrain_lengths :: [Answer] -> [Answer]
 constrain_lengths = filter constrain_length
@@ -196,12 +216,21 @@ sort_most_likely = map (snd) . sort . map (\x -> (cost_parse x, x))
 
 possible_words = check_valid_words . constrain_lengths  . evaluate . parse
 
-solve = head . check_synonyms . check_valid_words . constrain_lengths .  evaluate . sort_most_likely . parse . lowercase
+solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . sort_most_likely . constrain_parse_lengths . parse . lowercase
 
-solve_no_syn = head . sort_solved  . check_valid_words . constrain_lengths  . evaluate . sort_most_likely . parse . lowercase
+solve_no_syn_sorted = head' . sort_solved  . take 100 . solve_no_syn
+
+solve_no_syn_unsorted = head'  . solve_no_syn
+
+solve_no_syn = check_valid_words . constrain_lengths  . evaluate . sort_most_likely . constrain_parse_lengths . parse . lowercase
 
 solve_clue = solve . clue
 
+head' :: [a] -> [a]
+head' []     = []
+head' (x:xs) = [x]
+
+compare_clue (Clue (s,n)) (Clue (t,m)) = compare n m 
  
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT
