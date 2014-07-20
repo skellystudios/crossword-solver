@@ -9,6 +9,7 @@ isAnagramWord xs = Data.Set.member (concatWithSpaces xs) anagramIndicators
 
 
 anagramIndicators = Data.Set.fromList [
+  "advantage",
   "abandoned",
   "abnormal",
   "about",
