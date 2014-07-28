@@ -6,8 +6,19 @@ import Data.Map as Map
 import Wordlists
 import Abbreviation
 
-isInWordlist x = Data.Set.member x wordlist_extended
-wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this"]) wordlist
+isInWordlist x = Data.Set.member x wordlist_extended'
+wordlist_extended' = Data.Set.union (Data.Set.fromList (Map.keys thesaurus)) wordlist 
+wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this", "earnest request"]) wordlist
+
+is_wordlist_prefix x = Data.Set.member x wl_pref
+wl_pref = Data.Set.fold add_prefixes Data.Set.empty wordlist
+
+add_prefixes word set = Data.Set.union (Data.Set.fromList (prefixes word)) set
+
+prefixes = rprefixes . reverse 
+rprefixes (x:xs) = [reverse xs++[x]] ++ rprefixes xs
+rprefixes [] = []
+
 
 manual_syn "notice" = ["ack", "acknowledge", "sign"] 
 manual_syn "coat" = ["jacket"]
@@ -36,6 +47,8 @@ manual_syn "wine" = ["aseti"]
 manual_syn "providing" = ["if"]
 manual_syn "theme" = ["leitmotif"]
 manual_syn "not public" = ["secret"]
+manual_syn "earnest request" = ["prayer"]
+manual_syn "paper in the street" = ["litter"]
 manual_syn _ = []
 
 

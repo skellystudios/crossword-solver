@@ -17,8 +17,11 @@ import Evaluation
 import Dictionary
 import Display
 import LengthFunctions
-import Guardian
 import Abbreviation
+
+
+import Guardian
+import Everyman
 
 -- import GHC
 
@@ -41,7 +44,7 @@ main = do
        -- GHC.Profiling.stopProfTimer
         print $  solve_clue 11
       --  GHC.Profiling.startProfTimer
-        print $  solve_clue 11
+        print $  is_wordlist_prefix "x"
          -- print $ {-# SCC "second" #-} (map solve clues)
    
 
@@ -57,16 +60,16 @@ partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
 
 parse :: Clue -> [Parse]
-parse (Clue (xs, n)) = makeNoIndicatorDefs (words xs, n) ++ makIndicatorDefs (words xs, n)
+parse (Clue (xs, n)) = makeNoIndicatorDefs (words xs, n) ++ makeIndicatorDefs (words xs, n)
 
 makeNoIndicatorDefs :: ([String], Int) -> [Parse]
 makeNoIndicatorDefs (xs, n) = let parts = twoParts xs
         in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), isInWordlist(concatWithSpaces (fst part)), y' <- (expand (snd part) n)]
 
-makIndicatorDefs :: ([String], Int) -> [Parse]
-makIndicatorDefs (xs, n) = let parts = threeParts xs
+makeIndicatorDefs :: ([String], Int) -> [Parse]
+makeIndicatorDefs (xs, n) = let parts = threeParts xs
         in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (expand z n)] 
-        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces z), isDefIndicator(y), z' <- (expand z n)]
+        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (expand z n)]
 
 expand :: [String] -> Int -> [ClueTree]
 expand ys n= (if length ys > 1 then makeConsListNodes ys n else [])
@@ -78,6 +81,7 @@ expandNoCons ys n = [Leaf (concatWithSpaces ys)]
   ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
   ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then makeInsertionNodes ys n else [])
+  ++ (if length ys > 2 then makeSubtractionNodes ys n else [])
   ++ (if length ys > 1 then makeReversalNodes ys n else [])
   ++ (if length ys > 1 then makeFirstLetterNodes ys n else [])
   ++ (if length ys > 1 then makeLastLetterNodes ys n else [])
@@ -135,7 +139,8 @@ makeInsertionNodes xs n = let parts = threeParts xs
 -- SUBTRACTIONS
 makeSubtractionNodes :: [String] -> Int -> [ClueTree]
 makeSubtractionNodes xs n = let parts = threeParts xs
-                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
+                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (expand x n), z' <- (expand z n)] 
+                  ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (expand x n), z' <- (expand z n)] 
 
 -- REVERSALS
 makeReversalNodes :: [String] -> Int -> [ClueTree]
@@ -150,12 +155,12 @@ makeHiddenWordNodes xs n = let parts = twoParts xs
 -- FIRST LETTERS
 makeFirstLetterNodes :: [String]  -> Int -> [ClueTree]
 makeFirstLetterNodes xs n = let parts = twoParts xs
-                  in [FirstLetterNode (FLIndicator x) y | (x,y) <- includeReversals(parts), isFLIndicator(x), (length y) <= n]
+                  in [FirstLetterNode (FLIndicator x) y | (x,y) <- includeReversals(parts), isFLIndicator(x)] -- (length y) <= n
 
 -- LAST LETTERS
 makeLastLetterNodes :: [String]  -> Int -> [ClueTree]
 makeLastLetterNodes xs n = let parts = twoParts xs
-                  in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x), (length y) <= n]
+                  in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x)] -- (length y) <= n
 
 -- LAST LETTERS
 makePartialNodes :: [String]  -> Int -> [ClueTree]
@@ -193,7 +198,7 @@ constrain_parse_lengths :: [Parse] -> [Parse]
 constrain_parse_lengths = filter constrain_parse_length
 
 constrain_parse_length :: Parse -> Bool
-constrain_parse_length (DefNode def clue n) = (minLength clue >= n) && (maxLength clue <= n) 
+constrain_parse_length (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
 
 
 constrain_lengths :: [Answer] -> [Answer]
@@ -217,6 +222,8 @@ sort_most_likely = map (snd) . sort . map (\x -> (cost_parse x, x))
 possible_words = check_valid_words . constrain_lengths  . evaluate . parse
 
 solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . sort_most_likely . constrain_parse_lengths . parse . lowercase
+
+solve' = solve_no_syn_sorted
 
 solve_no_syn_sorted = head' . sort_solved  . take 100 . solve_no_syn
 
