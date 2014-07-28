@@ -24,15 +24,18 @@ answers = dict()
 clues = dict()
 intersections = dict()
 
+start = 3530
+end = 3537
 
-for c in range(26300,26315):	
+for c in range(start, end):	
 
-	path='http://www.theguardian.com/crosswords/cryptic/%d' % c
+	path='http://www.theguardian.com/crosswords/everyman/%d' % c
 	try:
 		req=urllib2.Request(path)
 		page=urllib2.urlopen(req).read()
+		print "Scraping from: " + path
 	except:
-		print path
+		print "Couldn't find: " +  path
 		continue
 
 	soup = BeautifulSoup(page, "lxml")
@@ -74,14 +77,16 @@ for c in range(26300,26315):
 
 #print clues
 #print answers
-print intersections
+#print intersections
 
 
-for c in range(26300,26315):	
+for c in range(start,end):	
 	for d in ["across", "down"]:
 		for n in range(1,30):
 			try:
 				(clue, length) = clues[c,n,d]
+				if "," in length:
+					continue
 				answer = answers[c,n,d]
 				
 				exclude = set(string.punctuation)
