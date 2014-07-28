@@ -1683,4 +1683,6 @@ anagramIndicators = Data.Set.fromList [
   "wretched",
   "wriggle",
   "wring",
-  "writhe"]
+  "writhe",
+  "preparation of",
+  "in resort"]

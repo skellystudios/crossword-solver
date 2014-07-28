@@ -1,12 +1,5 @@
 module Main where 
 
-
-
-remove2 [] ys = ys
-remove2 xs [] = []
-remove2 (x:xs) (y:ys) = if x==y then remove2 xs ys else y:(remove2 (x:xs) ys)
-
-
 remove xs ys = let n = (find_in xs ys 0 0) in if n == -1 then [] else remove_from ys n (length xs)
 
 remove_from ys 0 0 = ys
