@@ -1960,6 +1960,52 @@ Parsing and Evaluating everything
 \end_layout
 
 \begin_layout Subsection
+Solving a Clue
+\end_layout
+
+\begin_layout Standard
+Our motivation here is to take a cryptic crossword clue, for example:
+\end_layout
+
+\begin_layout LyX-Code
+Companion shredded corset (6)
+\end_layout
+
+\begin_layout Standard
+and attempt to parse and solve it to provide the correct answer.
+ We will define the datatype of Clue thus:
+\end_layout
+
+\begin_layout LyX-Code
+type Clue = String Int
+\end_layout
+
+\begin_layout Standard
+In order to solve this clue, we want to find a function that takes a clue,
+ which consists of a string containing the text of the clue and an integer
+ representing the lenght of the required answer, and returns us the answer.
+\end_layout
+
+\begin_layout LyX-Code
+solve :: Clue → Answer 
+\end_layout
+
+\begin_layout Standard
+While this has a surface reading involving the semantic natural langage
+ parsing of it as a sentence fragment (which would yield a phrase, with
+ an subject, a past tense verb and an object), we are only interested in
+ the crossword interpretation of this, which is of the form 
+\end_layout
+
+\begin_layout LyX-Code
+Definition Indicator* Wordplay |  Wordplay Indicator* Definition
+\end_layout
+
+\begin_layout Standard
+Let us forget about the optional indi
+\end_layout
+
+\begin_layout Subsection
 Overview
 \end_layout
 
