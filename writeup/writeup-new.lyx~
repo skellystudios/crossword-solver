@@ -2004,6 +2004,10 @@ evaluate   :: [Parse] → [Solution]
 valid_word :: Solution → Boolean
 \end_layout
 
+\begin_layout Standard
+
+\end_layout
+
 \begin_layout Subsection
 Tokenisation
 \end_layout
