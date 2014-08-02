@@ -7,3 +7,6 @@ dict/*.hs
 coding/dict/*k
 *archive*
 coding/scraper/.env/
+videos/*
+*.yuv
+*/#*#

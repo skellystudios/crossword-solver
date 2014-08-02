@@ -5,6 +5,22 @@
 \textclass article
 \use_default_options true
 \maintain_unincluded_children false
+\begin_local_layout
+InsetLayout Flex:Code
+    LyxType               charstyle
+    LabelString           code
+    LatexType             command
+    LatexName             code
+    Font
+      Family              Typewriter
+    EndFont
+    Preamble
+    \newcommand{\code}[1]{\texttt{#1}}
+    EndPreamble
+    InToc                 true
+    HTMLTag               code
+End
+\end_local_layout
 \language english
 \language_package default
 \inputencoding auto
@@ -25,6 +41,7 @@
 \bibtex_command default
 \index_command default
 \paperfontsize default
+\spacing single
 \use_hyperref false
 \papersize default
 \use_geometry false
@@ -109,6 +126,35 @@ status open
 Lots of stuff here please
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ Donec iaculis nisl in lobortis cursus.
+ Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere
+ cubilia Curae; Mauris consequat ante massa, eget rhoncus urna eleifend
+ eget.
+ Curabitur dui tortor, scelerisque sed dapibus ac, cursus id metus.
+ Vestibulum auctor libero vestibulum mi porttitor bibendum.
+ Morbi eget nunc ac sem facilisis aliquam vel ac dolor.
+ Ut fringilla nulla sit amet orci commodo, et accumsan orci lacinia.
+ Integer sit amet aliquet lacus.
+ Maecenas vel enim turpis.
+ In euismod nibh sit amet erat commodo semper.
+ Ut dapibus erat quis erat porttitor condimentum.
+ Donec eu lacus vel magna pharetra laoreet sed in enim.
+ Integer semper nulla sit amet mauris ullamcorper posuere.
+ Fusce non est porta, gravida velit ac, fringilla tellus.
+ Aliquam bibendum, risus at vulputate vestibulum, odio neque porta neque,
+ quis eleifend eros est nec lorem.
+ Vivamus imperdiet condimentum odio, non ultricies ligula suscipit id.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
 \end_inset
 
 
@@ -1951,6 +1997,13 @@ Do some shit here, yeah?
 Words
 \end_layout
 
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
 \begin_layout Part
 Naive Approach 
 \end_layout
@@ -1960,28 +2013,58 @@ Parsing and Evaluating everything
 \end_layout
 
 \begin_layout Subsection
-Overview
+Solving a Clue
 \end_layout
 
 \begin_layout Standard
-Our strategy for solving a given clue has to take into account the inherent
- abiguity in the structure of cryptic crosswords - ambiguity in the formulation
- of the problem (which part is the definition and which the wordplay?),
- ambiguity in the parsing of the wordplay, and ambiguity in the different
- ways a parse can be evaluated (for example there are 720 anagrams of 'ambled'
- of which 6 are dictionary words).
-\end_layout
-
-\begin_layout Standard
-In order to evaluate, measure and optimise each of these independently,
- we split the structure of our program into three parts:
+Our motivation here is to take a cryptic crossword clue, for example:
 \end_layout
 
 \begin_layout LyX-Code
-solve = filter (valid_word) .
+[A]  Ship carrying right flag (8)
+\end_layout
+
+\begin_layout LyX-Code
+[B]  Companion shredded corset (6)
+\end_layout
+
+\begin_layout LyX-Code
+[C]  Companion shredded corset (6)
+\end_layout
+
+\begin_layout Standard
+and attempt to parse and solve it to provide the correct answer.
+ We will define the datatype of Clue thus:
+\end_layout
+
+\begin_layout LyX-Code
+type Clue = String Int
+\end_layout
+
+\begin_layout Standard
+In order to solve this clue, we want to find a function that takes a clue,
+ which consists of a string containing the text of the clue and an integer
+ representing the lenght of the required answer, and returns us the answer.
+\end_layout
+
+\begin_layout LyX-Code
+solve :: Clue → Answer 
+\end_layout
+
+\begin_layout Standard
+The intuition behind how our naive solver will work is that it will generated
+ all possible ways of parsing a clue, then generate all possible answers
+ that could be derived from those parses, and then attempt to match those
+ up with the definition and the length constraints.
+ In order to evaluate, measure and optimise each of these steps independently,
+ we split the structure of our program into four parts:
+\end_layout
+
+\begin_layout LyX-Code
+solve = choose .
  evaluate .
  parse .
- formulate
+ split
 \end_layout
 
 \begin_layout Standard
@@ -1989,27 +2072,327 @@ where the types are given below:
 \end_layout
 
 \begin_layout LyX-Code
-formulate  :: Clue → [Formulation]
+split    :: Clue → [Split]
 \end_layout
 
 \begin_layout LyX-Code
-parse      :: [Formulation] → [Parse]
+parse    :: [Split] → [Parse]
 \end_layout
 
 \begin_layout LyX-Code
-evaluate   :: [Parse] → [Solution]
+evaluate :: [Parse] → [Answer]
 \end_layout
 
 \begin_layout LyX-Code
-valid_word :: Solution → Boolean
-\end_layout
-
-\begin_layout Standard
-
+choose   :: [Answer] → Answer
 \end_layout
 
 \begin_layout Subsection
-Tokenisation
+Splitting
+\end_layout
+
+\begin_layout Standard
+While a clue has a surface reading involving the semantic natural langage
+ parsing of it as a sentence fragment (which would yield a phrase, with
+ an subject, a past tense verb and an object), we are only interested in
+ the crossword interpretation of this, which is of the form: 
+\end_layout
+
+\begin_layout LyX-Code
+  Definition Indicator* Wordplay 
+\end_layout
+
+\begin_layout LyX-Code
+| Wordplay Indicator* Definition
+\end_layout
+
+\begin_layout Standard
+Let us forget about the optional indicators for now – we will deal with
+ these properly later .
+ We are looking to define a function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+split
+\end_layout
+
+\end_inset
+
+ which splits the clue into a wordplay portion and a definition portion.
+ So for example, clue 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+A
+\end_layout
+
+\end_inset
+
+ can be split 6 different ways:
+\end_layout
+
+\begin_layout LyX-Code
+ wordplay  definition         definition  wordplay
+\end_layout
+
+\begin_layout LyX-Code
+   
+\begin_inset Formula $\mathtt{\overbrace{Ship}\:\overbrace{carrying\: right\: flag}}$
+\end_inset
+
+         
+\begin_inset Formula $\mathtt{\overbrace{Ship}\:\overbrace{carrying\: right\: flag}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+    wordplay  definition         definition  wordplay
+\end_layout
+
+\begin_layout LyX-Code
+   
+\begin_inset Formula $\mathtt{\overbrace{Ship\, carrying}\:\overbrace{right\: flag}}$
+\end_inset
+
+         
+\begin_inset Formula $\mathtt{\overbrace{Ship\, carrying}\:\overbrace{right\: flag}}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset space \thinspace{}
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+       wordplay definition       definition   wordplay
+\end_layout
+
+\begin_layout LyX-Code
+   
+\begin_inset Formula $\mathtt{\overbrace{Ship\, carrying\, right}\:\overbrace{flag}}$
+\end_inset
+
+        
+\begin_inset Formula $\mathtt{\overbrace{Ship\, carrying\, right}\:\overbrace{flag}}$
+\end_inset
+
+  
+\end_layout
+
+\begin_layout Standard
+From the types of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Wordplay
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Definition
+\end_layout
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout LyX-Code
+type Definition = String
+\end_layout
+
+\begin_layout LyX-Code
+type Wordplay = String
+\end_layout
+
+\begin_layout Standard
+we can create a datatype
+\end_layout
+
+\begin_layout LyX-Code
+data Split = Def Definition Wordplay Int
+\end_layout
+
+\begin_layout Standard
+as well as the signature of a function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+split
+\end_layout
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout LyX-Code
+split :: Clue → [Split]
+\end_layout
+
+\begin_layout LyX-Code
+split (text length) = 
+\end_layout
+
+\begin_layout LyX-Code
+    let parts = partitions .
+ words $ text 
+\end_layout
+
+\begin_layout LyX-Code
+    in [Def (unwords d) (unwords w) length | [d,w] <- parts]
+\end_layout
+
+\begin_layout Subsection
+Parsing
+\end_layout
+
+\begin_layout Standard
+Now we have consumed one portion of the string to form the definition in
+ each of a list of splits.
+ Now we need to parse the rest of the clue into a structure which we can
+ evaluate to produce our answer.
+ Let us take for an example the correct split (of the 6 available) of 
+\end_layout
+
+\begin_layout LyX-Code
+wordplay definition       
+\end_layout
+
+\begin_layout LyX-Code
+   
+\begin_inset Formula $\mathtt{\overbrace{Ship\, carrying\, right}\:\overbrace{flag}}$
+\end_inset
+
+     
+\end_layout
+
+\begin_layout Standard
+which would have the haskell structure of 
+\end_layout
+
+\begin_layout LyX-Code
+Def 
+\begin_inset Quotes eld
+\end_inset
+
+flag
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+ship carrying right
+\begin_inset Quotes erd
+\end_inset
+
+ 8
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+parse
+\end_layout
+
+\end_inset
+
+ function must, for each split, consume the wordplay and return all possible
+ parses for that wordplay.
+ Since each split will return multiple parses, we will want to collect these
+ afterwards.
+ We define datatype 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Parse
+\end_layout
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout LyX-Code
+data Parse = Parse Definition ClueTree Int
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+ClueTree
+\end_layout
+
+\end_inset
+
+ will be an Abstract Syntax Tree based on the structure of our clue.
+ So we can now define:
+\end_layout
+
+\begin_layout LyX-Code
+parse :: [Split] → [Parse]
+\end_layout
+
+\begin_layout LyX-Code
+parse = concatMap parse'
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout LyX-Code
+parse' :: Split → [Parse]
+\end_layout
+
+\begin_layout Standard
+In our example, we would require 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+parse'
+\end_layout
+
+\end_inset
+
+ to consume 
+\end_layout
+
+\begin_layout Subsubsection
+Traditional Scanner-Based Parsing
 \end_layout
 
 \begin_layout Standard
@@ -2039,7 +2422,7 @@ available_credit).
  
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Paragraph
 The Scanner
 \end_layout
 
@@ -2099,7 +2482,7 @@ function 3
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Paragraph
 The Evaluator
 \end_layout
 
@@ -2119,7 +2502,7 @@ Yeha, finish this.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Paragraph
 Scannerless Parsing
 \end_layout
 
