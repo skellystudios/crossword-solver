@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage{qtree}
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \begin_local_layout
@@ -2343,7 +2346,7 @@ Parse
 \end_layout
 
 \begin_layout LyX-Code
-data Parse = Parse Definition ClueTree Int
+data Parse = Parse Definition ParseTree Int
 \end_layout
 
 \begin_layout Standard
@@ -2352,7 +2355,7 @@ where
 status open
 
 \begin_layout Plain Layout
-ClueTree
+ParseTree
 \end_layout
 
 \end_inset
@@ -2389,14 +2392,116 @@ parse'
 \end_inset
 
  to consume the string 
-\begin_inset Quotes eld
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Ship carrying right flag 
+\end_layout
+
 \end_inset
 
-Ship carrying right flag
-\begin_inset Quotes erd
+ to generate the parse trees, including the correct one:
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
 \end_inset
 
- to generate the valid parse trees
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.INSERTION
+\backslash
+ ("carrying") [.SYNONYM "ship" ] [.ABBREVIATION "right" ]]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+as well as many others
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATION [.SYNONYM "ship" ][.LAST
+\backslash
+ LETTER
+\backslash
+ ("right") [.SYNONYM "carrying" ]]]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATION [.SYNONYM "ship" ][.CONCATENATION [.SYNONYM "carrying" ][.SYNONYM
+ "flag" ]]]
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -2518,8 +2623,129 @@ Scannerless Parsing
 Some parsers, traditionally often ones for simple languages such as 
 \end_layout
 
-\begin_layout Subsection
-d5
+\begin_layout Subsubsection
+Parsing different clue types
+\end_layout
+
+\begin_layout Standard
+So we need to define a function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+parseClue
+\end_layout
+
+\end_inset
+
+ which will produce a parse tree from an unconsumed string.
+ So we have
+\end_layout
+
+\begin_layout LyX-Code
+parseClue :: String → ParseTree
+\end_layout
+
+\begin_layout Standard
+We will define parseString in terms of its parsing of various clue types,
+ starting with one of the more simple unary ones:
+\end_layout
+
+\begin_layout LyX-Code
+parseAnagram :: String → [ParseTree]
+\end_layout
+
+\begin_layout LyX-Code
+parseAnagram xs = 
+\end_layout
+
+\begin_layout LyX-Code
+    [AnagramNode (AIndicator x) y |(x,y) <- includeReversals 
+\end_layout
+
+\begin_layout LyX-Code
+                     .
+ twoPartitions $ xs, isAnagramWord(x)]
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout LyX-Code
+twoPartitions xs = [(x,y) | [x,y] <- partitions xs]
+\end_layout
+
+\begin_layout LyX-Code
+includeReversals xs = xs ++ [(snd(x),fst(x)) | x <- xs]  
+\end_layout
+
+\begin_layout Standard
+We allow both (x, y) and (y, x) through 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+includeReversals
+\end_layout
+
+\end_inset
+
+ in order to allow 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+muddled word
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+word muddled
+\end_layout
+
+\end_inset
+
+ both to indicate anagrams of 
+\begin_inset Quotes eld
+\end_inset
+
+word
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Anagram clues, along with Hidden Word clues only require a definition and
+ a string, so don't require any further parsing.
+ Other clues, though, may allow the subject string to have futher transformation
+s on it.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+parseLastLetter :: String → [ParseTree]
+\end_layout
+
+\begin_layout LyX-Code
+parseLastLetter xs = [LastLetterNode (LLIndicator x) y' 
+\end_layout
+
+\begin_layout LyX-Code
+         |(x,y) <- includeReversals .
+ twoPartitions $ xs
+\end_layout
+
+\begin_layout LyX-Code
+          , isAnagramWord(x)
+\end_layout
+
+\begin_layout LyX-Code
+          , y' <- parseClue]
 \end_layout
 
 \begin_layout Standard
