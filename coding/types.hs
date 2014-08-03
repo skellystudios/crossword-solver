@@ -20,12 +20,12 @@ data FLIndicator = FLIndicator [String] deriving (Show, Eq, Ord)
 data LLIndicator = LLIndicator [String] deriving (Show, Eq, Ord)
 data PartialIndicator = PartialIndicator [String] deriving (Show, Eq, Ord)
 
-type MaxLength = Int
-type MinLength = Int
+data MaxLength = Max Int | NoMax
+data MinLength = Min Int | NoMin
 
-data EvalConstraints = PrefixConstraint MaxLength MinLength
+data EvalConstraints = Constraints PrefixConstraint MaxLength MinLength
 
-data PrefixConstraint = Prefix String | Nothing
+data PrefixConstraint = Prefix String | Unconstrained | NoPref
 
 
 get_parse (Answer s p) = p
