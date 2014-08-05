@@ -8,12 +8,12 @@ import Abbreviation
 import Types
 
 isInWordlist x = Data.Set.member x wordlist_extended'
-wordlist_extended' = Data.Set.union (Data.Set.fromList (Map.keys thesaurus)) wordlist 
+wordlist_extended' = Data.Set.union (Data.Set.fromList (Map.keys thesaurus)) wordlist_extended 
 wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this", "earnest request"]) wordlist
 
 is_prefix = is_wordlist_prefix
 is_wordlist_prefix x = Data.Set.member x wl_pref
-wl_pref = Data.Set.fold add_prefixes Data.Set.empty wordlist
+wl_pref = Data.Set.fold add_prefixes Data.Set.empty wordlist_extended'
 
 add_prefixes word set = Data.Set.union (Data.Set.fromList (prefixes word)) set
 
