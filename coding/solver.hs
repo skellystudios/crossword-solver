@@ -38,6 +38,8 @@ SELECT CONCAT("\"",WORD,"\" = [", GROUP_CONCAT( CONCAT("\"",abbreviation,"\"")),
 FROM (SELECT DISTINCT word, abbreviation FROM abbreviations) ab
 GROUP BY word;
 
+:set +s
+
 -}
 
 main = do 
@@ -83,14 +85,14 @@ parseWithoutConcat :: [String] -> Int -> [ClueTree]
 parseWithoutConcat ys n = [Leaf (concatWithSpaces ys)] 
   ++ (if length ys == 1 then parseConsIndicatorNodes ys n else [])
   ++ (if length ys > 1 then parseAnagramNodes ys n else [] )
- {- ++ (if length ys > 1 then parseHiddenWordNodes ys n else [])
+  ++ (if length ys > 1 then parseHiddenWordNodes ys n else [])
   ++ (if length ys > 2 then parseInsertionNodes ys n else [])
   ++ (if length ys > 2 then parseSubtractionNodes ys n else [])
   ++ (if length ys > 1 then parseReversalNodes ys n else [])
   ++ (if length ys > 1 then parseFirstLetterNodes ys n else [])
   ++ (if length ys > 1 then parseLastLetterNodes ys n else [])
   ++ (if length ys > 1 then parsePartialNodes ys n else [])
-  -}
+
 
 parseJustAbbreviations :: [String] -> Int -> [ClueTree]
 parseJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
@@ -241,7 +243,7 @@ clue 6 = Clue ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
 clue 7 = Clue ("flyer needed by funfair manager", 6)
 clue 8 = Clue ("put food in this stuff on barge at sea", 9) -- Why doesn't this work?
 clue 9 = Clue ("notice supervisor is going nuts at first", 4)
-clue 10 = Clue ("animal parses mistake crossing one river", 7)
+clue 10 = Clue ("animal is mistake crossing one river", 7)
 clue 11 = Clue ("maria not a fickle lover", 9)
 clue 12 = Clue ("hope for high praise", 6)  
 
