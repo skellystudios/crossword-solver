@@ -38,6 +38,8 @@ SELECT CONCAT("\"",WORD,"\" = [", GROUP_CONCAT( CONCAT("\"",abbreviation,"\"")),
 FROM (SELECT DISTINCT word, abbreviation FROM abbreviations) ab
 GROUP BY word;
 
+:set +s
+
 -}
 
 main = do 
@@ -59,41 +61,84 @@ threeParts xs = [(x,y,z) | [x,y,z] <- partitions xs]
 partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
 
-parse :: Clue -> [Parse]
-parse (Clue (xs, n)) = makeNoIndicatorDefs (words xs, n) ++ makeIndicatorDefs (words xs, n)
-
-makeNoIndicatorDefs :: ([String], Int) -> [Parse]
-makeNoIndicatorDefs (xs, n) = let parts = twoParts xs
-        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), isInWordlist(concatWithSpaces (fst part)), y' <- (expand (snd part) n)]
-
-makeIndicatorDefs :: ([String], Int) -> [Parse]
-makeIndicatorDefs (xs, n) = let parts = threeParts xs
-        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (expand z n)] 
-        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (expand z n)]
-
-expand :: [String] -> Int -> [ClueTree]
-expand ys n= (if length ys > 1 then makeConsListNodes ys n else [])
-	++ (expandNoCons ys n)
-
-expandNoCons :: [String] -> Int -> [ClueTree]
-expandNoCons ys n = [Leaf (concatWithSpaces ys)] 
-  ++ (if length ys == 1 then makeConsIndicatorNodes ys n else [])
-  ++ (if length ys > 1 then makeAnagramNodes ys n else [] )
-  ++ (if length ys > 1 then makeHiddenWordNodes ys n else [])
-  ++ (if length ys > 2 then makeInsertionNodes ys n else [])
-  ++ (if length ys > 2 then makeSubtractionNodes ys n else [])
-  ++ (if length ys > 1 then makeReversalNodes ys n else [])
-  ++ (if length ys > 1 then makeFirstLetterNodes ys n else [])
-  ++ (if length ys > 1 then makeLastLetterNodes ys n else [])
-  ++ (if length ys > 1 then makePartialNodes ys n else [])
-
-expandJustAbbreviations :: [String] -> Int -> [ClueTree]
-expandJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
-
 lowercase :: Clue -> Clue
 lowercase (Clue (xs, n)) = Clue (map toLower xs, n)
 
 
+parse :: Clue -> [Parse]
+parse (Clue (xs, n)) = parseWithIndicator (words xs, n) ++ parseWithoutIndicator (words xs, n)
+
+parseWithoutIndicator :: ([String], Int) -> [Parse]
+parseWithoutIndicator (xs, n) = let parts = twoParts xs
+        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), isInWordlist(concatWithSpaces (fst part)), y' <- (parseClue (snd part) n)]
+
+parseWithIndicator :: ([String], Int) -> [Parse]
+parseWithIndicator (xs, n) = let parts = threeParts xs
+        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
+        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
+
+parseClue :: [String] -> Int -> [ClueTree]
+parseClue ys n= (if length ys > 1 then parseConcatNodes ys n else [])
+	++ (parseWithoutConcat ys n)
+
+parseWithoutConcat :: [String] -> Int -> [ClueTree]
+parseWithoutConcat ys n = [Leaf (concatWithSpaces ys)] 
+  ++ (if length ys == 1 then parseConsIndicatorNodes ys n else [])
+  ++ (if length ys > 1 then parseAnagramNodes ys n else [] )
+  ++ (if length ys > 1 then parseHiddenWordNodes ys n else [])
+  ++ (if length ys > 2 then parseInsertionNodes ys n else [])
+  ++ (if length ys > 2 then parseSubtractionNodes ys n else [])
+  ++ (if length ys > 1 then parseReversalNodes ys n else [])
+  ++ (if length ys > 1 then parseFirstLetterNodes ys n else [])
+  ++ (if length ys > 1 then parseLastLetterNodes ys n else [])
+  ++ (if length ys > 1 then parsePartialNodes ys n else [])
+
+
+parseJustAbbreviations :: [String] -> Int -> [ClueTree]
+parseJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
+
+parseConsNodes :: [String] -> Int -> [ClueTree]
+parseConsNodes xs n = let parts = twoParts xs
+                   in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
+parseConcatNodes :: [String] -> Int -> [ClueTree]
+parseConcatNodes xs n = [ConsListNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
+
+parseConsIndicatorNodes :: [String] -> Int -> [ClueTree]
+parseConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorLeaf xs] else []
+
+parseAnagramNodes :: [String] -> Int -> [ClueTree]
+parseAnagramNodes xs n = let parts = twoParts xs
+                  in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x), (length . concat) y <= n] 
+
+parseInsertionNodes :: [String] -> Int -> [ClueTree]
+parseInsertionNodes xs n = let parts = threeParts xs
+                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+                  ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+
+parseSubtractionNodes :: [String] -> Int -> [ClueTree]
+parseSubtractionNodes xs n = let parts = threeParts xs
+                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+                  ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+
+parseReversalNodes :: [String] -> Int -> [ClueTree]
+parseReversalNodes xs n  = let parts = twoParts xs
+                  in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (parseClue y n)]  
+
+parseHiddenWordNodes :: [String]  -> Int -> [ClueTree]
+parseHiddenWordNodes xs n = let parts = twoParts xs
+                  in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] --, (length (concat y)) > n 
+
+parseFirstLetterNodes :: [String]  -> Int -> [ClueTree]
+parseFirstLetterNodes xs n = let parts = twoParts xs
+                  in [FirstLetterNode (FLIndicator x) y | (x,y) <- includeReversals(parts), isFLIndicator(x)] -- (length y) <= n
+
+parseLastLetterNodes :: [String]  -> Int -> [ClueTree]
+parseLastLetterNodes xs n = let parts = twoParts xs
+                  in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x)] -- (length y) <= n
+
+parsePartialNodes :: [String]  -> Int -> [ClueTree]
+parsePartialNodes xs n = let parts = twoParts xs
+                  in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (parseClue y n)]
 
 -------------- COST EVALUATION -------------
 
@@ -115,70 +160,19 @@ cost (PartialNode ind tree) = 60 + cost tree
 cost (ConsIndicatorLeaf xs) = 0
 
 
-makeConsNodes :: [String] -> Int -> [ClueTree]
-makeConsNodes xs n = let parts = twoParts xs
-                   in concat [[ConsNode x' y' |x' <- (expand (fst part) n), y' <- (expand (snd part) n)] | part <- parts]  
-makeConsListNodes :: [String] -> Int -> [ClueTree]
-makeConsListNodes xs n = [ConsListNode ys | ys <- (concat [sequence [expandNoCons subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
-
-makeConsIndicatorNodes :: [String] -> Int -> [ClueTree]
-makeConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorLeaf xs] else []
-
--- ANAGRAMS
-
-makeAnagramNodes :: [String] -> Int -> [ClueTree]
-makeAnagramNodes xs n = let parts = twoParts xs
-                  in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x), (length . concat) y <= n] 
-
--- INSERTIONS
-makeInsertionNodes :: [String] -> Int -> [ClueTree]
-makeInsertionNodes xs n = let parts = threeParts xs
-                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
-                  ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (expand x n), z' <- (expand z n)] 
-
--- SUBTRACTIONS
-makeSubtractionNodes :: [String] -> Int -> [ClueTree]
-makeSubtractionNodes xs n = let parts = threeParts xs
-                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (expand x n), z' <- (expand z n)] 
-                  ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (expand x n), z' <- (expand z n)] 
-
--- REVERSALS
-makeReversalNodes :: [String] -> Int -> [ClueTree]
-makeReversalNodes xs n  = let parts = twoParts xs
-                  in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (expand y n)]  
-
--- HIDDEN WORDS
-makeHiddenWordNodes :: [String]  -> Int -> [ClueTree]
-makeHiddenWordNodes xs n = let parts = twoParts xs
-                  in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] --, (length (concat y)) > n 
-
--- FIRST LETTERS
-makeFirstLetterNodes :: [String]  -> Int -> [ClueTree]
-makeFirstLetterNodes xs n = let parts = twoParts xs
-                  in [FirstLetterNode (FLIndicator x) y | (x,y) <- includeReversals(parts), isFLIndicator(x)] -- (length y) <= n
-
--- LAST LETTERS
-makeLastLetterNodes :: [String]  -> Int -> [ClueTree]
-makeLastLetterNodes xs n = let parts = twoParts xs
-                  in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x)] -- (length y) <= n
-
--- LAST LETTERS
-makePartialNodes :: [String]  -> Int -> [ClueTree]
-makePartialNodes xs n = let parts = twoParts xs
-                  in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (expand y n)]
 
 --------------------- KNOWN LETTER CONSTRAINS ---------------------
 
-fits :: String -> String -> Bool
-fits [] [] = True
-fits [] (y:ys) = False
-fits (x:xs) [] = False
-fits (x:xs) (y:ys) = if x=='?' then (fits xs ys) else 
-                        if x==y then (fits xs ys) else
+known_letter_fits :: String -> String -> Bool
+known_letter_fits [] [] = True
+known_letter_fits [] (y:ys) = False
+known_letter_fits (x:xs) [] = False
+known_letter_fits (x:xs) (y:ys) = if x=='?' then (known_letter_fits xs ys) else 
+                        if x==y then (known_letter_fits xs ys) else
                           False
 
 answerFits ::  String -> Answer -> Bool
-answerFits fitstring (Answer x y)  = fits fitstring x
+answerFits fitstring (Answer x y)  = known_letter_fits fitstring x
 
 stripFits :: String -> [Answer] -> [Answer]
 stripFits s = filter (answerFits s) 
@@ -249,7 +243,7 @@ clue 6 = Clue ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
 clue 7 = Clue ("flyer needed by funfair manager", 6)
 clue 8 = Clue ("put food in this stuff on barge at sea", 9) -- Why doesn't this work?
 clue 9 = Clue ("notice supervisor is going nuts at first", 4)
-clue 10 = Clue ("animal makes mistake crossing one river", 7)
+clue 10 = Clue ("animal is mistake crossing one river", 7)
 clue 11 = Clue ("maria not a fickle lover", 9)
 clue 12 = Clue ("hope for high praise", 6)  
 
