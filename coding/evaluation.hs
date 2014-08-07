@@ -123,7 +123,7 @@ fits (Prefix p) s = True
 
 
 evaluate :: [Parse] -> [Answer]
-evaluate = concat . (map eval) 
+evaluate = concatMap eval 
 
 anagrams :: String -> [String]
 anagrams [] = [[]]

@@ -42,6 +42,19 @@ GROUP BY word;
 
 -}
 
+
+{-  USE NULL INSTEAD OF LENGTH == 0  -}
+  
+
+  {-
+
+  Removal of first and last letters
+  Removal of central letter(s)
+  Removal of alternate letters
+
+  -}
+
+
 main = do 
        -- GHC.Profiling.stopProfTimer
         print $  solve_clue 11
@@ -215,7 +228,14 @@ sort_most_likely = map (snd) . sort . map (\x -> (cost_parse x, x))
 
 possible_words = check_valid_words . constrain_lengths  . evaluate . parse
 
+
+
+
+
 solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . sort_most_likely . constrain_parse_lengths . parse . lowercase
+
+
+
 
 solve' = solve_no_syn_sorted
 
@@ -235,20 +255,19 @@ compare_clue (Clue (s,n)) (Clue (t,m)) = compare n m
  
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT
-clue 2 = Clue ("notice in flying coat", 6) -- JACKET
+clue 2 = Clue ("notice in flying coat", 6) -- JACKET 
 clue 3 = Clue ("companion found in oklahoma terminal", 4)
 clue 4 = Clue ("a new member returned a woman", 6)
 clue 5 = Clue ("pause at these i fancy", 8) -- Everyman 3526, clue 1   ["athetise","hesitate"] 
 clue 6 = Clue ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
 clue 7 = Clue ("flyer needed by funfair manager", 6)
-clue 8 = Clue ("put food in this stuff on barge at sea", 9) -- Why doesn't this work?
+clue 8 = Clue ("put food in this stuff on barge at sea", 9) 
 clue 9 = Clue ("notice supervisor is going nuts at first", 4)
 clue 10 = Clue ("animal is mistake crossing one river", 7)
 clue 11 = Clue ("maria not a fickle lover", 9)
 clue 12 = Clue ("hope for high praise", 6)  
 
 grid = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
-
 
 
 -- REGEX ((\d*)\s(.+)\s\((\d*)\)\n(.*)\n(.*))\n
