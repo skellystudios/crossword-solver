@@ -72,7 +72,7 @@ makeIndicatorDefs (xs, n) = let parts = threeParts xs
         ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (expand z n)]
 
 expand :: [String] -> Int -> [ClueTree]
-expand ys n= (if length ys > 1 then makeConsListNodes ys n else [])
+expand ys n= (if length ys > 1 then makeConsNodes ys n else [])
 	++ (expandNoCons ys n)
 
 expandNoCons :: [String] -> Int -> [ClueTree]

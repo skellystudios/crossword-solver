@@ -6,7 +6,7 @@ import Data.Map as Map
 import Wordlists
 import Abbreviation
 
-isInWordlist x = Data.Set.member x wordlist_extended'
+isInWordlist x = True -- Data.Set.member x wordlist_extended'
 wordlist_extended' = Data.Set.union (Data.Set.fromList (Map.keys thesaurus)) wordlist 
 wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this", "earnest request"]) wordlist
 
