@@ -17,18 +17,18 @@ eval (DefNode y z n) = let constraints = (n, n) in [Answer x (DefNode y z n) | x
 eval_tree :: ClueTree  -> EvalConstraints -> [String]
 eval_tree (AnagramNode x y) c = 
 								let y' = (concat y) in 	
-								if (is_less_than_min (minC c) (length y')) then [] else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
+								anagrams  $ y'
 
-eval_tree (Leaf x) c = filter (fits_constraints c) (syn x ++ [x])
+eval_tree (Leaf x) c = (syn x ++ [x])
 eval_tree (ConsListNode xs) c = eval_trees xs c --map concat (sequence (map (eval_tree n) xs))
--- eval_tree (ConsNode x y) c = [x' ++ y' | x' <- eval_tree x (noPrefix c), y' <- eval_tree y (Constraints Unconstrained (mx - length x') (mn - length x'))]
-eval_tree (InsertionNode ind x y) c = concat[insertInto x' y' | y' <- eval_tree y (noMin . noPrefix $ c), x' <- eval_tree x (decreaseMax (length y') . decreaseMin (length y') . noPrefix $ c)]
-eval_tree (SubtractionNode ind x y) c = concat[subtractFrom x' y' | x' <- eval_tree x no_constraints, y' <- eval_tree y no_constraints, fits_min c (length y' - length x'), fits_min c (length y' - length x')]
-eval_tree (HiddenWordNode ind ys) c = [x | x <- substr (concat ys), (length x) > 0, fits_constraints c x]
+eval_tree (ConsNode x y) c = [x' ++ y' | x' <- eval_tree x  no_constraints, y' <- eval_tree y no_constraints]
+eval_tree (InsertionNode ind x y) c = concat[insertInto x' y' | y' <- eval_tree y no_constraints, x' <- eval_tree x no_constraints]
+eval_tree (SubtractionNode ind x y) c = concat[subtractFrom x' y' | x' <- eval_tree x no_constraints, y' <- eval_tree y no_constraints]
+eval_tree (HiddenWordNode ind ys) c = [x | x <- substr (concat ys), (length x) > 0]
 eval_tree (ReversalNode ind ys) c = map reverse (eval_tree ys c)
 eval_tree (FirstLetterNode ind ys) c = [firstLetter ys]
 eval_tree (LastLetterNode ind ys) c = [lastLetter ys]
-eval_tree (PartialNode ind y) c = filter (fits_constraints c) (concat [top_tail_substrings y | y <- eval_tree y no_constraints])
+eval_tree (PartialNode ind y) c = (concat [top_tail_substrings y | y <- eval_tree y no_constraints])
 eval_tree (ConsIndicatorLeaf x) c = [""]
 
 

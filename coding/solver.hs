@@ -91,7 +91,7 @@ parseWithIndicator (xs, n) = let parts = threeParts xs
         ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
 
 parseClue :: [String] -> Int -> [ClueTree]
-parseClue ys n= (if length ys > 1 then parseConcatNodes ys n else [])
+parseClue ys n= (if length ys > 1 then parseConsNodes ys n else [])
 	++ (parseWithoutConcat ys n)
 
 parseWithoutConcat :: [String] -> Int -> [ClueTree]
@@ -114,14 +114,14 @@ parseConsNodes :: [String] -> Int -> [ClueTree]
 parseConsNodes xs n = let parts = twoParts xs
                    in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
 parseConcatNodes :: [String] -> Int -> [ClueTree]
-parseConcatNodes xs n = [ConsListNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
+parseConcatNodes xs n = [ConsListNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs])] --, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
 
 parseConsIndicatorNodes :: [String] -> Int -> [ClueTree]
 parseConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorLeaf xs] else []
 
 parseAnagramNodes :: [String] -> Int -> [ClueTree]
 parseAnagramNodes xs n = let parts = twoParts xs
-                  in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x), (length . concat) y <= n] 
+                  in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x)] --, (length . concat) y <= n] 
 
 parseInsertionNodes :: [String] -> Int -> [ClueTree]
 parseInsertionNodes xs n = let parts = threeParts xs
