@@ -2041,7 +2041,15 @@ and attempt to parse and solve it to provide the correct answer.
 \end_layout
 
 \begin_layout LyX-Code
-type Clue = String Int
+data Clue = Clue String AnswerLength
+\end_layout
+
+\begin_layout LyX-Code
+where
+\end_layout
+
+\begin_layout LyX-Code
+type Length = Int
 \end_layout
 
 \begin_layout Standard
@@ -2235,7 +2243,7 @@ we can create a datatype
 \end_layout
 
 \begin_layout LyX-Code
-data Split = Def Definition Wordplay Int
+data Split = Def Definition Wordplay AnswerLength
 \end_layout
 
 \begin_layout Standard
@@ -2282,7 +2290,7 @@ Now we have consumed one portion of the string to form the definition in
 \end_layout
 
 \begin_layout LyX-Code
-wordplay definition       
+       wordplay  definition       
 \end_layout
 
 \begin_layout LyX-Code
@@ -2346,7 +2354,7 @@ Parse
 \end_layout
 
 \begin_layout LyX-Code
-data Parse = Parse Definition ParseTree Int
+data Parse = Parse Definition ParseTree AnswerLength
 \end_layout
 
 \begin_layout Standard
@@ -2401,7 +2409,7 @@ Ship carrying right flag
 
 \end_inset
 
- to generate the parse trees, including the correct one:
+ to generate the parse trees – including the correct one:
 \end_layout
 
 \begin_layout Standard
@@ -2434,7 +2442,7 @@ Tree[.INSERTION
 \end_layout
 
 \begin_layout Standard
-as well as many others
+as well as many others:
 \end_layout
 
 \begin_layout Standard
@@ -2505,124 +2513,7 @@ Tree[.CONCATENATION [.SYNONYM "ship" ][.CONCATENATION [.SYNONYM "carrying" ][.SY
 \end_layout
 
 \begin_layout Standard
-So we need to define a function 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-parseClue
-\end_layout
-
-\end_inset
-
- which will produce a parse tree from an unconsumed string.
- So we have
-\end_layout
-
-\begin_layout LyX-Code
-parseClue :: String → ParseTree
-\end_layout
-
-\begin_layout Standard
-We will define parseString in terms of its parsing of various clue types,
- starting with one of the more simple unary ones:
-\end_layout
-
-\begin_layout LyX-Code
-parseAnagram :: String → [ParseTree]
-\end_layout
-
-\begin_layout LyX-Code
-parseAnagram xs = 
-\end_layout
-
-\begin_layout LyX-Code
-    [AnagramNode (AIndicator x) y |(x,y) <- includeReversals 
-\end_layout
-
-\begin_layout LyX-Code
-                     .
- twoPartitions $ xs, isAnagramWord(x)]
-\end_layout
-
-\begin_layout Standard
-where
-\end_layout
-
-\begin_layout LyX-Code
-twoPartitions xs = [(x,y) | [x,y] <- partitions xs]
-\end_layout
-
-\begin_layout LyX-Code
-includeReversals xs = xs ++ [(snd(x),fst(x)) | x <- xs]  
-\end_layout
-
-\begin_layout Standard
-We allow both (x, y) and (y, x) through 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-includeReversals
-\end_layout
-
-\end_inset
-
- in order to allow 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-muddled word
-\end_layout
-
-\end_inset
-
- and 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-word muddled
-\end_layout
-
-\end_inset
-
- both to indicate anagrams of 
-\begin_inset Quotes eld
-\end_inset
-
-word
-\begin_inset Quotes erd
-\end_inset
-
-.
- Anagram clues, along with Hidden Word clues only require a definition and
- a string, so don't require any further parsing.
- Other clues, though, may allow the subject string to have futher transformation
-s on it.
- 
-\end_layout
-
-\begin_layout LyX-Code
-parseLastLetter :: String → [ParseTree]
-\end_layout
-
-\begin_layout LyX-Code
-parseLastLetter xs = [LastLetterNode (LLIndicator x) y' 
-\end_layout
-
-\begin_layout LyX-Code
-         |(x,y) <- includeReversals .
- twoPartitions $ xs
-\end_layout
-
-\begin_layout LyX-Code
-          , isAnagramWord(x)
-\end_layout
-
-\begin_layout LyX-Code
-          , y' <- parseClue]
+and so on.
 \end_layout
 
 \begin_layout Subsubsection
@@ -2744,24 +2635,965 @@ Scannerless Parsing
 Some parsers, traditionally often ones for simple languages such as 
 \end_layout
 
-\begin_layout Subsection
-d5
+\begin_layout Subsubsection
+Parsing different clue types
 \end_layout
 
 \begin_layout Standard
-In order to parse a clue, we must first decide on a separation between the
- definition part of the clue and the wordplay part of the clue.
- As discussed earlier, 
-\begin_inset Note Note
+So we need to define a function 
+\begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-did we?
+parseClue
 \end_layout
 
 \end_inset
 
-the clue 
+ which will produce a parse tree from an unconsumed string.
+ So we have
+\end_layout
+
+\begin_layout LyX-Code
+parseClue :: String → ParseTree
+\end_layout
+
+\begin_layout Standard
+We will define parseString in terms of its parsing of various clue types,
+ starting with one of the more simple unary ones:
+\end_layout
+
+\begin_layout LyX-Code
+parseAnagram :: String → [ParseTree]
+\end_layout
+
+\begin_layout LyX-Code
+parseAnagram xs = 
+\end_layout
+
+\begin_layout LyX-Code
+ [AnagramNode (AIndicator x) y |
+\end_layout
+
+\begin_layout LyX-Code
+              (x,y) <- includeReversals .
+ twoPartitions $ xs
+\end_layout
+
+\begin_layout LyX-Code
+                                     , isAnagramIndicator(x)]
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout LyX-Code
+twoPartitions xs = [(x,y) | [x,y] <- partitions xs]
+\end_layout
+
+\begin_layout LyX-Code
+includeReversals xs = xs ++ [(snd(x),fst(x)) | x <- xs]  
+\end_layout
+
+\begin_layout Standard
+We allow both (x, y) and (y, x) through 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+includeReversals
+\end_layout
+
+\end_inset
+
+ in order to allow 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+muddled word
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+word muddled
+\end_layout
+
+\end_inset
+
+ both to indicate anagrams of 
+\begin_inset Quotes eld
+\end_inset
+
+word
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This means a that in example [B] we parse both 
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.DEFINITION
+\backslash
+ "companion" [.ANAGRAM
+\backslash
+ ("shredded") "corset" ]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "5col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+and
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.DEFINITION
+\backslash
+ "corset" [.ANAGRAM
+\backslash
+ ("shredded") "companion" ]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+Anagram clues, along with Hidden Word clues only require a definition and
+ a string, so their operands don't require any further parsing.
+ Other clues, though, may require the operands to be parsed bef.
+ For example, the parsing of the clue 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SWEETHEART NEARLY FINISHED (5)
+\end_layout
+
+\end_inset
+
+ as 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+(L)OVER
+\end_layout
+
+\end_inset
+
+ requires 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SWEETHEART
+\end_layout
+
+\end_inset
+
+ to be parsed into a synonym node after we consumer nearly to be an indicator
+ for a partial word node.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.DEFINITION
+\backslash
+ "finished" [.PARTIAL
+\backslash
+ ("nearly") [.
+\backslash
+emph{
+\backslash
+{unparsed: "sweetheart"
+\backslash
+}} ] ] ]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "5col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+ ⇒ 
+\end_layout
+
+\begin_layout Plain Layout
+parse
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.DEFINITION
+\backslash
+ "finished" [.PARTIAL
+\backslash
+ ("nearly") [.SYNONYM "sweetheart" ] ] ]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+we therefore parse recursively, letting Haskell's list comprehension take
+ care of matching the correct partition to the correct parse.
+\end_layout
+
+\begin_layout LyX-Code
+parsePartialNode :: String → [ParseTree]
+\end_layout
+
+\begin_layout LyX-Code
+parsePartialNode xs = [PartialNode (LLIndicator x) y' 
+\end_layout
+
+\begin_layout LyX-Code
+         |(x,y) <- includeReversals .
+ twoPartitions $ xs
+\end_layout
+
+\begin_layout LyX-Code
+          , isPartialIndicator(x)
+\end_layout
+
+\begin_layout LyX-Code
+          , y' <- parseClue y]
+\end_layout
+
+\begin_layout Standard
+Still more complex clue types require splitting into three parts – two branches
+ and an indicator – and often both of these branches require further parsing.
+ For example, in the case of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SHIP CARRYING RIGHT FLAG
+\end_layout
+
+\end_inset
+
+, choosing 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+FLAG
+\end_layout
+
+\end_inset
+
+ as the definition, we can generate
+\end_layout
+
+\begin_layout Verse
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.INSERTION
+\backslash
+ ("carrying") [.
+\backslash
+emph{
+\backslash
+{unparsed string:
+\backslash
+ "SHIP"
+\backslash
+}} ] [.
+\backslash
+emph{
+\backslash
+{unparsed string:
+\backslash
+ "RIGHT"
+\backslash
+}} ]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and then consume each of the unparsed strings in turn to produce
+\end_layout
+
+\begin_layout Verse
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.INSERTION
+\backslash
+ ("carrying") [.SYNONYM "ship" ] [.ABBREVIATION "right" ]]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+It is worth noting here that as well as the top-level parse generating multiple
+ different options, each of these sub-parses may also generate several different
+ parses, and these themselves may be complex with multiple sub-parses.
+ In the clue 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+WORK HARD IN ATTEMPT TO GET CUP
+\end_layout
+
+\end_inset
+
+, with definition (=
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\begin_inset Quotes erd
+\end_inset
+
+to get
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+) of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+CUP
+\end_layout
+
+\end_inset
+
+, we can parse the wordplay as
+\end_layout
+
+\begin_layout Verse
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.INSERTION
+\backslash
+ ("in") [.
+\backslash
+emph{
+\backslash
+{unparsed string:
+\backslash
+ "work hard"}
+\backslash
+} ] [.SYNONYM "attempt" ]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which may subsequently evaluate to the (correct, in this case) parse:
+\end_layout
+
+\begin_layout Verse
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.INSERTION
+\backslash
+ ("in") [.CONCATENATION [.SYNONYM "work" ]  [.ABBREVIATION "hard" ] ] [.SYNONYM
+ "attempt" ]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+as well as others, such as: 
+\end_layout
+
+\begin_layout Verse
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.INSERTION
+\backslash
+ ("in") [.ANAGRAM
+\backslash
+ ("work") "hard" ] [.SYNONYM "attempt" ]]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here, again, we allow Haskell's list comprehension take care of constructing
+ the sub- parse-trees from our recursive calls and constructing them into
+ our final list of trees.
+\end_layout
+
+\begin_layout LyX-Code
+ parseInsertionNodes :: [String] -> Int -> [ClueTree] 
+\end_layout
+
+\begin_layout LyX-Code
+ parseInsertionNodes xs n = let parts = threeParts xs                  
+ 
+\end_layout
+
+\begin_layout LyX-Code
+       in [InsertionNode (IIndicator y) x' z' 
+\end_layout
+
+\begin_layout LyX-Code
+           | (x,y,z) <- parts, isInsertionWord(y)
+\end_layout
+
+\begin_layout LyX-Code
+             , x' <- (parseClue x n)
+\end_layout
+
+\begin_layout LyX-Code
+             , z' <- (parseClue z n)] 
+\end_layout
+
+\begin_layout Subsubsection
+Parse Multitudes 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ok, call it something different
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These nested parses can cause the number of produced parses to grow exponentiall
+y as the depth of the nesting increases.
+ Longer strings with more indicators – especially indicators for binary
+ expressions such as insertion indicators and subtraction indicators – are
+ more likely to produce deeply nested parses, and therefore return a large
+ number of parse trees.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Either give some numbers here, talk about the numbers from later on, or
+ just push this whole thing later altogether
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Evaluation
+\end_layout
+
+\begin_layout Standard
+In the evaluation stage we look to define a function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+evaluate
+\end_layout
+
+\end_inset
+
+with the type signature: 
+\end_layout
+
+\begin_layout LyX-Code
+evaluate :: [Parse] → [Answer]
+\end_layout
+
+\begin_layout Standard
+As the evaluation of each 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Parse
+\end_layout
+
+\end_inset
+
+ will yield a list of multiple 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Answer
+\end_layout
+
+\end_inset
+
+ (e.g.
+ an anagram node of a five-letter word will evaluate to 120 different answers,
+ although very few of them will be valid words), we can define 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+evaluate
+\end_layout
+
+\end_inset
+
+as 
+\end_layout
+
+\begin_layout LyX-Code
+evaluate = concatMap eval
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+evaluate
+\end_layout
+
+\end_inset
+
+ will consume 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Parse
+\end_layout
+
+\end_inset
+
+ data in the form 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Def Definition ParseTree AnswerLength
+\end_layout
+
+\end_inset
+
+and produce 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+[Answer]
+\end_layout
+
+\end_inset
+
+, where:
+\end_layout
+
+\begin_layout LyX-Code
+data Answer = Answer String Parse
+\end_layout
+
+\begin_layout Standard
+The parse is included along with the answer, as it contains the definition
+ for that parse, which will later allow us to check that our generated answer
+ has some relation to what we thought we were looking for in that parse,
+ and also allows us to reconstruct the reasoning behind the clue by inspecing
+ the parse tree.
+\end_layout
+
+\begin_layout Standard
+We then define 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+eval
+\end_layout
+
+\end_inset
+
+ as:
+\end_layout
+
+\begin_layout LyX-Code
+eval (Def d pt l) = [Answer x (Def d pt l) |
+\end_layout
+
+\begin_layout LyX-Code
+                                        x <- evalTree pt]
+\end_layout
+
+\begin_layout Standard
+We can then define 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+evalTree
+\end_layout
+
+\end_inset
+
+ in terms of the different types of node in our 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+ParseTree
+\end_layout
+
+\end_inset
+
+ type.
+ Those without subtrees will be defined simply with reference to a haskell
+ function that performs their action:
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (AnagramNode ind xs) c = anagrams xs
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (SynonymNode xs) = synonyms xs
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+anagrams :: String -> [String] 
+\end_layout
+
+\begin_layout LyX-Code
+anagrams [] = [[]] 
+\end_layout
+
+\begin_layout LyX-Code
+anagrams xs = [x:ys | x<- nub xs, ys <- anagrams $ delete x xs]
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+synonyms :: String -> [String] 
+\end_layout
+
+\begin_layout LyX-Code
+synonyms xs = Map.lookup xs thesaurus
+\end_layout
+
+\begin_layout Standard
+and so on.
+ Clues with sub-trees are treated with a similar recursive call, with either
+ a map, or a list comprehension applying the expressions function to each
+ generated sub-answer
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (ReversalNode ind ys) = map reverse (eval_tree ys)
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (ConcatNode ind xs ys) = [x ++ y | x <- eval_tree xs
+\end_layout
+
+\begin_layout LyX-Code
+                                           , y <- eval_tree ys]
+\end_layout
+
+\begin_layout Subsection
+Selection
+\end_layout
+
+\begin_layout Standard
+Finally, given that we've produced our list of answers, most of which will
+ be meaningless combinations of jumbled letters and synonyms pressed together,
+ we need to filter down to the answer containing a string which in some
+ way meets the criteria set for us in the clue, that is 1.
+ finding an answer that is a synonym of the part of the clue we chose as
+ the definition 2.
+ being the right number of letters.
+\end_layout
+
+\begin_layout Standard
+So we can define 
+\end_layout
+
+\begin_layout LyX-Code
+choose :: [Answer] → Answer
+\end_layout
+
+\begin_layout LyX-Code
+choose = first .
+ filter valid 
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+valid (Answer ans (Def def pt len)) = (length ans == len) 
+\end_layout
+
+\begin_layout LyX-Code
+                                      && (is_synonym ans def)
+\end_layout
+
+\begin_layout Standard
+Of course, we may not have generated a valid solution, so we can redefine
+ to include this uncertainty:
+\end_layout
+
+\begin_layout LyX-Code
+choose :: [Answer] → Maybe Answer
+\end_layout
+
+\begin_layout LyX-Code
+choose = firstM .
+ filter valid 
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Section
