@@ -12,33 +12,118 @@ import Wordlists
 
 -- Now we evaluate
 eval :: Parse -> [Answer]
-eval (DefNode y z n) = let constraints = (n, n) in [Answer x (DefNode y z n) | x <- eval_tree n z] 
+eval (DefNode y z n) = let constraints = (n, n) in [Answer x (DefNode y z n) | x <- eval_tree z (Constraints (Prefix []) (Max n) (Min n))] 
 
-eval_tree :: Int -> ClueTree  -> [String]
-eval_tree n (AnagramNode x y) = let y' = (concat y) in 
-								if length y' > n then [] else  (delete y') . anagrams  $ y'
-eval_tree n (Leaf x) = filter (\x -> length x <= n) (syn x ++ [x])
-eval_tree n (ConsListNode xs) = eval_trees n xs [] --map concat (sequence (map (eval_tree n) xs))
-eval_tree n (ConsNode x y) = [x' ++ y' | x' <- eval_tree n x, y' <- eval_tree (n - length x') y]
-eval_tree n (InsertionNode ind x y) = concat[insertInto x' y' | x' <- eval_tree n x, y' <- eval_tree n y, length y' == (n - length x')]
-eval_tree n (SubtractionNode ind x y) = concat[subtractFrom x' y' | x' <- eval_tree 99 x, y' <- eval_tree 99 y, length y' - length x' == n  ]
-eval_tree n (HiddenWordNode ind ys) = [x | x <- substr (concat ys), (length x) > 0, (length x) <= n, isInWordlist(x)]
-eval_tree n (ReversalNode ind ys) = map reverse (eval_tree n ys)
-eval_tree n (FirstLetterNode ind ys) = [firstLetter ys]
-eval_tree n (LastLetterNode ind ys) = [lastLetter ys]
-eval_tree n (PartialNode ind y) = concat [top_tail_substrings y | y <- eval_tree n y]
-eval_tree n (ConsIndicatorLeaf x) = [""]
+eval_tree :: ClueTree  -> EvalConstraints -> [String]
+eval_tree (AnagramNode x y) c = 
+								let y' = (concat y) in 	
+								if (is_less_than_min (minC c) (length y')) then [] else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
 
-eval_trees :: Int -> [ClueTree] -> String -> [String]
-eval_trees n (c:[]) _ = eval_tree n c
-eval_trees n (c:clues_left) pref =
-  let starts = [start | start <- eval_tree n c] --, is_wordlist_prefix (pref ++ start)]
-  in concatMap f starts 
-  where f start =  map (\x -> start ++ x) (eval_trees (n - (length start)) clues_left (pref ++ start))
+eval_tree (Leaf x) c = filter (fits_constraints c) (syn x ++ [x])
+eval_tree (ConsListNode xs) c = eval_trees xs c --map concat (sequence (map (eval_tree n) xs))
+-- eval_tree (ConsNode x y) c = [x' ++ y' | x' <- eval_tree x (noPrefix c), y' <- eval_tree y (Constraints Unconstrained (mx - length x') (mn - length x'))]
+eval_tree (InsertionNode ind x y) c = concat[insertInto x' y' | y' <- eval_tree y (noMin . noPrefix $ c), x' <- eval_tree x (decreaseMax (length y') . decreaseMin (length y') . noPrefix $ c)]
+eval_tree (SubtractionNode ind x y) c = concat[subtractFrom x' y' | x' <- eval_tree x no_constraints, y' <- eval_tree y no_constraints, fits_min c (length y' - length x'), fits_min c (length y' - length x')]
+eval_tree (HiddenWordNode ind ys) c = [x | x <- substr (concat ys), (length x) > 0, fits_constraints c x]
+eval_tree (ReversalNode ind ys) c = map reverse (eval_tree ys c)
+eval_tree (FirstLetterNode ind ys) c = [firstLetter ys]
+eval_tree (LastLetterNode ind ys) c = [lastLetter ys]
+eval_tree (PartialNode ind y) c = filter (fits_constraints c) (concat [top_tail_substrings y | y <- eval_tree y no_constraints])
+eval_tree (ConsIndicatorLeaf x) c = [""]
+
+
+
+eval_trees :: [ClueTree] -> EvalConstraints -> [String]
+eval_trees (x:[]) c = eval_tree x (noPrefix c)
+eval_trees (x:xs) (Constraints p mx mn) =
+  let starts = [start | start <- eval_tree x (Constraints Unconstrained mx NoMin), fits p start]
+  in  concatMap f $ starts 
+  where f start =  map (\x -> start ++ x) (eval_trees xs (noMin . add_partial start $ (Constraints p mx mn)))
+
+--no_constraints
+--------- CONSTRAINTS
+
+class Constraint c where
+    fits :: c -> String -> Bool
+instance Constraint MaxLength where
+    fits mx s = is_lte_max mx (length s)
+instance Constraint MinLength where
+    fits mn s = is_gte_min mn (length s)
+instance Constraint PrefixConstraint where
+	fits p s = is_prefix_with p s
+
+no_constraints = (Constraints Unconstrained NoMax NoMin)
+
+new_constraint n = Constraints (Prefix []) (Max n) (Min n)
+
+is_prefix_with (Prefix p) x = is_prefix (p ++ x)
+is_prefix_with Unconstrained x = True
+
+is_lte_max (Max mx) n = n <= mx 
+is_lte_max NoMax n = True
+
+is_gte_min (Min mn) n = n >= mn 
+is_gte_min NoMin n = True
+
+is_less_than_min (Min mn) n = n < mn 
+is_less_than_min NoMin n = True
+
+extend_prefix (Prefix p) x = Prefix (p ++ x)
+extend_prefix Unconstrained x = Unconstrained
+
+fits_max (Constraints p mx mn) x = is_lte_max mx x
+fits_min (Constraints p mx mn) x = is_gte_min mn x
+fits_constraints (Constraints p mx mn) x = (fits p x) && (fits mx x) && (fits mn x)
+
+add_partial :: String -> EvalConstraints -> EvalConstraints
+add_partial x (Constraints p mx mn) = decreaseMax (length x) $ (Constraints (extend_prefix p x) mx mn) 
+
+decreaseMax :: Int -> EvalConstraints -> EvalConstraints
+decreaseMax n (Constraints p (Max mx) mn) = Constraints p (Max (mx - n)) mn
+decreaseMax n (Constraints p NoMax mn) = Constraints p NoMax mn
+
+increaseMin :: Int -> EvalConstraints -> EvalConstraints
+increaseMin n (Constraints p mx (Min mn)) = Constraints p mx (Min (mn + n))
+increaseMin n (Constraints p mx NoMin) = Constraints p mx NoMin
+
+decreaseMin :: Int -> EvalConstraints -> EvalConstraints
+decreaseMin n (Constraints p mx (Min mn)) = Constraints p mx (Min (mn - n))
+decreaseMin n (Constraints p mx NoMin) = Constraints p mx NoMin
+
+maxC :: EvalConstraints -> MaxLength
+maxC (Constraints p mx mn) = mx
+
+minC :: EvalConstraints -> MinLength
+minC (Constraints p mx mn) = mn
+
+prefC :: EvalConstraints -> PrefixConstraint
+prefC (Constraints p mx mn) = p
+
+noPrefix :: EvalConstraints -> EvalConstraints
+noPrefix (Constraints p mx mn) = (Constraints Unconstrained mx mn)
+
+noMin :: EvalConstraints -> EvalConstraints
+noMin (Constraints p mx mn) = (Constraints p mx NoMin)
+
+noMax :: EvalConstraints -> EvalConstraints
+noMax (Constraints p mx mn) = (Constraints p NoMax mn)
+
+{-fits :: a -> String -> Bool
+fits (Max n) s = True
+fits (Prefix p) s = True
+-}
+
+{- instance Ord MinLength where
+	(<) (Min n) = (<) n
+	(<) NoMin = True
+	(>) NoMin = True
+	(>) (Min n) = (>) n
+	-}
+
 
 
 evaluate :: [Parse] -> [Answer]
-evaluate = concat . (map eval) 
+evaluate = concatMap eval 
 
 anagrams :: String -> [String]
 anagrams [] = [[]]
@@ -88,6 +173,8 @@ top_substrings (x:xs) = [[x]] ++ (map  (\y -> [x] ++ y) (top_substrings xs))
 tail_substrings :: String -> [String]
 tail_substrings = (map reverse) . top_substrings . reverse
 
+{-
 check_eval :: Parse -> [Answer]
 -- check_eval x = let DefNode y z n = x in Data.List.intersect (syn y) ((eval_tree n z))
 check_eval (DefNode y z n) = map (\x -> Answer x (DefNode y z n)) (Data.Set.toList (Data.Set.intersection wordlist_extended (Data.Set.fromList (eval_tree n z))))
+-} 
