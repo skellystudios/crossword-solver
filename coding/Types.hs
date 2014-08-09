@@ -3,6 +3,8 @@ module Types where
 data Clue = Clue (String, Int)
 	deriving (Show)
 
+data Clue2 = Clue2 String (Int)
+
 data Parse = DefNode String ClueTree Int
   deriving (Show, Eq, Ord)
 
