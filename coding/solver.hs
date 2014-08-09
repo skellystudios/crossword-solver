@@ -234,7 +234,14 @@ possible_words = check_valid_words . constrain_lengths  . evaluate . parse
 
 solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . sort_most_likely . constrain_parse_lengths . parse . lowercase
 
+naive = choose . evaluate . parse
 
+-- choose :: [Answer] -> Answer
+choose = head . filter valid 
+
+
+valid :: Answer -> Bool
+valid (Answer ans (DefNode def pt len)) = (length ans == len)  && (is_syn ans def)
 
 
 solve' = solve_no_syn_sorted
