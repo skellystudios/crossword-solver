@@ -59,7 +59,7 @@ is_syn x y = elem x (syn y)
 
 syn :: String -> [String]
 syn ('t':'o':' ':xs) = syn xs
-syn x = take 99999 (thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x)
+syn x =  (thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x)
 
 thes x = case (Map.lookup x thesaurus) of 
   Nothing -> []

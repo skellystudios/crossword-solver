@@ -240,9 +240,17 @@ naive = choose . evaluate . parse
 choose = head . filter valid 
 
 
+
+
 valid :: Answer -> Bool
 valid (Answer ans (DefNode def pt len)) = (length ans == len)  && (is_syn ans def)
 
+
+num_parses = length . parse
+
+num_evals = length . evaluate . parse
+
+get_everyman = everyman
 
 solve' = solve_no_syn_sorted
 
@@ -275,6 +283,7 @@ clue 11 = Clue ("maria not a fickle lover", 9)
 clue 12 = Clue ("hope for high praise", 6)  
 
 grid = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
+
 
 
 -- REGEX ((\d*)\s(.+)\s\((\d*)\)\n(.*)\n(.*))\n
