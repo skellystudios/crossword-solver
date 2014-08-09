@@ -122,11 +122,60 @@ Introduction to the Problem / Field
 \end_layout
 
 \begin_layout Standard
+Cryptic crosswords are widely thought to be at the crossroads of various
+ fields of human endevour considered to be right at the limit of current
+ AI and Machine Learning – featuring wit, slang, allusion, linguistic ambiguity
+ and generally deliberate trickery.
+ Along with this, they possess other characteristics that make brute force
+ solutions difficult, if not impossible: the state space of all possible
+ crossword grids is of the order 10
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+90
+\end_layout
+
+\end_inset
+
+
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Lots of stuff here please
+citation needed
+\end_layout
+
+\end_inset
+
+(compare, for example, an upper bound on all the possible chess positions
+ is merely 10
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+50
+\end_layout
+
+\end_inset
+
+), and worse still, a solution to a grid is non-trivial to verify (as the
+ verification process is the nearly same as solving the clue!)
+\end_layout
+
+\begin_layout Standard
+Nevertheless, techniques from combinatorics, compiler design and NLP and
+ AI all have applications that can help elucidate and simplify the problem,
+ along with heuristics adapted from both human solvers and analytical optimisati
+ons that can help improve the time taken to arrive at at the correct solution.
+\end_layout
+
+\begin_layout Standard
+I have developed a system which can solve a significat percentage of cryptic
+ crossword clues 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+More here, obvs
 \end_layout
 
 \end_inset
@@ -134,26 +183,41 @@ Lots of stuff here please
 
 \end_layout
 
-\begin_layout Standard
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- Donec iaculis nisl in lobortis cursus.
- Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere
- cubilia Curae; Mauris consequat ante massa, eget rhoncus urna eleifend
- eget.
- Curabitur dui tortor, scelerisque sed dapibus ac, cursus id metus.
- Vestibulum auctor libero vestibulum mi porttitor bibendum.
- Morbi eget nunc ac sem facilisis aliquam vel ac dolor.
- Ut fringilla nulla sit amet orci commodo, et accumsan orci lacinia.
- Integer sit amet aliquet lacus.
- Maecenas vel enim turpis.
- In euismod nibh sit amet erat commodo semper.
- Ut dapibus erat quis erat porttitor condimentum.
- Donec eu lacus vel magna pharetra laoreet sed in enim.
- Integer semper nulla sit amet mauris ullamcorper posuere.
- Fusce non est porta, gravida velit ac, fringilla tellus.
- Aliquam bibendum, risus at vulputate vestibulum, odio neque porta neque,
- quis eleifend eros est nec lorem.
- Vivamus imperdiet condimentum odio, non ultricies ligula suscipit id.
+\begin_layout Quotation
+\begin_inset Quotes eld
+\end_inset
+
+A provost at Eton once boasted that he could do The Times crossword in the
+ time it took his morning egg to boil, prompting one wag to suggest that
+ the school may have been Eton but the egg almost certainly wasn't.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+ –
+\begin_inset space ~
+\end_inset
+
+Citation Needed
 \end_layout
 
 \begin_layout Standard
@@ -172,7 +236,7 @@ Summary of Cryptic Crosswords
 \end_layout
 
 \begin_layout Subsection
-Cryptic Crosswords 
+Definition of Cryptic Crosswords 
 \end_layout
 
 \begin_layout Standard
@@ -262,7 +326,20 @@ ations and operations.
 
 \begin_layout Standard
 It is the task of determining the correct answer for this type of clue that
- this paper will address.
+ this report will address.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Definitely do some more examples dotted throughout here
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -3559,7 +3636,7 @@ choose :: [Answer] → Answer
 \end_layout
 
 \begin_layout LyX-Code
-choose = first .
+choose = head .
  filter valid 
 \end_layout
 
@@ -3588,9 +3665,13 @@ choose :: [Answer] → Maybe Answer
 \end_layout
 
 \begin_layout LyX-Code
-choose = firstM .
+choose = headM .
  filter valid 
 \end_layout
+
+\begin_layout LyX-Code
+\begin_inset Note Note
+status open
 
 \begin_layout LyX-Code
 
@@ -3604,16 +3685,46 @@ Discussion of different clue types
 Any interesting ones of note 
 \end_layout
 
+\begin_layout Plain Layout
+Is there anything here?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
-State space and performance analysis 
+State space and performance analysis
 \end_layout
 
 \begin_layout Subsection
-By length of clue 
+Overview - does it work? 
 \end_layout
 
 \begin_layout Subsection
-Show difference from particularly complex or overloaded operators
+Analysis of types of clues for which this can generate a valid parse tree
+\end_layout
+
+\begin_layout Subsection
+Show general performance over a small dataset
+\end_layout
+
+\begin_layout Subsection
+Show the sorts of things that cause the biggest difference between an easy
+ parse and a hard one
+\end_layout
+
+\begin_layout Subsubsection
+Long clues
+\end_layout
+
+\begin_layout Subsubsection
+Complex (binary) Operators
+\end_layout
+
+\begin_layout Subsubsection
+Overloaded Operators
 \end_layout
 
 \begin_layout Part
@@ -3714,7 +3825,7 @@ Discussion of parallelization
 \end_layout
 
 \begin_layout Part
-Whole Grid Solving
+Future Work
 \end_layout
 
 \begin_layout Section
@@ -3756,6 +3867,10 @@ Generating probable solutions with missing data
 
 \begin_layout Section
 Deployment as a web app
+\end_layout
+
+\begin_layout Section
+Tweaking the values on the weighting function
 \end_layout
 
 \begin_layout Part

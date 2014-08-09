@@ -4,6 +4,7 @@
 -- Need to radically improve wordlist
 -- Need to include "Small" as abbreviation indicator
 
+-- Write about generative vs filtering approaches (i.e. mine vs the guy from Imperial's suggestions
 
 -- Come up with a name 
 -- Come up with a cryptic clue for the thesis title: as Jack Devlin for help!

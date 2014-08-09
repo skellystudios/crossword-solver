@@ -1,0 +1,11 @@
+RESULTS
+
+length  . evaluate . parse . clue $ 2
+
+WINNER
+226
+(1.12 secs, 225M bytes)
+
+NAIVE
+92995844
+(342.19 secs, 118G bytes) 
