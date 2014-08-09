@@ -3710,9 +3710,6 @@ This approach has the required structure to solve most cryptic crossword
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage pagebreak
-\end_inset
-
 
 \end_layout
 
@@ -4279,13 +4276,13 @@ TRILBY
 \end_layout
 
 \begin_layout Standard
-\begin_inset CommandInset label
-LatexCommand label
-name "Figure 6.1 Solving times for Selected Clues"
 
-\end_inset
+\end_layout
 
+\begin_layout Verse
 
+\series bold
+Figure 6.1 – Solving statistics for selected clues
 \end_layout
 
 \begin_layout Standard
@@ -4306,13 +4303,6 @@ end{landscape}
 
 \begin_layout Standard
 DO something about how the number of evaluations increases with clue size.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Newpage pagebreak
-\end_inset
-
-
 \end_layout
 
 \begin_layout Subsection

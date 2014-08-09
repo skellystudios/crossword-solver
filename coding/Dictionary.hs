@@ -13,7 +13,7 @@ wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tu
 
 is_prefix = is_wordlist_prefix
 is_wordlist_prefix x = Data.Set.member x wl_pref
-wl_pref = Data.Set.fold add_prefixes Data.Set.empty wordlist_extended'
+wl_pref = Data.Set.fold add_prefixes Data.Set.empty wordlist_extended'	
 
 add_prefixes word set = Data.Set.union (Data.Set.fromList (prefixes word)) set
 

@@ -24,7 +24,8 @@ answers = dict()
 clues = dict()
 intersections = dict()
 
-start = 3530
+identifier = 'everyman'
+start = 3500
 end = 3537
 
 for c in range(start, end):	
@@ -79,6 +80,17 @@ for c in range(start, end):
 #print answers
 #print intersections
 
+f = open('ClueBank.hs','w')
+
+f.write('module ClueBank where \n') # python will convert \n to os.linesep
+
+f.write("-- From %s nos %s to %s \n\n" % (identifier, start, end))
+
+f.write('\t import Types \n\n') # python will convert \n to os.linesep
+
+
+f.write('\t cluebank = [') # python will convert \n to os.linesep
+
 
 for c in range(start,end):	
 	for d in ["across", "down"]:
@@ -94,10 +106,16 @@ for c in range(start,end):
 
 				#print str(n) + " " + d
 				#print "%s (%s) - %s" % (clue, length, answer)
-				print "(Clue (\"%s\",%s), \"%s\")," % (clue_changed, length, answer)
+				f.write("(Clue (\"%s\",%s), \"%s\")," % (clue_changed, length, answer))
+
+			
+				
 			except:
 				pass
 
+f.write("(Clue (\"companion shredded corset\",6), \"ESCORT\")")
 
+f.write(']')
+f.close()
 
 	
