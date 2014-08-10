@@ -2690,7 +2690,8 @@ The Evaluator
 \end_layout
 
 \begin_layout Standard
-This stage of the tokeniser 
+This stage of the tokeniser...
+ 
 \begin_inset Note Note
 status open
 
@@ -2710,7 +2711,21 @@ Scannerless Parsing
 \end_layout
 
 \begin_layout Standard
-Some parsers, traditionally often ones for simple languages such as 
+Some parsers, traditionally often ones for simple languages such as...
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Todo: need to finish off this section and explain why my parser is more
+ like a scannerless parser.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -3705,47 +3720,66 @@ Overview - does it work?
 \end_layout
 
 \begin_layout Standard
-This approach has the required structure to solve most cryptic crossword
- clues — with some caveats.
+This approach has the required structure to correctly parse and solve most
+ cryptic crossword clues — with some caveats.
+ 
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage pagebreak
-\end_inset
-
-
+Firstly, although in most cases the correct parse was generated, often the
+ number of other parses to be evaluated before reaching the correct one
+ was so great that the computation would effectively not end.
+ In this case, the heap size wasn't continually growing, as each evaluation
+ branched and then diminished in turn, but the running time was sufficiently
+ large (>48hrs) such that the computation would be useless in a practical
+ situation.
+ The data for this is considered in 
+\series bold
+6.2
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{landscape}
-\end_layout
-
-\end_inset
-
-
+In other cases the correct parse was created, however the semantic data
+ wasn't available to evaluate the clue correctly.
+ In other, very rare cases, there is a clue which does not fit the structure
+ of the grammar defined in 
+\series bold
+Part I
+\series default
+.
+ These do not generate the correct parse trees, and so are not soluable.
+ These are discussed in 
+\series bold
+6.3
+\series default
+.
 \end_layout
 
 \begin_layout Subsection
-Solving Metrics
+Correctly evaluated clues
 \end_layout
 
 \begin_layout Standard
-THis dfsdf
-\begin_inset Newline newline
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Leadup
+\end_layout
+
 \end_inset
 
 
-\begin_inset Newline newline
-\end_inset
+\end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways true
+status collapsed
 
+\begin_layout Plain Layout
 \begin_inset Tabular
 <lyxtabular version="3" rows="9" columns="6">
 <features rotate="0" tabularvalignment="middle">
@@ -3985,7 +4019,23 @@ INAMORATA
 \begin_inset Text
 
 \begin_layout Plain Layout
-?
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+—
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4041,7 +4091,23 @@ MATE
 \begin_inset Text
 
 \begin_layout Plain Layout
-?
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+—
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4191,7 +4257,7 @@ SIGN
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+853
 \end_layout
 
 \end_inset
@@ -4200,6 +4266,22 @@ SIGN
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+—
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -4209,6 +4291,22 @@ SIGN
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+—
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -4256,7 +4354,23 @@ TRILBY
 \begin_inset Text
 
 \begin_layout Plain Layout
-???
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+—
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4265,7 +4379,23 @@ TRILBY
 \begin_inset Text
 
 \begin_layout Plain Layout
-???
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+—
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4278,25 +4408,100 @@ TRILBY
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Solving statistics for selected clues on a 2014 MacBook Pro
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
 \begin_layout Verse
+\begin_inset VSpace bigskip
+\end_inset
 
-\series bold
-Figure 6.1 – Solving statistics for selected clues
+
+\begin_inset VSpace bigskip
+\end_inset
+
+
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
+\begin_layout Verse
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
 status open
 
 \begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
 
 
-\backslash
-end{landscape}
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+ Although the correct parse was generated, and selective evaluation of that
+ parse yieleded the correct results (i.e.
+ a solution would be available eventually), the normal solving procedure
+ did not compute the correct answer within 48hrs of running time
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+ Could not yield answer within 48hrs 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -4305,39 +4510,503 @@ end{landscape}
 \end_layout
 
 \begin_layout Standard
-DO something about how the number of evaluations increases with clue size.
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage pagebreak
+
+\end_layout
+
+\begin_layout Subsubsection
+The effect of clue length on the number of parses
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/clue-length-to-parses.pdf
+	width 100col%
+
 \end_inset
 
 
 \end_layout
 
-\begin_layout Subsection
-Analysis of types of clues for which this can generate a valid parse tree
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Number of parses generated for varying clue lengths over 600 sample clues
 \end_layout
 
-\begin_layout Subsection
-Show general performance over a small dataset
+\end_inset
+
+
 \end_layout
 
-\begin_layout Subsection
-Show the sorts of things that cause the biggest difference between an easy
- parse and a hard one
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
-Long clues
+The effect of clue length on the number of parses
+\end_layout
+
+\begin_layout Standard
+Scope: across 600 clues
+\end_layout
+
+\begin_layout Standard
+TODO: Need some commentary here
 \end_layout
 
 \begin_layout Subsubsection
-Complex (binary) Operators
+The effect of clue length on the number of evaluations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/clue-length-to-evaluations evaluations.pdf
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Number of evaluations generated for varying clue lengths over 75 sample
+ clues
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Scope: across 75 clues
+\end_layout
+
+\begin_layout Standard
+TODO: Need some commentary here
 \end_layout
 
 \begin_layout Subsubsection
-Overloaded Operators
+The effect of clue length on the number of evaluations
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/eval-vs-dictionary evals_vs_dictionary.pdf
+	width 100col%
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Number of evaluations generated by restricting the maximum thesaurus length
+ for the clue 
+\begin_inset Quotes eld
+\end_inset
+
+Good opportunity in school
+\begin_inset Quotes erd
+\end_inset
+
+ (5)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Scope: across 75 clues
+\end_layout
+
+\begin_layout Standard
+TODO: Need some commentary here
+\end_layout
+
+\begin_layout Subsection
+Analysis of selected clues which are not correctly solved
+\end_layout
+
+\begin_layout Standard
+It is difficult to perform a large-scale analysis of the numbers of clues
+ for which the data does not exist, or where the correct parse is not generated,
+ as often these will present themselves in the same way as the correct clues
+ with too large a search space, that is by not terminating within an acceptable
+ time.
+ 
+\end_layout
+
+\begin_layout Standard
+These clues are therefore presented as an illustrative sample of the sorts
+ of errors that prevent correct parse (
+\series bold
+6.3.4
+\series default
+) or correct evaluation (
+\series bold
+6.3.1 –
+\begin_inset space ~
+\end_inset
+
+6.3.3) 
+\series default
+being generated.
+\end_layout
+
+\begin_layout Subsubsection
+SHINY SILVER PAPER IN THE STREET (8)  (= 
+\begin_inset Quotes eld
+\end_inset
+
+AGLITTER
+\begin_inset Quotes erd
+\end_inset
+
+) [Guardian]
+\end_layout
+
+\begin_layout Standard
+Although the correct parse is generated ([SILVER] + [PAPER IN THE STREET]),
+ some natural language analysis would be required to derive the fact that
+ 
+\begin_inset Quotes eld
+\end_inset
+
+PAPER IN THE STREET
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+litter
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+PLAYWRIGHT AT HOME HAVING CAUGHT DISEASE (5) (="IBSEN
+\begin_inset Quotes erd
+\end_inset
+
+) [Everyman]
+\end_layout
+
+\begin_layout Standard
+This clue requires two pieces of category knowledge, firstly that Ibsen
+ is a member of the set of playwrights (and not a synonym for playwright),
+ and that BSE is a member of the set of diseases 
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+HE SCORED HARLEM WINDS (6)   (= 
+\begin_inset Quotes eld
+\end_inset
+
+MAHLER
+\begin_inset Quotes erd
+\end_inset
+
+) [Guardian]
+\end_layout
+
+\begin_layout Standard
+Not only is knowledge of composer Gustav Mahler required, but also a cryptic
+ understanding that 'HE SCORED' can refer to a member of the set of male
+ composers.
+ Note that this is structurally different from the examples above: while
+ (1) was a more oblique version of a synonym (litter 
+\series bold
+is
+\series default
+ paper on the street), and (2) is membership of the set of of playwrights,
+ we must now consider the set of people who fit the description 
+\begin_inset Quotes eld
+\end_inset
+
+he scored
+\begin_inset Quotes erd
+\end_inset
+
+, which may include composers, sportsmen, and maybe even engravers.
+ 
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+WHERE AND HOW A SUPERHERO MIGHT LABEL HIS FAUCET (4) (= 
+\begin_inset Quotes eld
+\end_inset
+
+BATH
+\begin_inset Quotes erd
+\end_inset
+
+) [Guardian]
+\end_layout
+
+\begin_layout Standard
+This clue requires not just specialist knowledge, but also natural language
+ parsing of the sentence of a whole.
+ The answer can be derived from the concept that the superhero Batman would
+ append bat- onto the names of objects (batmobile, etc.), and that a hot
+ tap (or faucet) might be labeled H, so his faucet might be labelled BAT-H.
+ 
+\end_layout
+
+\begin_layout Standard
+Along with that, the definition bears reference to the clue as a whole,
+ and may be properly expanded as: 
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout --Separator--
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+definition
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset space ~
+\end_inset
+
+wordplay
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Address
+\begin_inset Formula $\noindent\mathtt{\overbrace{where\, a\, superhero\, might\, label\, his\, faucet}\:\mathit{and}\,\overbrace{how\, a\, superhero\, might\, label\, his\, faucet}}$
+\end_inset
+
+   
+\end_layout
+
+\begin_layout Address
+This clue represents the upper level of challenge for a computer based solver,
+ being unique structure, self referential, using very specialist knowledge
+ and oblique humour.
+ 
 \end_layout
 
 \begin_layout Part
