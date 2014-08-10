@@ -22,6 +22,7 @@ import Abbreviation
 
 import Guardian
 import Everyman
+import ClueBank
 
 -- import GHC
 
