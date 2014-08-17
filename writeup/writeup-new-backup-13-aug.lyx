@@ -2093,23 +2093,6 @@ Naive Approach
 \end_layout
 
 \begin_layout Section
-Functional Solving
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Yah yah why do we do it functionally?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
 Parsing and Evaluating everything 
 \end_layout
 
@@ -2129,11 +2112,13 @@ Our motivation here is to take a cryptic crossword clue, for example:
 [B]  Companion shredded corset (6)
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 and attempt to parse and solve it to provide the correct answer.
  We will define the datatype of Clue thus:
 \end_layout
 
+\end_deeper
 \begin_layout LyX-Code
 data Clue = Clue String AnswerLength
 \end_layout
@@ -2371,22 +2356,6 @@ split (text length) =
     in [Def (unwords d) (unwords w) length | [d,w] <- parts]
 \end_layout
 
-\begin_layout Standard
-where partitions finds all ways of partitioning a list, and is defined as
-\end_layout
-
-\begin_layout LyX-Code
-partitions [] = [[]] 
-\end_layout
-
-\begin_layout LyX-Code
-partitions (x:xs) = [[x]:p | p <- partitions xs] 
-\end_layout
-
-\begin_layout LyX-Code
-                ++ [(x:ys):yss | (ys:yss) <- partitions xs]
-\end_layout
-
 \begin_layout Subsection
 Parsing
 \end_layout
@@ -2479,46 +2448,7 @@ ParseTree
 \end_inset
 
  will be an Abstract Syntax Tree based on the structure of our clue.
-\end_layout
-
-\begin_layout LyX-Code
-data ParseTree =  ConcatNode ParseTree ParseTree | Leaf String     
-\end_layout
-
-\begin_layout LyX-Code
-   | AnagramNode Anagrind String 
-\end_layout
-
-\begin_layout LyX-Code
-   | InsertionNode InsertionIndicator ParseTree ParseTree 
-\end_layout
-
-\begin_layout LyX-Code
-   | SubtractionNode SubtractionIndicator ParseTree ParseTree 
-\end_layout
-
-\begin_layout LyX-Code
-   | HiddenWordNode HWIndicator [String] 
-\end_layout
-
-\begin_layout LyX-Code
-   | ReversalNode ReversalIndicator ParseTree 
-\end_layout
-
-\begin_layout LyX-Code
-   | FirstLetterNode FLIndicator [String] 
-\end_layout
-
-\begin_layout LyX-Code
-   | LastLetterNode LLIndicator [String] 
-\end_layout
-
-\begin_layout LyX-Code
-   | PartialNode PartialIndicator ParseTree 
-\end_layout
-
-\begin_layout Standard
-So we will define:
+ So we can now define:
 \end_layout
 
 \begin_layout LyX-Code
@@ -2526,7 +2456,7 @@ parse :: [Split] → [Parse]
 \end_layout
 
 \begin_layout LyX-Code
-parse = concatMap parseClue
+parse = concatMap parse'
 \end_layout
 
 \begin_layout Standard
@@ -2534,7 +2464,7 @@ where
 \end_layout
 
 \begin_layout LyX-Code
-parseClue :: Split → [Parse]
+parse' :: Split → [Parse]
 \end_layout
 
 \begin_layout Standard
@@ -2543,7 +2473,7 @@ In our example, we would require
 status open
 
 \begin_layout Plain Layout
-parseClue
+parse'
 \end_layout
 
 \end_inset
@@ -2816,19 +2746,17 @@ parseClue
 
 \end_inset
 
- which will produce a parse tree from an unconsumed split.
+ which will produce a parse tree from an unconsumed string.
  So we have
 \end_layout
 
 \begin_layout LyX-Code
-parseClue :: Split → ParseTree
+parseClue :: String → ParseTree
 \end_layout
 
 \begin_layout Standard
 We will define parseString in terms of its parsing of various clue types,
- starting with one of the more simple unary ones.
- We will hold back from the details of unpacking a split into the string
- to be consumed until later.
+ starting with one of the more simple unary ones:
 \end_layout
 
 \begin_layout LyX-Code
@@ -3412,35 +3340,11 @@ Tree[.INSERTION
 \begin_layout Standard
 Here, again, we allow Haskell's list comprehension take care of constructing
  the sub- parse-trees from our recursive calls and constructing them into
- our final list of trees, for example in
+ our final list of trees.
 \end_layout
 
 \begin_layout LyX-Code
-parseConcatNodes :: String -> [ParseTree] 
-\end_layout
-
-\begin_layout LyX-Code
-parseConcatNodes xs n = let parts = twoParts xs 
-\end_layout
-
-\begin_layout LyX-Code
-      in [ConcatNode x' y' |( x,y,z) <- parts
-\end_layout
-
-\begin_layout LyX-Code
-                                  , x' <- (parseClue x)
-\end_layout
-
-\begin_layout LyX-Code
-                                  , y' <- (parseClue y)]
-\end_layout
-
-\begin_layout Standard
-and in 
-\end_layout
-
-\begin_layout LyX-Code
- parseInsertionNodes :: String -> [ParseTree] 
+ parseInsertionNodes :: [String] -> Int -> [ClueTree] 
 \end_layout
 
 \begin_layout LyX-Code
@@ -3457,94 +3361,11 @@ and in
 \end_layout
 
 \begin_layout LyX-Code
-             , x' <- (parseClue x)
+             , x' <- (parseClue x n)
 \end_layout
 
 \begin_layout LyX-Code
-             , z' <- (parseClue z)] 
-\end_layout
-
-\begin_layout Standard
-We can then compose each expression type together to form our final definition
- of 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-parseClue
-\end_layout
-
-\end_inset
-
-, checking the number of words in the phrase to check that we will be able
- to split the string correctly into 2 or 3 parts.
-\end_layout
-
-\begin_layout LyX-Code
-parseClue :: Split -> [ParseTree] 
-\end_layout
-
-\begin_layout LyX-Code
-parseClue (Def def ys n) = let len = length .
- words $ ys in
-\end_layout
-
-\begin_layout LyX-Code
-[Leaf ys]    
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 1 then parseConcatNodes ys else [] )  
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 1 then parseAnagramNodes ys else [] )   
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 1 then parseHiddenWordNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 2 then parseInsertionNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 2 then parseSubtractionNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 1 then parseReversalNodes ys else [])  
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 1 then parseFirstLetterNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 1 then parseLastLetterNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-++ (if len > 1 then parsePartialNodes ys else [])
-\end_layout
-
-\begin_layout Standard
-We can then define 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-parse
-\end_layout
-
-\end_inset
-
-as
-\end_layout
-
-\begin_layout LyX-Code
-parse = concatMap parseClue
+             , z' <- (parseClue z n)] 
 \end_layout
 
 \begin_layout Subsubsection
@@ -5581,706 +5402,56 @@ Algebraic + computational simplifications
 Pruning out equivalent trees (Canonization) 
 \end_layout
 
-\begin_layout Standard
-One large factor in the rapid proliferation is in the our binary tree representa
-tion of concatenation.
- The number of trees with n leaves is given by the (n-1)th Catalan number,
- so ignoring any other type of expression (anagram, etc.), for a clue of
- length n we have Cn-1 trees created with each of the clue words taken as
- a leaf (synonym) node.
- This number grows 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-very quickly indeed blah blah blah say more stuff Also when we add more
- clue types, it gets pretty bad
-\end_layout
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-Due to the associativity of addition 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-is it?
-\end_layout
-
-\end_inset
-
-, each of these parses evaluates to an identical output.
- 
-\end_layout
-
-\begin_layout Standard
-One strategy to deal with this would be to perform canonization on the trees,
- and prune all concatenation trees which don't conform to our decided 'ideal
- tree' 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Discuss options for ideal tree.
-\end_layout
-
-\end_inset
-
-This is both wasteful 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-blah blah blah
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-OK ALL OF THIS TEXT ABOVE IS PRETTY SHIT, BETTER CLEAN UP SOME DAY
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We can instead define a new version of our Concatenation Nodes which, instead
- of describing a binary tree by storing the data as two parsetrees:
-\end_layout
-
-\begin_layout LyX-Code
-data ParseTree = ConcatNode ParseTree ParseTree | [...]
-\end_layout
-
-\begin_layout Standard
-structured as:
-\end_layout
-
-\begin_layout Verse
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-Tree[.CONCATENATE [.CONCATENATE A B ] [.CONCATENATE C D ]]
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout LyX-Code
- (as well as 4 other equivalent trees)
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-instead stores it as a forest, i.e.
- a list of trees –
-\end_layout
-
-\begin_layout LyX-Code
-data ParseTree = ConcatNode ParseForest | [...]
-\end_layout
-
-\begin_layout LyX-Code
-type ParseForest = [ParseTree]
-\end_layout
-
-\begin_layout Standard
-structured as:
-\end_layout
-
-\begin_layout Verse
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-Tree[.CONCATENATE {[A B C D]} ]
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\begin_inset VSpace bigskip
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We define a new version of parseConcatNodes to reflect the new structure.
- This time, instead of considering all the ways to partition the wordplay
- of the clue into two parse, and subsequently combining each of the different
- parses of both of them, this time we need to consider all the ways to partition
- the string (which  
-\end_layout
-
-\begin_layout LyX-Code
-parseConcatNodes' :: String -> [ClueTree] 
-\end_layout
-
-\begin_layout LyX-Code
-parseConcatNodes' xs n = let parts = partitions xs 
-\end_layout
-
-\begin_layout LyX-Code
-       in [ConsListNode ys | part <- parts
-\end_layout
-
-\begin_layout LyX-Code
-                 , (length part) > 1
-\end_layout
-
-\begin_layout LyX-Code
-                 , ys <- [sequence .
- map parseClue $ part]  ] 
-\end_layout
-
-\begin_layout Standard
-the Prelude function 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-sequence
-\end_layout
-
-\end_inset
-
-, which has the type 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-sequence :: Monad m => [m a] -> m [a]
-\end_layout
-
-\end_inset
-
-, which when applied to a list of lists will provide all lists comprising
- of an element from each sublist:
-\end_layout
-
-\begin_layout LyX-Code
-sequence [ [1,2,3], [40,50], [666,777,888] ] =
-\end_layout
-
-\begin_layout LyX-Code
-  [ [1,40,666],[1,40,777],[1,40,888],[1,50,666],[1,50,777],
-\end_layout
-
-\begin_layout LyX-Code
-    [1,50,888],[2,40,666],[2,40,777],[2,40,888],[2,50,666],
-\end_layout
-
-\begin_layout LyX-Code
-    [2,50,777],[2,50,888],[3,40,666],[3,40,777],[3,40,888],
-\end_layout
-
-\begin_layout LyX-Code
-    [3,50,666],[3,50,777],[3,50,888] ]
-\end_layout
-
-\begin_layout Standard
-In order to prevent our new concatenation nodes nesting again (and thereby
- produce 
-\series bold
-more
-\series default
- parses than before), as
-\end_layout
-
-\begin_layout Verse
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-Tree[.CONCATENATE [.{[A CONCATENATE D]} {B C} ]]
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-we need to define a version of 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-parseClue
-\end_layout
-
-\end_inset
-
- which doesn't generate concatenation nodes:
-\end_layout
-
-\begin_layout LyX-Code
-parseClueNoConcat :: String -> [ParseTree] 
-\end_layout
-
-\begin_layout LyX-Code
-parseClueNoConcat ys = let len = length .
- words $ ys in
-\end_layout
-
-\begin_layout LyX-Code
-  [Leaf ys]    
-\end_layout
-
-\begin_layout LyX-Code
-
-\strikeout on
-  ++ (if len > 1 then parseConcatNodes ys else [] )  
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 1 then parseAnagramNodes ys else [] )   
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 1 then parseHiddenWordNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 2 then parseInsertionNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 2 then parseSubtractionNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 1 then parseReversalNodes ys else [])  
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 1 then parseFirstLetterNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 1 then parseLastLetterNodes ys else [])   
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 1 then parsePartialNodes ys else [])
-\end_layout
-
-\begin_layout Standard
-and re-define our original 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-parseClue
-\end_layout
-
-\end_inset
-
- as
-\end_layout
-
-\begin_layout LyX-Code
-parseClue :: String -> [ParseTree] 
-\end_layout
-
-\begin_layout LyX-Code
-parseClue (Def def ys n) = let len = length .
- words $ ys in
-\end_layout
-
-\begin_layout LyX-Code
-  parseClueNoConcat ys  
-\end_layout
-
-\begin_layout LyX-Code
-  ++ (if len > 1 then parseConcatNodes ys else [] ) 
+\begin_layout Subsection
+Discussion of lazy evaluation 
 \end_layout
 
 \begin_layout Subsubsection
-Improvement
+e.g.
+ Anagram Nodes - should we pre-compute and thread through the program?
 \end_layout
 
-\begin_layout Standard
-By cleaning up the redundancy in our different parses, we can improve our
- parsing function from exponential growth against clue length, to a low
- quadratic growth, as can be seen in 
-\series bold
-Figure 5
-\series default
- and 
-\series bold
-Figure 6
-\series default
-.
- As each parse may have thousands of solutions, this should represent a
- significant improvement in the number of outputs, and so the solve time,
- of each clue.
-\end_layout
-
-\begin_layout Verse
-\begin_inset VSpace bigskip
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename results/parses-original-canonical large-scale.pdf
-	width 100col%
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Average number of parses before and after canonization by clue length, averaged
- over 710 clues
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename results/parses-original-canonical logarithmic.pdf
-	width 100col%
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Average number of parses before and after canonization by clue length, averaged
- over 710 clues, on a logarithmic scale
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+\begin_layout Subsection
+Analysis of improved solution with respect to state space etc.
 \end_layout
 
 \begin_layout Section
-Heuristics from Human Solvers
-\end_layout
-
-\begin_layout Standard
-We can take cues for further improvements to our solving process by considering
- the heuristics that a human solver uses to navigate the huge state space
- and find the correct solution without having to check hundreds and thousands
- of possible solutions.
+Further heuristic simplification - 
 \end_layout
 
 \begin_layout Subsection
-Filter parses by output length
-\end_layout
-
-\begin_layout Subsubsection
-The Motivation
-\end_layout
-
-\begin_layout Quotation
-
-\shape italic
-\begin_inset Quotes eld
-\end_inset
-
-It can't be an anagram of those words, as that'd only make 6 letters, and
- the clue is 8
-\begin_inset Quotes erd
-\end_inset
-
-
-\begin_inset VSpace medskip
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Quotation
-
-\shape italic
-\begin_inset Quotes eld
-\end_inset
-
-We can't have an insertion here, as we've already got 5 letters, and so
- if we add another 5 then it's too long
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Subsubsection
-
-\series bold
-Implementation
-\end_layout
-
-\begin_layout Standard
-We can recursively evaluate a parse to determine its maximum and minimum
- lengths, to check that the maximum is at least as big as the desired output
- length, and the minimum is at least as small.
-\end_layout
-
-\begin_layout Standard
-We define the functions 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-minLength
-\end_layout
-
-\end_inset
-
- and 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-maxLength
-\end_layout
-
-\end_inset
-
- :
-\end_layout
-
-\begin_layout LyX-Code
-minLength :: ParseTree -> Int 
-\end_layout
-
-\begin_layout LyX-Code
-minLength (ConsListNode trees) = (sum .
- map minLength) trees 
-\end_layout
-
-\begin_layout LyX-Code
-minLength (AnagramNode ind strings) = (length .
- concat) strings 
-\end_layout
-
-\begin_layout LyX-Code
-minLength (HiddenWordNode ind strings) = 2 
-\end_layout
-
-\begin_layout LyX-Code
-minLength (InsertionNode ind tree1 tree2) = (minLength tree1) 
-\end_layout
-
-\begin_layout LyX-Code
-                                           + (minLength tree2) 
-\end_layout
-
-\begin_layout LyX-Code
-minLength (SubtractionNode ind tree1 tree2) = minimum[
-\end_layout
-
-\begin_layout LyX-Code
-                          (minLength tree2) - (maxLength tree1),1]
-\end_layout
-
-\begin_layout LyX-Code
--- and definitions for other clue types
-\end_layout
-
-\begin_layout Standard
-Some clue types are can be defined directly from their inputs – both the
- maxium and minium length of an anagram node is the lenght of the input
- string – while an insertion node need to be defined based on the maxium
- and minimum of the two subtrees.
- It's also worth noting that sometimes we need to make a judgement: what
- is the minimum that a Hidden Word could yield? 
-\end_layout
-
-\begin_layout Standard
-From these definitions, and similar ones for maxLength, we can check a parse
- for validity.
- 
-\end_layout
-
-\begin_layout LyX-Code
-valid_parse_length :: Parse -> Bool 
-\end_layout
-
-\begin_layout LyX-Code
-valid_parse_length (Def d clue n) = (minLength clue <= n) 
-\end_layout
-
-\begin_layout LyX-Code
-                                 && (maxLength clue >= n) 
-\end_layout
-
-\begin_layout Standard
-and so redefine parse as 
-\end_layout
-
-\begin_layout LyX-Code
-parse = filter valid_parse_Length .
- concatMap parseClue 
-\end_layout
-
-\begin_layout Subsubsection
-Analysis
-\end_layout
-
-\begin_layout Standard
-While
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename results/parse-lengths-constrained ConstrainParse.pdf
-	width 100col%
-
-\end_inset
-
-
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Average number of parses before and after canonization by clue length, averaged
- over 710 clues, on a logarithmic scale
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+matching the Human Solver's thought process 
 \end_layout
 
 \begin_layout Subsection
-Taking Advantage of Lazy Evaluation
+Constrain length while parsing maximum and minimum 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection
+Constrain length while solving 
+\end_layout
+
+\begin_layout Subsection
+Constrain against known letters 
+\end_layout
+
+\begin_layout Subsection
+Constrain against known wordlist 
+\end_layout
+
+\begin_layout Subsection
+Constrain against synonyms 
+\end_layout
+
+\begin_layout Subsection
+Analysis of improved solution with respect to state space etc.
+\end_layout
+
+\begin_layout Section
+Solving based on most probable parse trees 
+\end_layout
+
+\begin_layout Subsection
 Evaluation functions 
 \end_layout
 
@@ -6294,18 +5465,6 @@ Could generate weighting based on ML + cost minimization
 
 \begin_layout Subsubsection
 Providing a weighted list of possible answers
-\end_layout
-
-\begin_layout Subsection
-Constrain length while solving 
-\end_layout
-
-\begin_layout Subsection
-Constrain against known letters 
-\end_layout
-
-\begin_layout Subsection
-Analysis of improved solution with respect to state space etc.
 \end_layout
 
 \begin_layout Section
@@ -6363,10 +5522,6 @@ Human as an oracle
 
 \begin_layout Subsection
 Generating probable solutions with missing data 
-\end_layout
-
-\begin_layout Subsubsection
-Generative vs Filtering
 \end_layout
 
 \begin_layout Subsubsection

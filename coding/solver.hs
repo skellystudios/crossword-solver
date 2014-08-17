@@ -40,6 +40,8 @@ GROUP BY word;
 
 :set +s
 
+[(Clue (x,n), Y) | (Clue (x,n), y) <- cluebank, length (words x) == 4]  
+
 -}
 
 
@@ -202,10 +204,10 @@ check_valid_word :: Answer -> Bool
 check_valid_word (Answer x (DefNode y z n)) = isInWordlist x 
 
 constrain_parse_lengths :: [Parse] -> [Parse]
-constrain_parse_lengths = filter constrain_parse_length
+constrain_parse_lengths = filter valid_parse_length
 
-constrain_parse_length :: Parse -> Bool
-constrain_parse_length (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
+valid_parse_length :: Parse -> Bool
+valid_parse_length (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
 
 
 constrain_lengths :: [Answer] -> [Answer]
