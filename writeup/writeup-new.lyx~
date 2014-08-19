@@ -47,11 +47,11 @@ End
 \output_sync 0
 \bibtex_command default
 \index_command default
-\paperfontsize default
-\spacing single
+\paperfontsize 11
+\spacing other 1.2
 \use_hyperref false
 \papersize default
-\use_geometry false
+\use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
 \use_package cancel 1
@@ -75,6 +75,10 @@ End
 \shortcut idx
 \color #008000
 \end_index
+\leftmargin 3cm
+\topmargin 4.5cm
+\rightmargin 3cm
+\bottommargin 4.5cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -92,20 +96,31 @@ End
 
 \begin_body
 
+\begin_layout Date
+Imperial College London
+\begin_inset Newline newline
+\end_inset
+
+Department of Computing
+\end_layout
+
 \begin_layout Title
+
+\series bold
+\size huge
 Solving Cryptic Crosswords through Functional Programming
 \end_layout
 
 \begin_layout Author
+by
+\end_layout
+
+\begin_layout Author
 Michael Skelly
-\begin_inset Newline newline
-\end_inset
+\end_layout
 
-Department of Computer Science
-\begin_inset Newline newline
-\end_inset
+\begin_layout --Separator--
 
-Imperial College
 \end_layout
 
 \begin_layout Date
@@ -119,6 +134,50 @@ th
 \end_inset
 
  2014
+\end_layout
+
+\begin_layout Date
+Submitted in partial fulfilment of the requirements for the MSc Degree in
+ Advanced Computing of Imperial College London 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+This is the abstract
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+Acknowledgements
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
@@ -3989,7 +4048,7 @@ FRIEND FOUND IN OKLAHOMA TERMINAL (4)
 
 \end_inset
 
-yields the correct parse:
+ yields the correct parse:
 \end_layout
 
 \begin_layout LyX-Code
@@ -6089,7 +6148,7 @@ Filter parses by output length
 \end_layout
 
 \begin_layout Subsubsection
-The Motivation
+Motivation
 \end_layout
 
 \begin_layout Quotation
@@ -6172,6 +6231,14 @@ minLength (ConsListNode trees) = (sum .
 \end_layout
 
 \begin_layout LyX-Code
+minLength (Leaf string) = let x = 
+\end_layout
+
+\begin_layout LyX-Code
+             minimum ( map length (string : syn string)) in x
+\end_layout
+
+\begin_layout LyX-Code
 minLength (AnagramNode ind strings) = (length .
  concat) strings 
 \end_layout
@@ -6205,7 +6272,16 @@ Some clue types are can be defined directly from their inputs – both the
  maxium and minium length of an anagram node is the lenght of the input
  string – while an insertion node need to be defined based on the maxium
  and minimum of the two subtrees.
- It's also worth noting that sometimes we need to make a judgement: what
+\end_layout
+
+\begin_layout Standard
+Notable is that here we see some 'contextual bleed' from evaluation across
+ into the parsing, as we consider the semantics of what the thesaurus could
+ yield for a Leaf synonym node in determining its minimum length.
+\end_layout
+
+\begin_layout Standard
+It's also worth noting that sometimes we need to make a judgement: what
  is the minimum that a Hidden Word could yield? 
 \end_layout
 
@@ -6241,7 +6317,27 @@ Analysis
 \end_layout
 
 \begin_layout Standard
-While
+
+\series bold
+Figure 7
+\series default
+ shows the effect on number of parses generated following the addition of
+ the parse length constraints.
+ 
+\end_layout
+
+\begin_layout Standard
+This filtering constraint now means that many clues now yield 0 parses.
+ Some of these are clues that could never be correctly parsed, while some
+ are clues which we can generate correct parses, but do not have the thesaurus
+ and synonym data to solve the clue.
+ 
+\end_layout
+
+\begin_layout Standard
+This transformation is, though, safe – any parse that previously would have
+ generated the correct answer will not be filtered out.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -6281,31 +6377,573 @@ Taking Advantage of Lazy Evaluation
 \end_layout
 
 \begin_layout Subsubsection
-Evaluation functions 
+Motivation
+\end_layout
+
+\begin_layout Standard
+Although we are now generating far fewer parses, we still have some solveable
+ clues generating 100+ parses.
+ This means that for these clues we will have to perform on average 
+\begin_inset Formula $n/2$
+\end_inset
+
+ evaluations – lazy evaluation means that our use of the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+head
+\end_layout
+
+\end_inset
+
+ with 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+filter
+\end_layout
+
+\end_inset
+
+will yield the first result computed from the head of the list toward the
+ tail.
+ 
+\end_layout
+
+\begin_layout Standard
+We could take further advantage of the intuition that some parses are more
+ likely, given the input words.
+ For instance in the clue 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Lowest point in ruptured drain (5)
+\end_layout
+
+\end_inset
+
+, we see the angram indicator 'ruptured' next to a 5 letter word:
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.{ANAGRAM (=RUPTURED)} drain ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+with the definition 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+lowest point
+\end_layout
+
+\end_inset
+
+, intuitively feels more likely than 
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATION [.CONCATENATION [.SYN lowest ] [.SYN point ] ] [.CONCATENATION
+ [.SYN in ] [.SYN ruptured ]  ] ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+cluing the definition
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+drain
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+More formally, we're looking for a heuristic which weights toward consuming
+ words into indicators for more 'interesting' clue types: in that clues
+ using expressions more varied than synonym and concatenation are considered
+ better clues, and so are more likely than not if they are an available
+ parse.
+ 
+\end_layout
+
+\begin_layout Standard
+Furthermore, these expressions consume more of the string in indicators
+ than other types (reversal nodes consume one word from the clue as its
+ indicator, while synonyms and concatenation both don't consume any indicators)
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Diagram to show this
+\end_layout
+
+\end_inset
+
+ and are less likely to produce nested parse trees (both anagrams and hidden
+ word nodes treat their input as a pure string to be transformed, and so
+ do not generate any nested parse trees).
+ This means that clues featuring these types tend to be less complex.
+ 
+\end_layout
+
+\begin_layout Standard
+Both of these factors make them good candidates to evaluate sooner than
+ other options.
 \end_layout
 
 \begin_layout Subsubsection
-Current weighting just ‘works’ 
+Implementation
+\end_layout
+
+\begin_layout Standard
+We define a method 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+cost
+\end_layout
+
+\end_inset
+
+ which gives a weighting to a given ParseTree
+\end_layout
+
+\begin_layout LyX-Code
+cost :: ParseTree -> Int 
+\end_layout
+
+\begin_layout LyX-Code
+cost (ConcatNode trees) = 20 * (length trees) + sum (map cost trees) 
+\end_layout
+
+\begin_layout LyX-Code
+cost (AnagramNode ind strings) = 10 
+\end_layout
+
+\begin_layout LyX-Code
+cost (HiddenWordNode ind strings) = 40 
+\end_layout
+
+\begin_layout LyX-Code
+cost (InsertionNode ind tree1 tree2) = 40 + cost tree1 + cost tree2 
+\end_layout
+
+\begin_layout LyX-Code
+cost (SubtractionNode ind tree1 tree2) = 30 + cost tree1 + cost tree2 
+\end_layout
+
+\begin_layout LyX-Code
+cost (ReversalNode ind tree) = 20 + cost tree 
+\end_layout
+
+\begin_layout LyX-Code
+cost (Leaf string) = 80 * length (words string) 
+\end_layout
+
+\begin_layout LyX-Code
+cost (FirstLetterNode ind strings) = 20 
+\end_layout
+
+\begin_layout LyX-Code
+cost (LastLetterNode ind strings) = 20 
+\end_layout
+
+\begin_layout LyX-Code
+cost (PartialNode ind tree) = 60 + cost tree
+\end_layout
+
+\begin_layout Standard
+we can then define
+\end_layout
+
+\begin_layout LyX-Code
+cost_parse :: Parse -> Int
+\end_layout
+
+\begin_layout LyX-Code
+cost_parse (DefNode s tree n) = cost tree * (length_penalty s) 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+length_penalty :: String -> Int
+\end_layout
+
+\begin_layout LyX-Code
+length_penalty ws = 60 + (length (words ws)) 
+\end_layout
+
+\begin_layout Standard
+which can then be integrated into our definition of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+parse
+\end_layout
+
+\end_inset
+
+:
+\end_layout
+
+\begin_layout LyX-Code
+parse = sortBy cost_parse .
+ filter valid_parse_length .
+ concatMap parseClue
+\end_layout
+
+\begin_layout Standard
+It should be noted that the weights here are intuitive only.
+ 
+\end_layout
+
+\begin_layout Standard
+Leaf node has a high weighting against consuming long lists of words – this
+ is to prevent them from being low scoring (as they consume large portions
+ the clue) while being unlikely to yield the correct answer.
+ 
 \end_layout
 
 \begin_layout Subsubsection
-Could generate weighting based on ML + cost minimization 
+Analysis
+\end_layout
+
+\begin_layout Standard
+The weighting above mean that the correct parse had the highest score in
+ 70% of the clues that the system can solve, as opposed to approximately
+ 10% when not sorted by weight.
+ In cases where the clue can not be solved, the order of the parses is irrelevan
+t.
+ 
 \end_layout
 
 \begin_layout Subsubsection
-Providing a weighted list of possible answers
+Determining a correct weighting 
+\end_layout
+
+\begin_layout Standard
+While the current weighting given has been developed though trial and error
+ to be reasonably successful, a more structured approach to detemining the
+ correct weighting could generate even better results.
+ Using a large dataset of clues and the correct parses, hill climbing or
+ statistical analysis of clue types could produce optimal numbers.
 \end_layout
 
 \begin_layout Subsection
-Constrain length while solving 
+Constrain length while evaluating 
+\end_layout
+
+\begin_layout Subsubsection
+Motivation
+\end_layout
+
+\begin_layout Standard
+While evaluating a parse tree of a given clue, we expect the overall length
+ of the generated solution to be equal to the length specified in the clue.
+ Furthermore, while evaluating different sub-trees of a given parse tree
+ – either different branches of a concatenation list, or the two constituent
+ parts of an insertion or subtraction experession – the solutions generated
+ from one influence and limit what can be generated from the others.
+ 
+\end_layout
+
+\begin_layout Standard
+For example, in the clue 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Story about bishop and food (5)
+\end_layout
+
+\end_inset
+
+, if we are evaluating the parse 
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.{INSERTION (=about)} [.SYN "story" ] [.SYN "bishop" ] ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+then the partial evaluation of the left hand branch to one of its possible
+ evaluations
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.{INSERTION (=about)} [."TALE" ] [.SYN "bishop" ] ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+means that as the subsequent evalaution of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SYN 
+\begin_inset Quotes eld
+\end_inset
+
+bishop
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ should only yield solutions that are one-letter one, in order to stay within
+ the constraint of a five-letter solution.
+ If we can successfully apply this constraint, then we can limit the subsequent
+ evaluations of this partial parse tree to one or two, rather than the order
+ of 100.
+\end_layout
+
+\begin_layout Subsubsection
+
+\series bold
+Implementation
+\end_layout
+
+\begin_layout Standard
+In the example above, we see the length constraints preventing overflow
+ - that is, a maximum length which the generated solution should not exceed.
+ We also need to constrain against 'underflow', wherein the evaluation fails
+ to yield enough letters to fit the solution.
+ Constraining both maximum and minimum length will have the effect of forcing
+ the generated solution length to be equal to the prescribed length.
+\end_layout
+
+\begin_layout Standard
+We can therefore define a datatype to carry both of these constraints.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+newtype Constraints = Constraints MaxLength MinLength
+\end_layout
+
+\begin_layout Standard
+In some cases, we will not be able to prescribe a definite maximum length
+ for a clue: in the case of a subtraction expression of parse trees A and
+ B, where the evaluation of tree A will have the evaluation of B removed
+ from it to yield the final solution, the length of clue A will exceed the
+ overall solution length by an amount only limited by the length of B.
+ 
+\end_layout
+
+\begin_layout Standard
+We also, then define 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+MaxLength
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+MinLength
+\end_layout
+
+\end_inset
+
+ as new datatypes.
+ 
+\end_layout
+
+\begin_layout LyX-Code
+data MaxLength = Max Int | NoMax 
+\end_layout
+
+\begin_layout LyX-Code
+data MinLength = Min Int | NoMin
+\end_layout
+
+\begin_layout Standard
+Although we could use the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Maybe
+\end_layout
+
+\end_inset
+
+ monad here, by defining our own datatype we can subsequently take advantage
+ of Haskell's type class system later on to allow us to treat these, and
+ other constraints, in a similar way.
+\end_layout
+
+\begin_layout Standard
+We then want to re-define our definition of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+eval
+\end_layout
+
+\end_inset
+
+ to set the maximum and the minimum to 
+\end_layout
+
+\begin_layout LyX-Code
+eval (Def d pt l) = [Answer x (Def d pt l) |
+\end_layout
+
+\begin_layout LyX-Code
+                                        x <- evalTree pt]
 \end_layout
 
 \begin_layout Subsection
-Constrain against known letters 
-\end_layout
-
-\begin_layout Subsection
-Analysis of improved solution with respect to state space etc.
+Constain against known letters 
 \end_layout
 
 \begin_layout Section
@@ -6330,6 +6968,15 @@ Discussion of parallelization
 
 \begin_layout Part
 Future Work
+\end_layout
+
+\begin_layout Section
+Adding new clue types
+\end_layout
+
+\begin_layout Subsection
+Show how we could use data fields to represent all the functions of a particular
+ clue type
 \end_layout
 
 \begin_layout Section

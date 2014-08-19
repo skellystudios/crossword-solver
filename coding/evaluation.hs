@@ -14,7 +14,7 @@ import Wordlists
 eval :: Parse -> [Answer]
 eval (DefNode y z n) = let constraints = (n, n) in [Answer x (DefNode y z n) | x <- eval_tree z (Constraints (Prefix []) (Max n) (Min n))] 
 
-eval_tree :: ClueTree  -> EvalConstraints -> [String]
+eval_tree :: ClueTree  -> Constraints -> [String]
 eval_tree (AnagramNode x y) c = 
 								let y' = (concat y) in 	
 								if (is_less_than_min (minC c) (length y')) then [] else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
@@ -33,7 +33,7 @@ eval_tree (ConsIndicatorLeaf x) c = [""]
 
 
 
-eval_trees :: [ClueTree] -> EvalConstraints -> [String]
+eval_trees :: [ClueTree] -> Constraints -> [String]
 eval_trees (x:[]) c = eval_tree x (noPrefix c)
 eval_trees (x:xs) (Constraints p mx mn) =
   let starts = [start | start <- eval_tree x (Constraints Unconstrained mx NoMin), fits p start]
@@ -75,37 +75,37 @@ fits_max (Constraints p mx mn) x = is_lte_max mx x
 fits_min (Constraints p mx mn) x = is_gte_min mn x
 fits_constraints (Constraints p mx mn) x = (fits p x) && (fits mx x) && (fits mn x)
 
-add_partial :: String -> EvalConstraints -> EvalConstraints
+add_partial :: String -> Constraints -> Constraints
 add_partial x (Constraints p mx mn) = decreaseMax (length x) $ (Constraints (extend_prefix p x) mx mn) 
 
-decreaseMax :: Int -> EvalConstraints -> EvalConstraints
+decreaseMax :: Int -> Constraints -> Constraints
 decreaseMax n (Constraints p (Max mx) mn) = Constraints p (Max (mx - n)) mn
 decreaseMax n (Constraints p NoMax mn) = Constraints p NoMax mn
 
-increaseMin :: Int -> EvalConstraints -> EvalConstraints
+increaseMin :: Int -> Constraints -> Constraints
 increaseMin n (Constraints p mx (Min mn)) = Constraints p mx (Min (mn + n))
 increaseMin n (Constraints p mx NoMin) = Constraints p mx NoMin
 
-decreaseMin :: Int -> EvalConstraints -> EvalConstraints
+decreaseMin :: Int -> Constraints -> Constraints
 decreaseMin n (Constraints p mx (Min mn)) = Constraints p mx (Min (mn - n))
 decreaseMin n (Constraints p mx NoMin) = Constraints p mx NoMin
 
-maxC :: EvalConstraints -> MaxLength
+maxC :: Constraints -> MaxLength
 maxC (Constraints p mx mn) = mx
 
-minC :: EvalConstraints -> MinLength
+minC :: Constraints -> MinLength
 minC (Constraints p mx mn) = mn
 
-prefC :: EvalConstraints -> PrefixConstraint
+prefC :: Constraints -> PrefixConstraint
 prefC (Constraints p mx mn) = p
 
-noPrefix :: EvalConstraints -> EvalConstraints
+noPrefix :: Constraints -> Constraints
 noPrefix (Constraints p mx mn) = (Constraints Unconstrained mx mn)
 
-noMin :: EvalConstraints -> EvalConstraints
+noMin :: Constraints -> Constraints
 noMin (Constraints p mx mn) = (Constraints p mx NoMin)
 
-noMax :: EvalConstraints -> EvalConstraints
+noMax :: Constraints -> Constraints
 noMax (Constraints p mx mn) = (Constraints p NoMax mn)
 
 {-fits :: a -> String -> Bool
