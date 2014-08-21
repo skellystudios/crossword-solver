@@ -5,10 +5,10 @@ data Clue = Clue (String, Int)
 
 data Clue2 = Clue2 String (Int)
 
-data Parse = DefNode String ClueTree Int
+data Parse = DefNode String ParseTree Int
   deriving (Show, Eq, Ord)
 
-data ClueTree = ConsIndicatorLeaf [String] | ConsListNode [ClueTree] | ConsNode ClueTree ClueTree | Leaf String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ClueTree ClueTree | SubtractionNode SubtractionIndicator ClueTree ClueTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ClueTree | FirstLetterNode FLIndicator [String] | LastLetterNode LLIndicator [String] | PartialNode PartialIndicator ClueTree
+data ParseTree = ConsIndicatorNode [String] | ConsListNode [ParseTree] | ConsNode ParseTree ParseTree | SynonymNode String | AnagramNode Anagrind [String] | InsertionNode InsertionIndicator ParseTree ParseTree | SubtractionNode SubtractionIndicator ParseTree ParseTree | HiddenWordNode HWIndicator [String] | ReversalNode ReversalIndicator ParseTree | FirstLetterNode FLIndicator [String] | LastLetterNode LLIndicator [String] | PartialNode PartialIndicator ParseTree
    deriving (Show, Eq, Ord)
 
 data Answer = Answer String Parse deriving (Show, Eq, Ord)

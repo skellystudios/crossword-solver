@@ -76,9 +76,9 @@ End
 \color #008000
 \end_index
 \leftmargin 3cm
-\topmargin 4.5cm
+\topmargin 3cm
 \rightmargin 3cm
-\bottommargin 4.5cm
+\bottommargin 3cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -2541,7 +2541,8 @@ ParseTree
 \end_layout
 
 \begin_layout LyX-Code
-data ParseTree =  ConcatNode ParseTree ParseTree | Leaf String     
+data ParseTree =  ConcatNode ParseTree ParseTree | SynonymNode String  
+   
 \end_layout
 
 \begin_layout LyX-Code
@@ -3549,7 +3550,7 @@ parseClue (Def def ys n) = let len = length .
 \end_layout
 
 \begin_layout LyX-Code
-[Leaf ys]    
+[SynonymNode ys]    
 \end_layout
 
 \begin_layout LyX-Code
@@ -4064,11 +4065,11 @@ however it also generates 59 others, including:
 \end_layout
 
 \begin_layout LyX-Code
-Def "friend" (InsertionNode (IIndicator ["in"]) (Leaf "found") 
+Def "friend" (InsertionNode (IIndicator ["in"]) (SynonymNode "found") 
 \end_layout
 
 \begin_layout LyX-Code
-               (ConsNode (Leaf "oklahoma") (Leaf "terminal")))
+               (ConsNode (SynonymNode "oklahoma") (SynonymNode "terminal")))
 \end_layout
 
 \begin_layout LyX-Code
@@ -4076,35 +4077,37 @@ Def "terminal" (InsertionNode (IIndicator ["in"])
 \end_layout
 
 \begin_layout LyX-Code
-            (Leaf "friend found") (Leaf "oklahoma"))
+            (SynonymNode "friend found") (SynonymNode "oklahoma"))
 \end_layout
 
 \begin_layout LyX-Code
-Def "oklahoma terminal" (ConsNode (Leaf "friend") 
+Def "oklahoma terminal" (ConsNode (SynonymNode "friend") 
 \end_layout
 
 \begin_layout LyX-Code
-                                  (Leaf "found"))
+                                  (SynonymNode "found"))
 \end_layout
 
 \begin_layout LyX-Code
-Def "terminal" (ConsNode (Leaf "friend") (ConsNode (Leaf "found") 
+Def "terminal" (ConsNode (SynonymNode "friend") (ConsNode (SynonymNode "found")
+ 
 \end_layout
 
 \begin_layout LyX-Code
-               (ConsNode (Leaf "in") (Leaf "oklahoma")))) 
+               (ConsNode (SynonymNode "in") (SynonymNode "oklahoma"))))
+ 
 \end_layout
 
 \begin_layout LyX-Code
-Def "terminal" (ConsNode (ConsNode (Leaf "friend") 
+Def "terminal" (ConsNode (ConsNode (SynonymNode "friend") 
 \end_layout
 
 \begin_layout LyX-Code
-                         (Leaf "found")) (Leaf "in oklahoma"))
+                         (SynonymNode "found")) (SynonymNode "in oklahoma"))
 \end_layout
 
 \begin_layout LyX-Code
-Def "friend found" (Leaf "in oklahoma terminal") 
+Def "friend found" (SynonymNode "in oklahoma terminal") 
 \begin_inset Newline newline
 \end_inset
 
@@ -4112,15 +4115,15 @@ Def "friend found" (Leaf "in oklahoma terminal")
 \end_layout
 
 \begin_layout LyX-Code
-Def "in oklahoma terminal" (ConsNode (Leaf "friend") 
+Def "in oklahoma terminal" (ConsNode (SynonymNode "friend") 
 \end_layout
 
 \begin_layout LyX-Code
-                                     (Leaf "found")) 
+                                     (SynonymNode "found")) 
 \end_layout
 
 \begin_layout LyX-Code
-Def "in oklahoma terminal" (Leaf "friend found") 
+Def "in oklahoma terminal" (SynonymNode "friend found") 
 \end_layout
 
 \begin_layout Standard
@@ -5160,10 +5163,6 @@ Number of parses generated for varying clue lengths over 600 sample clues
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -5202,6 +5201,19 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATE [.CONCATENATE A B ] [.C ]]
+\end_layout
+
+\end_inset
+
+ 
 \begin_inset Graphics
 	filename results/clue-length-to-evaluations evaluations.pdf
 	width 100col%
@@ -5218,10 +5230,6 @@ Number of evaluations generated for varying clue lengths over 75 sample
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -5640,62 +5648,200 @@ Algebraic + computational simplifications
 Pruning out equivalent trees (Canonization) 
 \end_layout
 
+\begin_layout Subsubsection
+Motivation
+\end_layout
+
 \begin_layout Standard
 One large factor in the rapid proliferation is in the our binary tree representa
 tion of concatenation.
- The number of trees with n leaves is given by the (n-1)th Catalan number,
- so ignoring any other type of expression (anagram, etc.), for a clue of
- length n we have Cn-1 trees created with each of the clue words taken as
- a leaf (synonym) node.
- This number grows 
-\begin_inset Note Note
+ While keeping them in a similar representation to the rest of the expression
+ nodes in our naive solution kept their representation in a similar form
+ to the rest of the nodes, the fact that no indicator is required to generate
+ a concatenation node means that any expression of two ore more words can
+ generate them.
+ 
+\end_layout
+
+\begin_layout Standard
+The number of trees with n leaves is given by the (n-1)
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+th
+\end_layout
+
+\end_inset
+
+ Catalan number
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-very quickly indeed blah blah blah say more stuff Also when we add more
- clue types, it gets pretty bad
+Catalan numbers are given by the formula 
+\begin_inset Formula $C_{n}=\frac{1}{n+1}{2n \choose n}=\frac{(2n)!}{(n+1)!\, n!}=\prod\limits _{k=2}^{n}\frac{n+k}{k}\qquad\mbox{ for }n\ge0.$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, so ignoring any other type of expression (anagram, etc.), for a clue of
+ length n we have 
+\begin_inset Formula $C_{n-1}$
+\end_inset
+
+ trees created with each of the clue words taken as a synonym node.
+ This number grows rapidly as the clue length increases, and yields an increasin
+gly large number of parses.
+ 
+\end_layout
+
+\begin_layout Standard
+Due to the associativity of concatenation, each of these parses evaluates
+ to an identical output:
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATE [.CONCATENATE A B ] [.C ]]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "8col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+and
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATE [.A ] [.CONCATENATE B C ] ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+both yield the output 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+ABC
 \end_layout
 
 \end_inset
 
 .
- 
-\end_layout
-
-\begin_layout Standard
-Due to the associativity of addition 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-is it?
-\end_layout
-
-\end_inset
-
-, each of these parses evaluates to an identical output.
- 
+ This means that much of our outputted parses are identical and therefore
+ redundant.
 \end_layout
 
 \begin_layout Standard
 One strategy to deal with this would be to perform canonization on the trees,
  and prune all concatenation trees which don't conform to our decided 'ideal
- tree' 
-\begin_inset Note Note
+ tree'.
+ For example, we could choose to create a right-handed binary tree, wherein
+ trees such as:
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
 status open
 
 \begin_layout Plain Layout
-Discuss options for ideal tree.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATE [.CONCATENATE A B ] [.CONCATENATE C D ]]
 \end_layout
 
 \end_inset
 
-This is both wasteful 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-blah blah blah
+ 
 \end_layout
 
 \end_inset
@@ -5704,16 +5850,63 @@ blah blah blah
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+would become
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
 status open
 
 \begin_layout Plain Layout
-OK ALL OF THIS TEXT ABOVE IS PRETTY SHIT, BETTER CLEAN UP SOME DAY
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATE [.A ] [.CONCATENATE [.B ] [.CONCATENATE C D ]]]
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The problem with this solution is that we need to look ahead while parsing:
+ the above parse only is acceptable if the parse of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+A
+\end_layout
+
+\end_inset
+
+ also doesn't produce a concatenation – this means we can't parse recursively
+ as before.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Implementation
 \end_layout
 
 \begin_layout Standard
@@ -5835,7 +6028,7 @@ We define a new version of parseConcatNodes to reflect the new structure.
 \end_layout
 
 \begin_layout LyX-Code
-parseConcatNodes' :: String -> [ClueTree] 
+parseConcatNodes' :: String -> [ParseTree] 
 \end_layout
 
 \begin_layout LyX-Code
@@ -5843,7 +6036,7 @@ parseConcatNodes' xs n = let parts = partitions xs
 \end_layout
 
 \begin_layout LyX-Code
-       in [ConsListNode ys | part <- parts
+       in [ConcatNode ys | part <- parts
 \end_layout
 
 \begin_layout LyX-Code
@@ -5900,13 +6093,13 @@ sequence [ [1,2,3], [40,50], [666,777,888] ] =
     [3,50,666],[3,50,777],[3,50,888] ]
 \end_layout
 
+\begin_layout Subsubsection
+Avoiding Nesting
+\end_layout
+
 \begin_layout Standard
-In order to prevent our new concatenation nodes nesting again (and thereby
- produce 
-\series bold
-more
-\series default
- parses than before), as
+Unfortunately, this solution alone will not prevent us from creating a forest
+ of parse trees that itself contains a concatenation node:
 \end_layout
 
 \begin_layout Verse
@@ -5944,8 +6137,13 @@ Tree[.CONCATENATE [.{[A CONCATENATE D]} {B C} ]]
 
 \end_layout
 
+\begin_layout Verse
+leading to a even more parse trees than before!
+\end_layout
+
 \begin_layout Standard
-we need to define a version of 
+In order to prevent our new concatenation nodes nesting again we need to
+ define a version of 
 \begin_inset Flex Code
 status open
 
@@ -5968,7 +6166,7 @@ parseClueNoConcat ys = let len = length .
 \end_layout
 
 \begin_layout LyX-Code
-  [Leaf ys]    
+  [SynonymNode ys]    
 \end_layout
 
 \begin_layout LyX-Code
@@ -6041,7 +6239,7 @@ parseClue (Def def ys n) = let len = length .
 \end_layout
 
 \begin_layout Subsubsection
-Improvement
+Improvement Analysis
 \end_layout
 
 \begin_layout Standard
@@ -6115,6 +6313,38 @@ status open
 \end_inset
 
 
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.CONCATENATE [.{[A CONCATENATE D]} {B C} ]]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
@@ -6151,14 +6381,18 @@ Filter parses by output length
 Motivation
 \end_layout
 
+\begin_layout Standard
+Here we seek to mimic the following thought processes of a human solver:
+\end_layout
+
 \begin_layout Quotation
 
 \shape italic
 \begin_inset Quotes eld
 \end_inset
 
-It can't be an anagram of those words, as that'd only make 6 letters, and
- the clue is 8
+This can't be an anagram of that word, as that'd only make 6 letters, and
+ the clue is 9
 \begin_inset Quotes erd
 \end_inset
 
@@ -6185,6 +6419,128 @@ We can't have an insertion here, as we've already got 5 letters, and so
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+These are constraints on the parses that we can generate based on an understandi
+ng of the maximum and minimum number of letters than a given reading of
+ a clue could produce.
+ In the first example, a clue such as
+\end_layout
+
+\begin_layout LyX-Code
+Report coarse players (9)
+\end_layout
+
+\begin_layout Standard
+could identify 'coarse' as a possible anagram indicator, and yield a parse
+ such as
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.{ANAGRAM (=coarse)} "report" ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This, however, can never yield a solution that is 9 letters long, so a human
+ solver, and so our improved computer solver, will not consider it for further
+ evaluation.
+\end_layout
+
+\begin_layout Standard
+In the second example, we see that we may also need to consider the parse
+ recursively to calculate the total length parameters: 
+\end_layout
+
+\begin_layout LyX-Code
+Punch’s dog in play about bishop (4) 
+\end_layout
+
+\begin_layout Standard
+can be parsed to
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.{INSERTION (=in)} [.SYNONYMN {"punch's dog"} ] [.{REVERSAL (=about)}
+ "play" ] ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since the reversal of play ('yalp') is already 4 letters long, we can see
+ that which ever word we choose to signify 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+punch's dog
+\end_layout
+
+\end_inset
+
+ will increase the length of the evaluated solution over the prescribed
+ solution length of 4.
+\end_layout
+
 \begin_layout Subsubsection
 
 \series bold
@@ -6226,12 +6582,12 @@ minLength :: ParseTree -> Int
 \end_layout
 
 \begin_layout LyX-Code
-minLength (ConsListNode trees) = (sum .
+minLength (ConcatNode trees) = (sum .
  map minLength) trees 
 \end_layout
 
 \begin_layout LyX-Code
-minLength (Leaf string) = let x = 
+minLength (SynonymNode string) = let x = 
 \end_layout
 
 \begin_layout LyX-Code
@@ -6277,7 +6633,7 @@ Some clue types are can be defined directly from their inputs – both the
 \begin_layout Standard
 Notable is that here we see some 'contextual bleed' from evaluation across
  into the parsing, as we consider the semantics of what the thesaurus could
- yield for a Leaf synonym node in determining its minimum length.
+ yield for a synonym node in determining its minimum length.
 \end_layout
 
 \begin_layout Standard
@@ -6514,7 +6870,7 @@ Tree[.CONCATENATION [.CONCATENATION [.SYN lowest ] [.SYN point ] ] [.CONCATENATI
 \end_layout
 
 \begin_layout Standard
-cluing the definition
+cluing the definition 
 \begin_inset Flex Code
 status open
 
@@ -6585,43 +6941,43 @@ cost :: ParseTree -> Int
 \end_layout
 
 \begin_layout LyX-Code
-cost (ConcatNode trees) = 20 * (length trees) + sum (map cost trees) 
+cost (ConcatNode trees) = 2 * (length trees) + sum (map cost trees) 
 \end_layout
 
 \begin_layout LyX-Code
-cost (AnagramNode ind strings) = 10 
+cost (AnagramNode ind strings) = 1 
 \end_layout
 
 \begin_layout LyX-Code
-cost (HiddenWordNode ind strings) = 40 
+cost (HiddenWordNode ind strings) = 4 
 \end_layout
 
 \begin_layout LyX-Code
-cost (InsertionNode ind tree1 tree2) = 40 + cost tree1 + cost tree2 
+cost (InsertionNode ind tree1 tree2) = 4 + cost tree1 + cost tree2 
 \end_layout
 
 \begin_layout LyX-Code
-cost (SubtractionNode ind tree1 tree2) = 30 + cost tree1 + cost tree2 
+cost (SubtractionNode ind tree1 tree2) = 3 + cost tree1 + cost tree2 
 \end_layout
 
 \begin_layout LyX-Code
-cost (ReversalNode ind tree) = 20 + cost tree 
+cost (ReversalNode ind tree) = 2 + cost tree 
 \end_layout
 
 \begin_layout LyX-Code
-cost (Leaf string) = 80 * length (words string) 
+cost (SynonymNode string) = 8 * length (words string) 
 \end_layout
 
 \begin_layout LyX-Code
-cost (FirstLetterNode ind strings) = 20 
+cost (FirstLetterNode ind strings) = 2 
 \end_layout
 
 \begin_layout LyX-Code
-cost (LastLetterNode ind strings) = 20 
+cost (LastLetterNode ind strings) = 2 
 \end_layout
 
 \begin_layout LyX-Code
-cost (PartialNode ind tree) = 60 + cost tree
+cost (PartialNode ind tree) = 6 + cost tree
 \end_layout
 
 \begin_layout Standard
@@ -6674,9 +7030,9 @@ It should be noted that the weights here are intuitive only.
 \end_layout
 
 \begin_layout Standard
-Leaf node has a high weighting against consuming long lists of words – this
- is to prevent them from being low scoring (as they consume large portions
- the clue) while being unlikely to yield the correct answer.
+Synonym nodes have a high weighting against consuming long lists of words
+ – this is to prevent them from being low scoring (as they consume large
+ portions the clue) while being unlikely to yield the correct answer.
  
 \end_layout
 
@@ -6691,6 +7047,30 @@ The weighting above mean that the correct parse had the highest score in
  In cases where the clue can not be solved, the order of the parses is irrelevan
 t.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Generate much more data for this and display in a nice way.
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+TODO: generate much more data for this and display in a nice way
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -6918,6 +7298,226 @@ Maybe
  monad here, by defining our own datatype we can subsequently take advantage
  of Haskell's type class system later on to allow us to treat these, and
  other constraints, in a similar way.
+ 
+\end_layout
+
+\begin_layout Standard
+We define 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+is_lte_max
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+is_gte_min
+\end_layout
+
+\end_inset
+
+ to account for both the case when we have a defined constraint (e.g.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Max 3
+\end_layout
+
+\end_inset
+
+), as well as when we have no constraint (e.g.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+NoMax
+\end_layout
+
+\end_inset
+
+):
+\end_layout
+
+\begin_layout LyX-Code
+is_lte_max :: MaxLength -> Int -> Bool
+\end_layout
+
+\begin_layout LyX-Code
+is_lte_max (Max mx) n = n <= mx 
+\end_layout
+
+\begin_layout LyX-Code
+is_lte_max NoMax n = True
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+is_gte_min :: MinLength -> Int -> Bool
+\end_layout
+
+\begin_layout LyX-Code
+is_gte_min (Min mn) n = n >= mn 
+\end_layout
+
+\begin_layout LyX-Code
+is_gte_min NoMin n = True
+\end_layout
+
+\begin_layout Standard
+We can define a typeclass 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Constraint
+\end_layout
+
+\end_inset
+
+ which gives us the ability to define the method for checking if a given
+ string fits a constraint of either type.
+\end_layout
+
+\begin_layout LyX-Code
+class Constraint c where 
+\end_layout
+
+\begin_layout LyX-Code
+    fits :: c -> String -> Bool 
+\end_layout
+
+\begin_layout LyX-Code
+instance Constraint MaxLength where 
+\end_layout
+
+\begin_layout LyX-Code
+    fits mx s = is_lte_max mx (length s) 
+\end_layout
+
+\begin_layout LyX-Code
+instance Constraint MinLength where 
+\end_layout
+
+\begin_layout LyX-Code
+    fits mn s = is_gte_min mn (length s) 
+\end_layout
+
+\begin_layout Standard
+which subsequently allows us to write a function to check if a given output
+ string fits the each of the constraints:
+\end_layout
+
+\begin_layout LyX-Code
+fits_max (Constraints mx mn) x = fits mx x
+\end_layout
+
+\begin_layout LyX-Code
+fits_min (Constraints mx mn) x = fits mn x
+\end_layout
+
+\begin_layout Standard
+and so can define an overall function for checking a string against all
+ our constraints:
+\end_layout
+
+\begin_layout LyX-Code
+fits_constraints c x = (fits_max c x) && (fits_min c x)
+\end_layout
+
+\begin_layout Standard
+This allows us to start to redefine our definitions of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+eval_tree
+\end_layout
+
+\end_inset
+
+, with the new type signature
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree :: ParseTree -> Constraints -> [String]
+\end_layout
+
+\begin_layout Standard
+For simple synonym nodes, we can apply the check in a straightforward manner,
+ as there are no subtrees to evaluate.
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (SynonymNode xs) c = filter (fits_constraints c) (synonyms xs)
+\end_layout
+
+\begin_layout Standard
+For anagram nodes, redefining in the same way, as 
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (AnagramNode xs) c = filter (fits_constraints c) (anagrams xs)
+\end_layout
+
+\begin_layout Standard
+would still require the costly computation of all our anagrams.
+ Instead, we can use our min and max criteria on the input string to check
+ if it's worth evaluating at all: 
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (AnagramNode xs) c = if ((fits_max c xs) && (fits_min c xs))
+\end_layout
+
+\begin_layout LyX-Code
+                               then filter (fits_constraints c) (anagrams
+ xs)
+\end_layout
+
+\begin_layout LyX-Code
+                               else []
+\end_layout
+
+\begin_layout Standard
+While here the first line could be replaced with if 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+fits_constraints c xs
+\end_layout
+
+\end_inset
+
+, we avoid this, as it's only due to the fact that angrams preserve length
+ that the max and min constraints are applicable to the initial string as
+ a filter for its output.
+ Once we add other constraints later which aren't preserved over the anagram
+ operation (anything involving letter order!) then we would violate this
+ condition.
+\end_layout
+
+\begin_layout Standard
+ParseTrees
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace 5cm
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard

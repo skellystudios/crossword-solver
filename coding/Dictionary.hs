@@ -51,6 +51,7 @@ manual_syn "theme" = ["leitmotif"]
 manual_syn "not public" = ["secret"]
 manual_syn "earnest request" = ["prayer"]
 manual_syn "paper in the street" = ["litter"]
+manual_syn "article" = ["a", "an"]
 manual_syn _ = []
 
 

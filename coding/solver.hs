@@ -4,6 +4,7 @@ import Data.List
 import qualified Data.Set
 import qualified Data.Map as Map
 import System.Environment   
+import System.Timeout
 import Data.Char
 import Data.Binary
   
@@ -54,6 +55,10 @@ GROUP BY word;
   Removal of central letter(s)
   Removal of alternate letters
 
+
+
+  \[\]\n
+
   -}
 
 
@@ -63,7 +68,14 @@ main = do
       --  GHC.Profiling.startProfTimer
         print $  is_wordlist_prefix "x"
          -- print $ {-# SCC "second" #-} (map solve clues)
-   
+
+-- Timeout is in microseconds
+seconds = 100000 --0
+dosolve x = timeout (1*seconds) $ do
+            print $ solve x
+
+
+
 
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
@@ -92,12 +104,12 @@ parseWithIndicator (xs, n) = let parts = threeParts xs
         in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
         ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
 
-parseClue :: [String] -> Int -> [ClueTree]
+parseClue :: [String] -> Int -> [ParseTree]
 parseClue ys n= (if length ys > 1 then parseConcatNodes ys n else [])
 	++ (parseWithoutConcat ys n)
 
-parseWithoutConcat :: [String] -> Int -> [ClueTree]
-parseWithoutConcat ys n = [Leaf (concatWithSpaces ys)] 
+parseWithoutConcat :: [String] -> Int -> [ParseTree]
+parseWithoutConcat ys n = [SynonymNode (concatWithSpaces ys)] 
   ++ (if length ys == 1 then parseConsIndicatorNodes ys n else [])
   ++ (if length ys > 1 then parseAnagramNodes ys n else [] )
   ++ (if length ys > 1 then parseHiddenWordNodes ys n else [])
@@ -109,49 +121,49 @@ parseWithoutConcat ys n = [Leaf (concatWithSpaces ys)]
   ++ (if length ys > 1 then parsePartialNodes ys n else [])
 
 
-parseJustAbbreviations :: [String] -> Int -> [ClueTree]
-parseJustAbbreviations ys n = [Leaf (concatWithSpaces ys)] 
+parseJustAbbreviations :: [String] -> Int -> [ParseTree]
+parseJustAbbreviations ys n = [SynonymNode (concatWithSpaces ys)] 
 
-parseConsNodes :: [String] -> Int -> [ClueTree]
+parseConsNodes :: [String] -> Int -> [ParseTree]
 parseConsNodes xs n = let parts = twoParts xs
                    in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
-parseConcatNodes :: [String] -> Int -> [ClueTree]
+parseConcatNodes :: [String] -> Int -> [ParseTree]
 parseConcatNodes xs n = [ConsListNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
 
-parseConsIndicatorNodes :: [String] -> Int -> [ClueTree]
-parseConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorLeaf xs] else []
+parseConsIndicatorNodes :: [String] -> Int -> [ParseTree]
+parseConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorNode xs] else []
 
-parseAnagramNodes :: [String] -> Int -> [ClueTree]
+parseAnagramNodes :: [String] -> Int -> [ParseTree]
 parseAnagramNodes xs n = let parts = twoParts xs
                   in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x), (length . concat) y <= n] 
 
-parseInsertionNodes :: [String] -> Int -> [ClueTree]
+parseInsertionNodes :: [String] -> Int -> [ParseTree]
 parseInsertionNodes xs n = let parts = threeParts xs
                   in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
                   ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
 
-parseSubtractionNodes :: [String] -> Int -> [ClueTree]
+parseSubtractionNodes :: [String] -> Int -> [ParseTree]
 parseSubtractionNodes xs n = let parts = threeParts xs
                   in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
                   ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
 
-parseReversalNodes :: [String] -> Int -> [ClueTree]
+parseReversalNodes :: [String] -> Int -> [ParseTree]
 parseReversalNodes xs n  = let parts = twoParts xs
                   in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (parseClue y n)]  
 
-parseHiddenWordNodes :: [String]  -> Int -> [ClueTree]
+parseHiddenWordNodes :: [String]  -> Int -> [ParseTree]
 parseHiddenWordNodes xs n = let parts = twoParts xs
                   in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] --, (length (concat y)) > n 
 
-parseFirstLetterNodes :: [String]  -> Int -> [ClueTree]
+parseFirstLetterNodes :: [String]  -> Int -> [ParseTree]
 parseFirstLetterNodes xs n = let parts = twoParts xs
                   in [FirstLetterNode (FLIndicator x) y | (x,y) <- includeReversals(parts), isFLIndicator(x)] -- (length y) <= n
 
-parseLastLetterNodes :: [String]  -> Int -> [ClueTree]
+parseLastLetterNodes :: [String]  -> Int -> [ParseTree]
 parseLastLetterNodes xs n = let parts = twoParts xs
                   in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x)] -- (length y) <= n
 
-parsePartialNodes :: [String]  -> Int -> [ClueTree]
+parsePartialNodes :: [String]  -> Int -> [ParseTree]
 parsePartialNodes xs n = let parts = twoParts xs
                   in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (parseClue y n)]
 
@@ -160,19 +172,19 @@ parsePartialNodes xs n = let parts = twoParts xs
 cost_parse (DefNode s tree n) = cost tree * (length_penalty s)
 length_penalty ws = 60 + (length (words ws))   -- Magic constant here ):
 
-cost :: ClueTree -> Int
+cost :: ParseTree -> Int
 cost (ConsListNode trees) = 20 * (length trees) + sum (map cost trees) 
 cost (AnagramNode ind strings) = 10
 cost (HiddenWordNode ind strings) = 40
 cost (InsertionNode ind tree1 tree2) = 40 + cost tree1 + cost tree2  -- weight against complex insertions?
 cost (SubtractionNode ind tree1 tree2) = 30 + cost tree1 + cost tree2
 cost (ReversalNode ind tree) = 20 + cost tree
-cost (Leaf string) = 80 * length (words string)
+cost (SynonymNode string) = 80 * length (words string)
 cost (FirstLetterNode ind strings) = 20
 cost (LastLetterNode ind strings) = 20
 cost (ConsNode one two) = 150
 cost (PartialNode ind tree) = 60 + cost tree
-cost (ConsIndicatorLeaf xs) = 0
+cost (ConsIndicatorNode xs) = 0
 
 
 

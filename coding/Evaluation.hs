@@ -14,12 +14,12 @@ import Wordlists
 eval :: Parse -> [Answer]
 eval (DefNode y z n) = let constraints = (n, n) in [Answer x (DefNode y z n) | x <- eval_tree z (Constraints (Prefix []) (Max n) (Min n))] 
 
-eval_tree :: ClueTree  -> Constraints -> [String]
+eval_tree :: ParseTree  -> EvalConstraints -> [String]
 eval_tree (AnagramNode x y) c = 
 								let y' = (concat y) in 	
 								if (is_less_than_min (minC c) (length y')) then [] else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
 
-eval_tree (Leaf x) c = filter (fits_constraints c) (syn x ++ [x])
+eval_tree (SynonymNode x) c = filter (fits_constraints c) (syn x ++ [x])
 eval_tree (ConsListNode xs) c = eval_trees xs c --map concat (sequence (map (eval_tree n) xs))
 -- eval_tree (ConsNode x y) c = [x' ++ y' | x' <- eval_tree x (noPrefix c), y' <- eval_tree y (Constraints Unconstrained (mx - length x') (mn - length x'))]
 eval_tree (InsertionNode ind x y) c = concat[insertInto x' y' | y' <- eval_tree y (noMin . noPrefix $ c), x' <- eval_tree x (decreaseMax (length y') . decreaseMin (length y') . noPrefix $ c)]
@@ -29,11 +29,11 @@ eval_tree (ReversalNode ind ys) c = map reverse (eval_tree ys c)
 eval_tree (FirstLetterNode ind ys) c = [firstLetter ys]
 eval_tree (LastLetterNode ind ys) c = [lastLetter ys]
 eval_tree (PartialNode ind y) c = filter (fits_constraints c) (concat [top_tail_substrings y | y <- eval_tree y no_constraints])
-eval_tree (ConsIndicatorLeaf x) c = [""]
+eval_tree (ConsIndicatorNode x) c = [""]
 
 
 
-eval_trees :: [ClueTree] -> Constraints -> [String]
+eval_trees :: [ParseTree] -> EvalConstraints -> [String]
 eval_trees (x:[]) c = eval_tree x (noPrefix c)
 eval_trees (x:xs) (Constraints p mx mn) =
   let starts = [start | start <- eval_tree x (Constraints Unconstrained mx NoMin), fits p start]
@@ -75,37 +75,37 @@ fits_max (Constraints p mx mn) x = is_lte_max mx x
 fits_min (Constraints p mx mn) x = is_gte_min mn x
 fits_constraints (Constraints p mx mn) x = (fits p x) && (fits mx x) && (fits mn x)
 
-add_partial :: String -> Constraints -> Constraints
+add_partial :: String -> EvalConstraints -> EvalConstraints
 add_partial x (Constraints p mx mn) = decreaseMax (length x) $ (Constraints (extend_prefix p x) mx mn) 
 
-decreaseMax :: Int -> Constraints -> Constraints
+decreaseMax :: Int -> EvalConstraints -> EvalConstraints
 decreaseMax n (Constraints p (Max mx) mn) = Constraints p (Max (mx - n)) mn
 decreaseMax n (Constraints p NoMax mn) = Constraints p NoMax mn
 
-increaseMin :: Int -> Constraints -> Constraints
+increaseMin :: Int -> EvalConstraints -> EvalConstraints
 increaseMin n (Constraints p mx (Min mn)) = Constraints p mx (Min (mn + n))
 increaseMin n (Constraints p mx NoMin) = Constraints p mx NoMin
 
-decreaseMin :: Int -> Constraints -> Constraints
+decreaseMin :: Int -> EvalConstraints -> EvalConstraints
 decreaseMin n (Constraints p mx (Min mn)) = Constraints p mx (Min (mn - n))
 decreaseMin n (Constraints p mx NoMin) = Constraints p mx NoMin
 
-maxC :: Constraints -> MaxLength
+maxC :: EvalConstraints -> MaxLength
 maxC (Constraints p mx mn) = mx
 
-minC :: Constraints -> MinLength
+minC :: EvalConstraints -> MinLength
 minC (Constraints p mx mn) = mn
 
-prefC :: Constraints -> PrefixConstraint
+prefC :: EvalConstraints -> PrefixConstraint
 prefC (Constraints p mx mn) = p
 
-noPrefix :: Constraints -> Constraints
+noPrefix :: EvalConstraints -> EvalConstraints
 noPrefix (Constraints p mx mn) = (Constraints Unconstrained mx mn)
 
-noMin :: Constraints -> Constraints
+noMin :: EvalConstraints -> EvalConstraints
 noMin (Constraints p mx mn) = (Constraints p mx NoMin)
 
-noMax :: Constraints -> Constraints
+noMax :: EvalConstraints -> EvalConstraints
 noMax (Constraints p mx mn) = (Constraints p NoMax mn)
 
 {-fits :: a -> String -> Bool
@@ -162,10 +162,14 @@ firstLetter = map head
 
 lastLetter = map last
 
+missing_center xs = concat . nub . map (\x -> subtractFrom x xs) . substr . strip_toptail $ xs
+strip_toptail = reverse . drop 1 . reverse . drop 1
+
 top_tail_substrings :: String -> [String]
-top_tail_substrings x =  top_substrings x ++ tail_substrings x
+top_tail_substrings x =  top_substrings x ++ tail_substrings x ++ missing_center x
 
 top_substrings :: String -> [String]
+top_substrings [] = []
 top_substrings (x:[]) = []  
 top_substrings (x:xs) = [[x]] ++ (map  (\y -> [x] ++ y) (top_substrings xs))
 

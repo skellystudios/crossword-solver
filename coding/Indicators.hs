@@ -18,6 +18,7 @@ isDefIndicator _ = False
 
 
 isConsIndicator ["on"] = True
+isConsIndicator ["to"] = True
 isConsIndicator ["over"] = True
 isConsIndicator _ = False
 
@@ -164,6 +165,8 @@ insertionIndicators = Data.Set.fromList [
 isReverseInsertionWord :: [String] -> Bool
 isReverseInsertionWord xs = Data.Set.member (concatWithSpaces xs) reverseInsertionIndicators
 reverseInsertionIndicators = Data.Set.fromList [
+	"on",
+	"to pen",
 	"frames",
 	"grasping",
 	"harbouring",

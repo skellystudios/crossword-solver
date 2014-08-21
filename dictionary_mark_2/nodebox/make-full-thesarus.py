@@ -18,9 +18,9 @@ def main():
 
     extract_to_dictionary()
 
-    extend_dictionary_with_wordnet()
+    #extend_dictionary_with_wordnet()
 
-    extend_dictionary_with_conjugations()
+    #extend_dictionary_with_conjugations()
 
     write_output_string()
 
@@ -111,23 +111,35 @@ def add_or_append(key, value):
 
 def write_output_string():
 
-    wordset =  join_sublists(create_sublists(sys.argv))
-    print wordset
+
+    # Make a list of all the keys, sorted, and map it to their numbers
+    keysout = '['
+    ids = dict()
+    i = 0
+    for key in sorted(dictionary.keys()):
+        ids[key] = i
+        keysout += '"' + key + '",'
+        i += 1
+    keysout = keysout[:-1]
+    keysout += ']'
+
+    fkeys = open('data/thesaurus-list-keys','w')
+    fkeys.write(keysout)
+    fkeys.close
+
+
     f2 = open('data/thesaurus-list','w')
     f2.write('[')
-
      
     for key in dictionary.keys():
 
-        if len(sys.argv) < 2 or key in wordset:
-            string = "(\"" + key + "\",["
-            related = set(dictionary[key])
-            for defn in related:
-                string = string + "\"" + defn + "\","
-            string = string[:-1]
-            string = string + "]),"
-            f2.write(string)
-
+        string = "(\"" + key + "\",["
+        related = set(dictionary[key])
+        for defn in related:
+            string += "keys!" + str(ids[defn]) + ","
+        string = string[:-1]
+        string += "]),"
+        f2.write(string)
 
     f2.write('("",[])]')
     f2.close()
