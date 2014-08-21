@@ -356,6 +356,7 @@ isLLIndicator _ = False
 isPartialIndicator ["mostly"] = True
 isPartialIndicator ["almost"] = True
 isPartialIndicator ["nearly"] = True
+isPartialIndicator ["tailless"] = True
 isPartialIndicator _ = False
 
 isSubtractionWord ["leaving"] = True

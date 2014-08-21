@@ -61,9 +61,13 @@ syn :: String -> [String]
 syn ('t':'o':' ':xs) = syn xs
 syn x = thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
 
-thes x = case (Map.lookup x thesaurus) of 
-  Nothing -> []
-  Just x -> x
+
+
+thes x = decode_thes x
+
+
+
+
 
 abbreviation' "spades" = ["s"]
 abbreviation' "river" = ["r"]

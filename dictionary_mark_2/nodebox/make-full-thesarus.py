@@ -16,30 +16,43 @@ def main():
 
     global dictionary
 
+    print "Beginning to extract to dictionary"
     extract_to_dictionary()
 
-    #extend_dictionary_with_wordnet()
 
-    #extend_dictionary_with_conjugations()
+    print "Beginning to extend from wordnet"
+    extend_dictionary_with_wordnet()
 
+
+    print "Beginning to extend with conjugations"
+    extend_dictionary_with_conjugations()
+
+
+    print "Beginning to write output"
     write_output_string()
 
 def extend_dictionary_with_conjugations():
 
-    functions = [en.verb.present, en.verb.present_participle, en.verb.past, en.verb.past_participle]
+    functions = [en.verb.present, en.verb.present_participle, en.verb.past, en.verb.past_participle, en.noun.plural]
 
+    i = 0
     for base in dictionary.keys():
+        if i%5000 == 0:
+            print i
+        i += 1
         for f in functions:
             try: 
-                print f
+                #print f
                 base2 = f(base)
                 if base == base2:
                     continue
                 for word in dictionary[base]:
                     try:
-                       # print "word: " + word
+                        # print "word: " + word
                         word2 = f(word)
-                       # print "word2: " + word2
+                        # print "word2: " + word2
+                        if word2 ==base:
+                            continue
                         add_or_append(word2, base2)
                         add_or_append(base2, word2)
                     except:
@@ -47,7 +60,8 @@ def extend_dictionary_with_conjugations():
             except:
                 continue    
 
-                
+            
+
 
 
 def extend_dictionary_with_wordnet():
@@ -136,7 +150,7 @@ def write_output_string():
         string = "(\"" + key + "\",["
         related = set(dictionary[key])
         for defn in related:
-            string += "keys!" + str(ids[defn]) + ","
+            string += str(ids[defn]) + ","
         string = string[:-1]
         string += "]),"
         f2.write(string)

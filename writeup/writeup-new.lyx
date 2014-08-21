@@ -7510,7 +7510,51 @@ fits_constraints c xs
 \end_layout
 
 \begin_layout Standard
-ParseTrees which are 
+Often, we will want to change the constraints on the evaluation of the subtrees
+ in a parse tree.
+ For example in the clue 
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.{PARTIAL} [.SYN "word" ] ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+we can't easily define a maximim length for our evaluation of synonym, as
+ an unspecified amount of letters will be removed when we apply the Partial
+ expression.
+ We need to define function which 
 \end_layout
 
 \begin_layout Standard

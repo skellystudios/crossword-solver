@@ -70,8 +70,8 @@ main = do
          -- print $ {-# SCC "second" #-} (map solve clues)
 
 -- Timeout is in microseconds
-seconds = 100000 --0
-dosolve x = timeout (1*seconds) $ do
+seconds = 1000000
+dosolve x = timeout (10*seconds) $ do
             print $ solve x
 
 
