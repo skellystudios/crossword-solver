@@ -20,15 +20,15 @@ eval_tree (AnagramNode x y) c =
 								if (is_less_than_min (minC c) (length y')) then [] else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
 
 eval_tree (SynonymNode x) c = filter (fits_constraints c) (syn x ++ [x])
-eval_tree (ConsListNode xs) c = eval_trees xs c --map concat (sequence (map (eval_tree n) xs))
--- eval_tree (ConsNode x y) c = [x' ++ y' | x' <- eval_tree x (noPrefix c), y' <- eval_tree y (Constraints Unconstrained (mx - length x') (mn - length x'))]
+eval_tree (ConcatNode xs) c = eval_trees xs c --map concat (sequence (map (eval_tree n) xs))
+-- eval_tree (ConsNode x y) c = [x' ++ y' | x' <- eval_tree x (noPrefix c), y' <- eval_tree y (Constraints NoPrefix (mx - length x') (mn - length x'))]
 eval_tree (InsertionNode ind x y) c = concat[insertInto x' y' | y' <- eval_tree y (noMin . noPrefix $ c), x' <- eval_tree x (decreaseMax (length y') . decreaseMin (length y') . noPrefix $ c)]
 eval_tree (SubtractionNode ind x y) c = concat[subtractFrom x' y' | x' <- eval_tree x no_constraints, y' <- eval_tree y no_constraints, fits_min c (length y' - length x'), fits_min c (length y' - length x')]
 eval_tree (HiddenWordNode ind ys) c = [x | x <- substr (concat ys), (length x) > 0, fits_constraints c x]
 eval_tree (ReversalNode ind ys) c = map reverse (eval_tree ys c)
 eval_tree (FirstLetterNode ind ys) c = [firstLetter ys]
 eval_tree (LastLetterNode ind ys) c = [lastLetter ys]
-eval_tree (PartialNode ind y) c = filter (fits_constraints c) (concat [top_tail_substrings y | y <- eval_tree y no_constraints])
+eval_tree (PartialNode ind y) c = filter (fits_constraints c) . concatMap partials $ eval_tree y no_constraints
 eval_tree (ConsIndicatorNode x) c = [""]
 
 
@@ -36,7 +36,7 @@ eval_tree (ConsIndicatorNode x) c = [""]
 eval_trees :: [ParseTree] -> EvalConstraints -> [String]
 eval_trees (x:[]) c = eval_tree x (noPrefix c)
 eval_trees (x:xs) (Constraints p mx mn) =
-  let starts = [start | start <- eval_tree x (Constraints Unconstrained mx NoMin), fits p start]
+  let starts = [start | start <- eval_tree x (Constraints NoPrefix mx NoMin), fits p start]
   in  concatMap f $ starts 
   where f start =  map (\x -> start ++ x) (eval_trees xs (noMin . add_partial start $ (Constraints p mx mn)))
 
@@ -52,12 +52,12 @@ instance Constraint MinLength where
 instance Constraint PrefixConstraint where
 	fits p s = is_prefix_with p s
 
-no_constraints = (Constraints Unconstrained NoMax NoMin)
+no_constraints = (Constraints NoPrefix NoMax NoMin)
 
 new_constraint n = Constraints (Prefix []) (Max n) (Min n)
 
 is_prefix_with (Prefix p) x = is_prefix (p ++ x)
-is_prefix_with Unconstrained x = True
+is_prefix_with NoPrefix x = True
 
 is_lte_max (Max mx) n = n <= mx 
 is_lte_max NoMax n = True
@@ -69,7 +69,7 @@ is_less_than_min (Min mn) n = n < mn
 is_less_than_min NoMin n = True
 
 extend_prefix (Prefix p) x = Prefix (p ++ x)
-extend_prefix Unconstrained x = Unconstrained
+extend_prefix NoPrefix x = NoPrefix
 
 fits_max (Constraints p mx mn) x = is_lte_max mx x
 fits_min (Constraints p mx mn) x = is_gte_min mn x
@@ -100,7 +100,7 @@ prefC :: EvalConstraints -> PrefixConstraint
 prefC (Constraints p mx mn) = p
 
 noPrefix :: EvalConstraints -> EvalConstraints
-noPrefix (Constraints p mx mn) = (Constraints Unconstrained mx mn)
+noPrefix (Constraints p mx mn) = (Constraints NoPrefix mx mn)
 
 noMin :: EvalConstraints -> EvalConstraints
 noMin (Constraints p mx mn) = (Constraints p mx NoMin)
@@ -155,7 +155,7 @@ find_in (x:xs) (y:ys) n 1 = if x==y
 substr [] = [[]]
 substr (x:xs) = (map ((:) x) (contiguoussubstr xs)) ++ substr xs 
 
-contiguoussubstr [] = [[]]
+contiguoussubstr  [] = [[]]
 contiguoussubstr (x:xs) = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
 firstLetter = map head
@@ -165,8 +165,8 @@ lastLetter = map last
 missing_center xs = concat . nub . map (\x -> subtractFrom x xs) . substr . strip_toptail $ xs
 strip_toptail = reverse . drop 1 . reverse . drop 1
 
-top_tail_substrings :: String -> [String]
-top_tail_substrings x =  top_substrings x ++ tail_substrings x ++ missing_center x
+partials :: String -> [String]
+partials x =  top_substrings x ++ tail_substrings x ++ missing_center x
 
 top_substrings :: String -> [String]
 top_substrings [] = []

@@ -5,6 +5,8 @@
 \textclass article
 \begin_preamble
 \usepackage{qtree}
+\newsavebox{\partbox} % Declare this only once, in your preamble!
+\newsavebox{\partboxx} % Declare this only once, in your preamble!
 \usepackage{pdflscape}
 \AtBeginDocument{%
 \let\ref\autoref
@@ -7512,7 +7514,7 @@ fits_constraints c xs
 \begin_layout Standard
 Often, we will want to change the constraints on the evaluation of the subtrees
  in a parse tree.
- For example in 
+ For example in the clue 
 \end_layout
 
 \begin_layout Verse
@@ -7551,14 +7553,499 @@ Tree[.{PARTIAL} [.SYN "word" ] ]
 \end_layout
 
 \begin_layout Standard
-\begin_inset VSpace 5cm
+we can't easily define a maximim length for our evaluation of synonym, as
+ an unspecified amount of letters will be removed when we apply the Partial
+ expression.
+ We need to define function which modifies our constraints to remove the
+ maximum length constraint, as well as a similar one for the minimum:
+\end_layout
+
+\begin_layout LyX-Code
+noMax :: EvalConstraints -> EvalConstraints 
+\end_layout
+
+\begin_layout LyX-Code
+noMax (Constraints p mx mn) = (Constraints p NoMax mn)
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+noMin :: EvalConstraints -> EvalConstraints 
+\end_layout
+
+\begin_layout LyX-Code
+noMin (Constraints p mx mn) = (Constraints p mx NoMin)
+\end_layout
+
+\begin_layout Standard
+we can then define the eval_tree function for partial nodes as
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (PartialNode ind y) c =  
+\end_layout
+
+\begin_layout LyX-Code
+      filter (fits_constraints c) .
+ concatMap partials $ eval_tree y (noMax c) 
+\end_layout
+
+\begin_layout Standard
+For our concatentation nodes, the requirement is slightly more complex,
+ as the constraints imposed on the parse of any one tree depend on the each
+ possible evaluation of all the other possible trees in the forest.
+ In a simple example: From a clue such as
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Outspoken shocking court (6)
+\end_layout
+
+\end_inset
+
+, we take a parse such as
+\begin_inset VSpace medskip
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-We then want to re-define our definition of 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setbox
+\backslash
+partbox=
+\backslash
+hbox{
+\backslash
+Tree [.SYN shocking ] } 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setbox
+\backslash
+partboxx=
+\backslash
+hbox{
+\backslash
+Tree [.SYN court ] } 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+qroof{
+\backslash
+usebox{
+\backslash
+partbox}  
+\backslash
+usebox{
+\backslash
+partboxx} }.CONCAT  
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and look at the evaluation criteria at each stage.
+ The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+ConcatNode
+\end_layout
+
+\end_inset
+
+ will be given the constraints 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Max 6 Min 6
+\end_layout
+
+\end_inset
+
+.
+ We will the start to parse the subtrees in the forest of the concatenation.
+ Parsing left-to-right, we parse the left 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SynonymNode
+\end_layout
+
+\end_inset
+
+ subtree with the constraints 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Max 6 NoMin
+\end_layout
+
+\end_inset
+
+.
+ Two of the partial evalautions we might come to are:
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+1.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+qroof{ "dire"  
+\backslash
+usebox{
+\backslash
+partboxx} }.CONCAT  
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "5col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
+and
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "45col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+2.
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+qroof{ "lousy"  
+\backslash
+usebox{
+\backslash
+partboxx} }.CONCAT  
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can see here that in partial evalaution 1, the constraints that we need
+ to apply to the right 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SynonymNode
+\end_layout
+
+\end_inset
+
+ will be 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Max 2 NoMin
+\end_layout
+
+\end_inset
+
+, whereas in 2, it will be 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Max 1 NoMin
+\end_layout
+
+\end_inset
+
+.
+ This means we will need to evaluate each subtree in the forest of a concatenati
+on expression with different constraints depending on the outcomes of the
+ evaluation of previous evaluations.
+ 
+\end_layout
+
+\begin_layout Standard
+We define a function to allow us to decrease the maximum length constraint
+ as we go further down the list (and also similar for increasing, and for
+ changing the min constraint).
+\end_layout
+
+\begin_layout LyX-Code
+decreaseMax :: Int -> EvalConstraints -> EvalConstraints 
+\end_layout
+
+\begin_layout LyX-Code
+decreaseMax n (Constraints (Max mx) mn) = Constraints  (Max (mx - n)) mn
+ 
+\end_layout
+
+\begin_layout LyX-Code
+decreaseMax n (Constraints NoMax mn) = Constraints NoMax mn 
+\end_layout
+
+\begin_layout Standard
+and a function which updates the constraints given a string we've just generated
+:
+\end_layout
+
+\begin_layout LyX-Code
+add_partial :: String -> EvalConstraints -> EvalConstraints 
+\end_layout
+
+\begin_layout LyX-Code
+add_partial x c = decreaseMax (length x) c 
+\end_layout
+
+\begin_layout Standard
+So in this example, applying the function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+add_partial 
+\begin_inset Quotes eld
+\end_inset
+
+dire
+\begin_inset Quotes erd
+\end_inset
+
+ (Constraints Max 6 NoMin)
+\end_layout
+
+\end_inset
+
+ will give the correct constraints for the second tree's evaluation: 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Max 2 NoMin
+\end_layout
+
+\end_inset
+
+.
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can then define a function 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+eval_trees
+\end_layout
+
+\end_inset
+
+ that will handle passing the right constraints down the list of 
+\end_layout
+
+\begin_layout LyX-Code
+eval_trees :: [ParseTree] -> EvalConstraints -> [String] 
+\end_layout
+
+\begin_layout LyX-Code
+eval_trees (x:[]) c = eval_tree x  c 
+\end_layout
+
+\begin_layout LyX-Code
+eval_trees (x:xs) c = 
+\end_layout
+
+\begin_layout LyX-Code
+       let starts = [start | start <- eval_tree x (noMin c)]  
+\end_layout
+
+\begin_layout LyX-Code
+         -- Generate options for the first in our list
+\end_layout
+
+\begin_layout LyX-Code
+       in concatMap f $ starts 
+\end_layout
+
+\begin_layout LyX-Code
+         -- For each option, evaluate the rest with updated constraints
+\end_layout
+
+\begin_layout LyX-Code
+       where f start = map (
+\backslash
+x -> start ++ x) (eval_trees xs (apply_partial start c))
+\end_layout
+
+\begin_layout LyX-Code
+         -- Append from each possible evaluation, after updating constraints
+ 
+\end_layout
+
+\begin_layout Standard
+overall 
+\end_layout
+
+\begin_layout Standard
+Now we can re-define 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+eval_tree
+\end_layout
+
+\end_inset
+
+ for the concatenation expression
+\end_layout
+
+\begin_layout LyX-Code
+eval_tree (ConcatNode xs) c = eval_trees xs c
+\end_layout
+
+\begin_layout Standard
+Finall, we can re-define our definition of 
 \begin_inset Flex Code
 status open
 
@@ -7568,19 +8055,217 @@ eval
 
 \end_inset
 
- to set the maximum and the minimum to 
+ to set the initial top-level maximum and the minimum constraints to the
+ length of the required answer
 \end_layout
 
 \begin_layout LyX-Code
-eval (Def d pt l) = [Answer x (Def d pt l) |
+eval (Def d pt len) = [Answer x (Def d pt len) |
 \end_layout
 
 \begin_layout LyX-Code
-                                        x <- evalTree pt]
+                                        x <- evalTree pt (Constraints Max
+ len Min len)]
+\end_layout
+
+\begin_layout Subsubsection
+Analysis of how good that is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Do this
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
-Constain against known letters 
+Constrain against known letters 
+\end_layout
+
+\begin_layout Subsubsection
+Motivation
+\end_layout
+
+\begin_layout Standard
+Here again we turn to behaviour of a human solver:
+\end_layout
+
+\begin_layout Quotation
+
+\shape italic
+\begin_inset Quotes eld
+\end_inset
+
+It can't be that, as there are no words that start with 
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Quotation
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert a good example here, that we can use later on too
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Currently, we are performing a large amount of wasteful evaluations on subtrees
+ that will never be ouputted as a valid answer, as we already know that
+ given the the preceding letters that we've already evaluated, there are
+ no possible words in our wordlist that we can make.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Add some illustrated examples
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Implementation
+\end_layout
+
+\begin_layout Standard
+We want to add another contraint while solving, which is a check that what
+ we are evaluating can be a prefix of a valid word.
+ We add a function to calculate all proper prefixes of a given word
+\end_layout
+
+\begin_layout LyX-Code
+prefixes :: String -> [String]
+\end_layout
+
+\begin_layout LyX-Code
+prefixes = rprefixes .
+ reverse 
+\end_layout
+
+\begin_layout LyX-Code
+rprefixes (x:xs) = [reverse xs++[x]] ++ rprefixes xs 
+\end_layout
+
+\begin_layout LyX-Code
+rprefixes [] = []
+\end_layout
+
+\begin_layout Standard
+and some functions to precomputer a set of prefixes
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+For a very large wordlist it may be preferable to create a prefix tree.
+ For my dataset, however, I found the extra memory footprint to be an acceptable
+ tradeoff for constant-time lookups
+\end_layout
+
+\end_inset
+
+ for our dataset and check if a given word is a prefix
+\end_layout
+
+\begin_layout LyX-Code
+is_prefix x = member x wl_prefixes 
+\end_layout
+
+\begin_layout LyX-Code
+wl_prefixes = fold add_prefixes empty wordlist
+\end_layout
+
+\begin_layout LyX-Code
+add_prefixes word set = union (fromList (prefixes word)) set 
+\end_layout
+
+\begin_layout Standard
+We want to add prefix constraints alongside the current maximum and minimum
+ length constraints, to take advantage of the current mechanisms we have
+ set up to propegate the prefixes down the nested parse trees.
+ We update the type definitions and create similar functions for our new
+ constraint:
+\end_layout
+
+\begin_layout LyX-Code
+data EvalConstraints = Constraints PrefixConstraint MaxLength MinLength
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+is_prefix_with (Prefix p) x = is_prefix (p ++ x) 
+\end_layout
+
+\begin_layout LyX-Code
+is_prefix_with NoPrefix x = True
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+class Constraint c where     
+\end_layout
+
+\begin_layout LyX-Code
+[...]
+\end_layout
+
+\begin_layout LyX-Code
+instance Constraint PrefixConstraint where 	
+\end_layout
+
+\begin_layout LyX-Code
+fits p s = is_prefix_with p s
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+extend_prefix_by x (Constraints (Prefix p) mx mn) = (Constraints (Prefix
+ (p++x)) mx mn) 
+\end_layout
+
+\begin_layout LyX-Code
+extend_prefix_by x c = c
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+add_partial x  = decreaseMax (length x) .
+ extend_prefix_by x 
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Section
