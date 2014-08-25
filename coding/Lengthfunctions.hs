@@ -8,7 +8,7 @@ import Anagram
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
 
-minLength (ConsListNode trees) = (sum . map minLength) trees
+minLength (ConcatNode trees) = (sum . map minLength) trees
 minLength (AnagramNode ind strings) = (length . concat) strings
 minLength (HiddenWordNode ind strings) = 2
 minLength (InsertionNode ind tree1 tree2) = (minLength tree1) + (minLength tree2)
@@ -21,7 +21,7 @@ minLength (ConsNode one two) = minLength one + minLength two
 minLength (PartialNode ind tree) = 1
 minLength (ConsIndicatorNode xs) = 0
 
-maxLength (ConsListNode trees) = (sum . map maxLength) trees
+maxLength (ConcatNode trees) = (sum . map maxLength) trees
 maxLength (AnagramNode ind strings) = (length . concat) strings
 maxLength (HiddenWordNode ind strings) = (length . concat $ strings) - 2
 maxLength (InsertionNode ind tree1 tree2) = (maxLength tree1) + (maxLength tree2)

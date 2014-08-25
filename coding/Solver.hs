@@ -92,24 +92,28 @@ lowercase :: Clue -> Clue
 lowercase (Clue (xs, n)) = Clue (map toLower xs, n)
 
 
+xxxxxxisInWordlist x = True
+
 parse :: Clue -> [Parse]
 parse (Clue (xs, n)) = parseWithIndicator (words xs, n) ++ parseWithoutIndicator (words xs, n)
 
 parseWithoutIndicator :: ([String], Int) -> [Parse]
 parseWithoutIndicator (xs, n) = let parts = twoParts xs
-        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), isInWordlist(concatWithSpaces (fst part)), y' <- (parseClue (snd part) n)]
+        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), xxxxxxisInWordlist(concatWithSpaces (fst part)), y' <- (parseClue (snd part) n)]
 
 parseWithIndicator :: ([String], Int) -> [Parse]
 parseWithIndicator (xs, n) = let parts = threeParts xs
-        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
-        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
+        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), xxxxxxisInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
+        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), xxxxxxisInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
 
 parseClue :: [String] -> Int -> [ParseTree]
 parseClue ys n= (if length ys > 1 then parseConcatNodes ys n else [])
 	++ (parseWithoutConcat ys n)
 
+
+
 parseWithoutConcat :: [String] -> Int -> [ParseTree]
-parseWithoutConcat ys n = [SynonymNode (concatWithSpaces ys)] 
+parseWithoutConcat ys n = parseSynonymNodes ys n
   ++ (if length ys == 1 then parseConsIndicatorNodes ys n else [])
   ++ (if length ys > 1 then parseAnagramNodes ys n else [] )
   ++ (if length ys > 1 then parseHiddenWordNodes ys n else [])
@@ -120,15 +124,14 @@ parseWithoutConcat ys n = [SynonymNode (concatWithSpaces ys)]
   ++ (if length ys > 1 then parseLastLetterNodes ys n else [])
   ++ (if length ys > 1 then parsePartialNodes ys n else [])
 
-
-parseJustAbbreviations :: [String] -> Int -> [ParseTree]
-parseJustAbbreviations ys n = [SynonymNode (concatWithSpaces ys)] 
+parseSynonymNodes :: [String] -> Int -> [ParseTree]
+parseSynonymNodes xs n = if ((length . syn . unwords $ xs) > 0) then [SynonymNode (unwords xs)] else []
 
 parseConsNodes :: [String] -> Int -> [ParseTree]
 parseConsNodes xs n = let parts = twoParts xs
                    in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
 parseConcatNodes :: [String] -> Int -> [ParseTree]
-parseConcatNodes xs n = [ConsListNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
+parseConcatNodes xs n = [ConcatNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
 
 parseConsIndicatorNodes :: [String] -> Int -> [ParseTree]
 parseConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorNode xs] else []
@@ -173,7 +176,7 @@ cost_parse (DefNode s tree n) = cost tree * (length_penalty s)
 length_penalty ws = 60 + (length (words ws))   -- Magic constant here ):
 
 cost :: ParseTree -> Int
-cost (ConsListNode trees) = 20 * (length trees) + sum (map cost trees) 
+cost (ConcatNode trees) = 20 * (length trees) + sum (map cost trees) 
 cost (AnagramNode ind strings) = 10
 cost (HiddenWordNode ind strings) = 40
 cost (InsertionNode ind tree1 tree2) = 40 + cost tree1 + cost tree2  -- weight against complex insertions?
@@ -207,7 +210,16 @@ stripFits s = filter (answerFits s)
 answerPart :: Answer -> String
 answerPart (Answer x y) = x
 
+check_answer_equals :: String -> [Answer] -> [Answer]
+check_answer_equals y z = filter (\x -> answerPart x == y) z
+
 --------------------------- EVALUATION ----------------------------
+
+is_not_a_cheat :: Parse -> Bool
+is_not_a_cheat (DefNode def (SynonymNode ys) n) = length (syn def) >= 1
+is_not_a_cheat _ = True
+
+remove_cheats = filter is_not_a_cheat
 
 check_valid_words ::  [Answer] -> [Answer]
 check_valid_words = filter check_valid_word
@@ -246,7 +258,7 @@ possible_words = check_valid_words . constrain_lengths  . evaluate . parse
 
 
 
-solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . sort_most_likely . constrain_parse_lengths . parse . lowercase
+solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . remove_cheats . sort_most_likely . constrain_parse_lengths . parse . lowercase
 
 
 
@@ -257,7 +269,7 @@ solve_no_syn_sorted = head' . sort_solved  . take 100 . solve_no_syn
 
 solve_no_syn_unsorted = head'  . solve_no_syn
 
-solve_no_syn = check_valid_words . constrain_lengths  . evaluate . sort_most_likely . constrain_parse_lengths . parse . lowercase
+solve_no_syn = check_valid_words . constrain_lengths  . evaluate . remove_cheats . sort_most_likely . constrain_parse_lengths . parse . lowercase
 
 solve_clue = solve . clue
 
