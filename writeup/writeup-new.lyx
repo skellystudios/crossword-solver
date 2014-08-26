@@ -160,10 +160,24 @@ This is the abstract
 \end_layout
 
 \begin_layout Standard
+\align center
 \begin_inset Newpage pagebreak
 \end_inset
 
 Acknowledgements
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To Bob Hargrave, who taught me how to solve crosswords, and for Richard
+ Bird, who taught me how to teach computers to solve them.
+\end_layout
+
+\begin_layout Standard
+\align center
 \begin_inset Newpage pagebreak
 \end_inset
 
@@ -306,12 +320,6 @@ Definition of Cryptic Crosswords
 \end_layout
 
 \begin_layout Standard
-To start, let us provide some basic definitions around crosswords and their
- taxonomies.
- 
-\end_layout
-
-\begin_layout Standard
 A crossword is a puzzle, usually published in newspapers or magazines.
  They consist of a grid of squares, often 15 x 15.
  Some of the squares are white (i.e.
@@ -379,14 +387,24 @@ Cryptic
 \noun default
  
 \series default
-clues are less straight-forward, appearing on the surface to be a valid
- syntactic utterance in English, but actually consisting of a definition
- (as in the Straight clue) and some wordplay which the solver can use to
- arrive at the same answer as with the definition by apply a series of transform
-ations and operations.
- The challenge is that the definition and the wordplay are not clearly separated
-, and that there are multiple ways to apply to the transformations, but
- with only on yielding the correct answer.
+clues are less straightforward, appearing on the surface to be a valid syntactic
+ utterance in English, but actually consisting of a definition (as in the
+ Straight clue) and some wordplay which the solver can use to arrive at
+ the same answer as with the definition by apply a series of transformations
+ and operations.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Insert some example here TF
+\end_layout
+
+\end_inset
+
+The challenge is that the definition and the wordplay are not clearly separated,
+ and that there are multiple ways to apply to the transformations, but with
+ only on yielding the correct answer.
  
 \end_layout
 
@@ -418,31 +436,18 @@ While not a topic well covered in scientific literature in general, what
 ble into three main groups
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Paragraph
 Generation of Cryptic Clues
 \end_layout
 
 \begin_layout Standard
 The largest body of work that exists is centered around the generation of
- cryptic clues, focused largely around analysis of how string literals from
- a pre-determined answer can be transformed by set clueing patterns, as
- well as some work around measures of the quality of generated clues.
+ cryptic clues, focusing largely around analysis of how string literals
+ from a pre-determined answer can be transformed by set clueing patterns,
+ as well as some work around measures of the quality of generated clues.
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-More here
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
+\begin_layout Paragraph
 Interpreting Clues
 \end_layout
 
@@ -452,35 +457,24 @@ The next set are the select few who have done prior, similar investigations
 s and notation for the sorts of clue types that appear in the majority of
  cryptic crosswords, and some attempts at solving based on these interpretations.
  
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-More here
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
+\begin_layout Paragraph
 Other Work
 \end_layout
 
 \begin_layout Standard
-There has also been some work done towards solving non-cryptic crosswords
- probabilistically, working on whole-grid solutions rather than individual
- clues.
- There are also some more left-of-field studies done: statistical studies
- into errors made during manual solving, and psychological studies into
- solving.
+There has also been some work aimed at solving non-cryptic crosswords probabilis
+tically, working on whole-grid solutions rather than individual clues.
+ A number of left-of-field studies have also been undertaken, e.g.
+ statistical studies into errors made during manual solving, and psychological
+ studies into solving.
  
 \begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-More here
+More here TF
 \end_layout
 
 \end_inset
@@ -521,8 +515,8 @@ Bug starts to move in dark, glowing endlessly (5)
 \begin_layout Standard
 cluing for 'MIDGE'.
  Usually "endlessly" and similar mean "remove the last letter", but here
- it is one of five consecutive words to form an acronym from, with the word
- "starts" as an indicator.
+ it is one of five consecutive words to form an acronym from, with the words
+ "starts to" as an indicator.
 \end_layout
 
 \begin_layout Paragraph
@@ -534,7 +528,6 @@ Even with only a few different clue types, the number of different readings
  of one clue based on those grows exponentially with the length of the clue.
  This means that unless heuristics are applied, the evaluation time for
  a whole grid longer clues may be unfeasibly long.
- Even longer than it takes me to do the Times Crossword.
  
 \end_layout
 
@@ -653,7 +646,7 @@ As well as being made up of encrypted and hidden meanings, cryptic crosswords
  also draws on a diverse knowledge base of synonyms, abbreviations, facts
  etc.
  These can include information as diverse as names of capital cities, common
- sayings, and the fact that one may carry a wallet in ones pocket.
+ sayings, and the fact that one may carry a wallet in one's pocket.
  
 \end_layout
 
@@ -693,15 +686,15 @@ The steps for compiling and running a computer program apply also to solving
  structure and then that structure evaluated to produce the final answer.
  Unusually for a programming language, however, the grammar of a cryptic
  crossword is highly ambiguous, and requires complex parsing.
- Firstly, programming language are only usually required to output the one
- valid abstract syntax tree, however here we may need to output many thousands
- in order to evaluate them to see which yields the correct answer.
+ Firstly, programming languages are only usually required to output the
+ one valid abstract syntax tree, however here we may need to output many
+ thousands in order to evaluate them to see which yields the correct answer.
  Furthermore, the grammar cannot be expressed without using complex context-sens
 itive features such as lookbacks, lookaheads and backtracking.
  Most major programming languages are parsed without these features, allowing
  information to flow in one direction from the lexer to the parser.
  To parse a cryptic crossword, lexing and parsing need to take place simultaneou
-sly in a process referred to as called 
+sly in a process referred to as 
 \begin_inset Quotes eld
 \end_inset
 
@@ -710,6 +703,16 @@ Scannerless Parsing
 \end_inset
 
 .
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+citation TF
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -754,9 +757,9 @@ Parsing Frameworks and Notation
 
 \begin_layout Standard
 Some different notations for denoting parsing of cryptic clues have come
- out of previous work – in order to properly provide a rigorous analysis
- of the structures and conventions of cryptic crosswords, it is necessary
- to analyze and choose a framework in which to do it.
+ out of previous work – in order to provide a rigorous analysis of the structure
+s and conventions of cryptic crosswords, it is necessary to analyze and
+ choose a framework in which to do it.
  
 \end_layout
 
@@ -808,8 +811,8 @@ l manipulation
 \end_layout
 
 \begin_layout Standard
-Still, they have provided the basis for future work, and begun a basic enumerati
-on of clue types.
+Regardless, the paper provides a basis for future work, and begins a basic
+ enumeration of clue types.
  
 \end_layout
 
@@ -828,7 +831,7 @@ Double underlining is used to denote the definition, underlining denotes
  an operator, with its class as an optional subscript, with scope provided
  by brackets and concatenation (and definition/wordplay separation) given
  by a semi-colon.
- Thus in their given example: 
+ The following example is taken from their paper:
 \end_layout
 
 \begin_layout LyX-Code
@@ -972,8 +975,8 @@ The (rev.) notation is most commonly used when the wordplay consists of a
 \end_layout
 
 \begin_layout Standard
-Letters abc removed, as in[c]OUNT to represent 'count' with c removed; the
- convention is to use lower case for the removed letters.
+Letters abc removed, as in [c]OUNT to represent 'count' with c removed;
+ the convention is to use lower case for the removed letters.
  
 \end_layout
 
@@ -1018,7 +1021,7 @@ aBcDeF
 \end_layout
 
 \begin_layout Standard
-Alternate letters of ABCDEF (shorthand for[ a]B[c]D[e]F).
+Alternate letters of ABCDEF (shorthand for[a]B[c]D[e]F).
  
 \end_layout
 
@@ -1028,8 +1031,8 @@ PICCUP
 
 \begin_layout Standard
 Hart and Davies define what is currently the most satisfying proposal for
- a formal syntactical definition of cryptic crossword syntax, in a loosely
- BNF grammar.
+ a formal syntactical definition of cryptic crossword syntax, in a BNF-like
+ grammar.
  Theirs is the only current definition that closely resembles a usable formally
  defined language.
 \end_layout
@@ -1038,6 +1041,7 @@ Hart and Davies define what is currently the most satisfying proposal for
 Their interpretation only specifies the grammar in terms of building an
  abstract syntax tree, rather than attempting to include a notation for
  clue or answer.
+ The syntax is as given in their paper.
 \end_layout
 
 \begin_layout LyX-Code
@@ -1069,78 +1073,13 @@ Equ Indicator → Word (.Word)*
 \end_layout
 
 \begin_layout Subsection
-Syntactic and Metasyntactic Conventions
-\end_layout
-
-\begin_layout Standard
-Here we apply a similar convention to Hart, in using a modified Backus Naur
- Form (BNF).
- We will later see that a context-free grammar may not be sufficient to
- model a cryptic crossword, and may have further deficiencies as a basis
- for finding a solution.
- Nevertheless, we will adopt a similar notation: 
-\end_layout
-
-\begin_layout LyX-Code
-→ = is composed of 
-\end_layout
-
-\begin_layout LyX-Code
-, = followed by 
-\end_layout
-
-\begin_layout LyX-Code
-| = or
-\end_layout
-
-\begin_layout LyX-Code
-(x) = x is optional 
-\end_layout
-
-\begin_layout LyX-Code
-x* = 1 or more occurrences of x 
-\end_layout
-
-\begin_layout LyX-Code
-(x)* = 0 or more occurrences of x 
-\end_layout
-
-\begin_layout Standard
-We also take the BNF conventions 
-\end_layout
-
-\begin_layout LyX-Code
-Word = non-terminal symbol 
-\end_layout
-
-\begin_layout LyX-Code
-“word” = string literal 
-\end_layout
-
-\begin_layout LyX-Code
-[x, y, z] = list containing x y and z 
-\end_layout
-
-\begin_layout LyX-Code
-(x, y) = pair x and y 
-\end_layout
-
-\begin_layout Standard
-For clarity, we additionally define: 
-\end_layout
-
-\begin_layout LyX-Code
-String = [any string literal]
-\end_layout
-
-\begin_layout Subsection
 Context Free?
 \end_layout
 
 \begin_layout Standard
-The grammar described in this paper not a regular grammar (for example:
- any of the binary operators generate two non-terminals), but it can be
- formulated as a context-free grammar.
+The grammar we will describe in chapter 3 is not a Regular Grammar (for
+ example: any of the binary operators generate two non-terminals), but it
+ can be formulated as a context-free grammar.
  
 \end_layout
 
@@ -1151,15 +1090,12 @@ context-free grammar
 \noun default
  (CFG) as one in which the expansion of a non-terminal is not affected by
  the symbols before and after it.
-\end_layout
-
-\begin_layout Standard
-While we can certainly define a working grammar for cryptic crossword clues
+ While we can certainly define a working grammar for cryptic crossword clues
  in terms of a CFG, it may be useful to consider other options as a means
  of reducing the number of trees generated during the parsing phase to speed
  up the evaluation phase.
  We could take, for example, the clue length as a contextual variable: in
- that case, a 6 letter clue whose parse tree contains an anagram of a 4-letter
+ that case, a 6-letter clue whose parse tree contains an anagram of a 4-letter
  string cannot yield another anagram of 5 letters.
 \end_layout
 
@@ -1212,6 +1148,18 @@ mixed pears
 \end_inset
 
 ).
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Make this example clearer and update to new graph structure, if graph is
+ the best way of doing it.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1220,9 +1168,9 @@ Syntax vs Semantics
 
 \begin_layout Standard
 Due to the ambiguous and duplicitous nature of the structure of cryptic
- crosswords, especially the deliberate challenges in the lexing phase, unclarity
- between the boundaries between parsing the syntax and evaluating the semantics
- emerge.
+ crosswords, especially the deliberate challenges in the lexing phase, the
+ boundaries between parsing the syntax and evaluating the semantics become
+ less clear.
  
 \end_layout
 
@@ -1235,6 +1183,16 @@ Strings consisting of one or more words can be at once tokens representing
  number of equivalent words (roughly, synonyms: see later for discussion
  about this equivalence relation).
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Give examples here
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1247,12 +1205,22 @@ rough
 \begin_inset Quotes erd
 \end_inset
 
- would parse to the token Rough, which later evaluates to a finite number
- of definitions.
- This may, indeed, be tempting if we had a limited number of candidate words.
- And, indeed, we do need to differentiate these from raw string literals
- that are subject to Hidden Word or Initial Letter operators, or occasionally
- concatenated in their raw form (for example the string 
+ would parse to the token 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Rough
+\end_layout
+
+\end_inset
+
+, which later evaluates to a finite number of definitions.
+ This may be tempting, except for the huge number of words which function
+ as indicators.
+ We do, however, need to differentiate these from raw string literals that
+ are subject to Hidden Word or Anagram operators, or occasionally concatenated
+ in their raw form (for example the string 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1267,7 +1235,7 @@ it
 I think a more manageable way and satisfying way to consider these options
  is to consider them subject to an invisible 'word' operator.
  This keeps the semantics and syntax more separate, but certainly poses
- some challenges for a parser / lexer.
+ some challenges for a parser/lexer.
 \end_layout
 
 \begin_layout Section
@@ -1275,11 +1243,89 @@ The Cryptic Crossword Clue
 \end_layout
 
 \begin_layout Subsection
+Syntactic and Metasyntactic Notation
+\end_layout
+
+\begin_layout Standard
+In the definitions here we write not literate Haskell, but in a convention
+ similar to the one used by Hart, in using a modified Backus Naur Form (BNF).
+ We have seen that a context-free grammar may not be sufficient to model
+ a cryptic crossword, and may have further deficiencies as a basis for finding
+ a solution.
+ Nevertheless, we will adopt a similar notation for clarity: 
+\end_layout
+
+\begin_layout LyX-Code
+→ = is composed of 
+\end_layout
+
+\begin_layout LyX-Code
+, = followed by 
+\end_layout
+
+\begin_layout LyX-Code
+| = or
+\end_layout
+
+\begin_layout LyX-Code
+(x) = x is optional 
+\end_layout
+
+\begin_layout LyX-Code
+x* = 1 or more occurrences of x 
+\end_layout
+
+\begin_layout LyX-Code
+(x)* = 0 or more occurrences of x 
+\end_layout
+
+\begin_layout Standard
+We also take the BNF conventions 
+\end_layout
+
+\begin_layout LyX-Code
+Word = non-terminal symbol 
+\end_layout
+
+\begin_layout LyX-Code
+“word” = string literal 
+\end_layout
+
+\begin_layout LyX-Code
+[x, y, z] = list containing x y and z 
+\end_layout
+
+\begin_layout LyX-Code
+(x, y) = pair x and y 
+\end_layout
+
+\begin_layout Standard
+For clarity, we additionally pre-define the type 
+\end_layout
+
+\begin_layout LyX-Code
+String 
+\end_layout
+
+\begin_layout Standard
+to represent any string literal.
+\end_layout
+
+\begin_layout Subsection
 Structure of a cryptic clue
 \end_layout
 
 \begin_layout Standard
-A cryptic crossword differs from a normal crossword in that the clue for
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+This repeats itself - can we move this further towards the front? TF
+\end_layout
+
+\end_inset
+
+ A cryptic crossword differs from a normal crossword in that the clue for
  each answer consists of two parts.
  The first is the definition, which performs the same function as a clue
  in a 'regular' crossword.
@@ -1306,8 +1352,7 @@ Clue → Definition, (Indicator), Wordplay
 
 \begin_layout Standard
 The final clue will often resemble a valid English utterance, although this
- 'surface reading' (i.e.
- {clue} ) very rarely has any relation to the answer.
+ 'surface reading' very rarely has any relation to the answer.
  Later on we will consider other information and context within the definition
  of a clue.
 \end_layout
@@ -1328,15 +1373,7 @@ The definition carries a variety of linguistic features with it that the
  These include aspect (noun, verb, adjective), plurality (tree, trees),
  tense (go, going, gone).
  These features may also be considered as 'context' to the clue itself.
- 
-\end_layout
-
-\begin_layout Subsubsection
-Formally 
-\end_layout
-
-\begin_layout Standard
-We can define the definition as 
+ We can define the definition as 
 \end_layout
 
 \begin_layout LyX-Code
@@ -1416,6 +1453,16 @@ I include these two operators first, as they really form the backbone or
  They are also unique in being implicitly clued, rather than requiring an
  indicator word to signify their presence.
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+This is ugly, and we should give them first, and then talk about others
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Paragraph
@@ -1499,6 +1546,17 @@ on in our metasemantics, we could define multiple definitions of each operator
  to add this explicitly as it mirrors the structure of an explanation of
  a computer solution (i.e.
  the parse tree).
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+This is a mess
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1534,8 +1592,7 @@ Wordplay → Words | Concatenation | Anagram | Reversion | Contraction
 \end_layout
 
 \begin_layout Standard
-These operators all include an indicator word to show they are being applied
- (as is far more common with operators in programming language parsing!)
+These operators all include an indicator word to show they are being applied.
  Each operator will usually have many different indicators (lists of anagram
  indicators on the web span multiple hundreds).
  Only select ones are included in the specification here.
@@ -1602,6 +1659,16 @@ Comic bare for short comedy play (7,5)
 
 \begin_layout Standard
 In which case we find the more general case one proposed structure: 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+What is this sentence
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1643,6 +1710,16 @@ Even so, most setters that claim to be Ximenean will allow small abbreviations
  We therefore must define a new class which includes String Literals as
  well as the abbreviation where appropriate.
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Get rid of this bit, say that we're going to stick with him and not do that.
+\end_layout
+
+\end_inset
+
+ 
 \end_layout
 
 \begin_layout LyX-Code
@@ -1658,7 +1735,7 @@ StringWordPlay → String | Abbreviation | Contraction
 \end_layout
 
 \begin_layout Paragraph
-Reversion 
+Reversal 
 \end_layout
 
 \begin_layout Standard
@@ -1671,18 +1748,37 @@ Clues can also be reversed.
  to ‘across’ clues, where “taken up” may only apply to ‘down’ clues.
  Further, these clues are usually taken to be ‘fairer’ game for subsequent
  operations to be applied to the target of the reversion.
- Therefore, a clue with nested wordplay such as ("Stressed, made upside-down
- pudding (7)" = DESSERT) would be acceptable, where an equivalent clue as
- an anagram ("Stressed, cooked up pudding") would often not be seen as Ximenean.
+ Therefore, a clue with nested wordplay such as (
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Stressed, made upside-down puddings (7)
+\end_layout
+
+\end_inset
+
+ = DESSERTS) would be acceptable, where an equivalent clue as an anagram
+ (
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Stressed, cooked up puddings
+\end_layout
+
+\end_inset
+
+) would often not be seen as Ximenean.
  
 \end_layout
 
 \begin_layout LyX-Code
-Anagram → ReversionIndictator, Wordplay | Wordplay, ReversionIndictator
+Anagram → ReversalIndictator, Wordplay | Wordplay, ReversalIndictator
 \end_layout
 
 \begin_layout LyX-Code
-ReversionIndicator → 
+ReversalIndicator → 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1742,7 +1838,7 @@ Selection
 \end_layout
 
 \begin_layout Standard
-There are three similar operators here: A pair which select even or odd
+There are three similar operators here: A pair which selects even or odd
  letters respectively, and one which takes initial letters across multiple
  words.
  These are rarely, if ever, applied to anything other than pure strings.
@@ -1800,6 +1896,17 @@ The hidden word clue finds a word which appears as a substring (ignoring
 
 \begin_layout LyX-Code
 'Smack which appears in East Anglian ports.(4)' 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Change this example.
+ As it's shit, and stolen
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1821,9 +1928,7 @@ Homophone
 
 \begin_layout Standard
 Also called 'sounds like', this operator produces homophones of a given
- word.
- They may be spelled differently ('right' and 'rite') or the same but said
- differently ('Polish' and 'polish').
+ word, for example 'right' and 'rite'.
  This operator is not applied to words that are both spelled and said the
  same, but with different meanings ('must' as an imperative and 'must' as
  a noun).
@@ -1876,8 +1981,9 @@ Containment
 \begin_layout Standard
 Here are two styles of wordplay which are clued very differently, but are
  actually the same operator, which places one set of letter inside another.
- This is either presented as a insertion ('end inside ls') or as a containment
- ('ls around end').
+ This is either presented as a insertion (e.g..
+ 'end inside ls') or as a containment (e.g.
+ 'ls around end').
  This operation always preserves letter order, unless some nested indicator
  allows otherwise.
  
@@ -1922,6 +2028,16 @@ In a subtraction clue, a number of letters are removed from the target.
  set must be in the target, and the length of the subtraction set must be
  less than the length of the target.
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Give example
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1929,11 +2045,7 @@ Subtraction → SubPreIndictator1 Wordplay (SubPreIndictator2) Wordplay
 \begin_inset Newline newline
 \end_inset
 
-   | Wordplay SubM
-\noun on
-function 
-\noun default
-idIndictator Wordplay 
+   | Wordplay SubMidIndictator Wordplay 
 \begin_inset Newline newline
 \end_inset
 
@@ -2051,6 +2163,16 @@ The letters in the set are thought to be removed in the order in which they’re
  If we also had an anagram indicator, as in “Boy muddled standing missing
  trap” we can apply the muddled to standing to get “dansting” before removing
  “sting” to get the answer “Dan”.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+What the fuck is this example, change it.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -2058,9 +2180,12 @@ Meta-references
 \end_layout
 
 \begin_layout Standard
-Sometimes, clues contain references to that cannot be parsed in isolation,
+Sometimes, clues contain references that cannot be parsed in isolation,
  or contain a cluing structure that is incompatible with the main model
  of cluing.
+ Due to their complexity and requirement for context, I consider clues such
+ as these outside of the scope of this project.
+ These include:
 \end_layout
 
 \begin_layout Subsubsection
@@ -2120,27 +2245,6 @@ Sunday Telegraph
 Araucaria
 \emph default
 , "Araucaria is" coded for IAM (= "I am") as part of an answer.
-\end_layout
-
-\begin_layout Section
-Convention 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Do some shit here, yeah?
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Words
 \end_layout
 
 \begin_layout Standard
@@ -2458,7 +2562,8 @@ Now we have consumed one portion of the string to form the definition in
  each of a list of splits.
  Now we need to parse the rest of the clue into a structure which we can
  evaluate to produce our answer.
- Let us take for an example the correct split (of the 6 available) of 
+ Let us take for an example the correct split (of the 6 available) of clue
+ A:
 \end_layout
 
 \begin_layout LyX-Code
@@ -2621,40 +2726,7 @@ Ship carrying right flag
 
 \end_inset
 
- to generate the parse trees – including the correct one:
-\end_layout
-
-\begin_layout Standard
-\begin_inset VSpace defskip
-\end_inset
-
-
-\begin_inset VSpace defskip
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-Tree[.INSERTION
-\backslash
- ("carrying") [.SYNONYM "ship" ] [.ABBREVIATION "right" ]]
-\end_layout
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-as well as many others:
+ to generate the following parse trees 
 \end_layout
 
 \begin_layout Standard
@@ -2721,10 +2793,39 @@ Tree[.CONCATENATION [.SYNONYM "ship" ][.CONCATENATION [.SYNONYM "carrying" ][.SY
 \begin_inset VSpace defskip
 \end_inset
 
+as well as the correct one:
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace defskip
+\end_inset
+
+
+\begin_inset VSpace defskip
+\end_inset
+
 
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.INSERTION
+\backslash
+ ("carrying") [.SYNONYM "ship" ] [.ABBREVIATION "right" ]]
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset VSpace defskip
+\end_inset
+
 and so on.
 \end_layout
 
@@ -2771,7 +2872,17 @@ scanner:
 this is often a finite state machine, which will consumer characters based
  on rules to produce potential lexemes.
  Some more simple scanners can operate under greedy assumptions (called
- the Maximal Munch principle by R.G.G.
+ the Maximal Munch principle by
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Reference this
+\end_layout
+
+\end_inset
+
+ R.G.G.
  Cattel), and some require backtracking (for example, the language 
 \noun on
 C
@@ -2812,6 +2923,16 @@ function 3
 \noun default
  is a constant function which always yields the integer literal 3, but this
  misses the point of having a scanner separately.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+What the fuck was this again?
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -3242,6 +3363,16 @@ Tree[.DEFINITION
 \end_inset
 
 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+give a better example - over and lover confusing here
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3369,11 +3500,15 @@ WORK HARD IN ATTEMPT TO GET CUP
 
 \end_inset
 
-, with definition (=
+, with definition (='
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+
 \begin_inset Quotes erd
 \end_inset
 
@@ -3382,11 +3517,7 @@ to get
 
 \end_inset
 
-
-\begin_inset Quotes erd
-\end_inset
-
-) of 
+') of 
 \begin_inset Flex Code
 status open
 
@@ -3785,6 +3916,16 @@ eval (Def d pt l) = [Answer x (Def d pt l) |
 
 \begin_layout LyX-Code
                                         x <- evalTree pt]
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Do this whole section bottom-up pls
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -3798,7 +3939,7 @@ evalTree
 
 \end_inset
 
- in terms of the different types of node in our 
+Refeerence in terms of the different types of node in our 
 \begin_inset Flex Code
 status open
 
@@ -3945,28 +4086,6 @@ choose = headM .
 \end_layout
 
 \begin_layout LyX-Code
-\begin_inset Note Note
-status open
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout Plain Layout
-6.
- Discussion of different clue types 
-\end_layout
-
-\begin_layout Plain Layout
-6.1 Any interesting ones of note 
-\end_layout
-
-\begin_layout Plain Layout
-Is there anything here?
-\end_layout
-
-\end_inset
-
 
 \end_layout
 
@@ -4147,7 +4266,8 @@ Figure 1.
 status open
 
 \begin_layout Plain Layout
-Leadup
+Need a big summary of this table, and to explain that it's just a sample,
+ and to give some top-level figures, or reasons why not
 \end_layout
 
 \end_inset
@@ -4930,10 +5050,6 @@ status open
 
 \end_layout
 
-\begin_layout Standard
-
-\end_layout
-
 \begin_layout Subsubsection
 The effect of clue length on the number of parses
 \end_layout
@@ -5176,12 +5292,16 @@ The effect of clue length on the number of evaluations
 \end_layout
 
 \begin_layout Standard
-We see a similar but even greater effect on the number of evaluations, with
- the effect of the exponential growth per parse compounded by the fact that
- each parse can evaluate out to to thousands of options.
+We see a similar but even greater effect on the number of solutions produced,
+ with the effect of the exponential growth per parse compounded by the fact
+ that each parse can evaluate out to to thousands of options.
  This is due to two effects, Firstly, clues types like anagrams can have
  many thousand evaluations per parse (there are 120 anagrams of a 5-letter
- word, rising to 40,320 anagrams of an eight letter word).
+ word, rising to 40,320 anagrams of an eight letter word – an 
+\begin_inset Formula $n!$
+\end_inset
+
+ relationship).
  Secondly, compound clues like insertions, which can take the result of
  one wordplay and insert into the second, can magnify the effect of branching
  in its sub-clues.
@@ -5194,6 +5314,17 @@ There are 4 ways that a word 'A' can be inserted into a 5-letter word 'B'.
  of word 'B', and if there are also 120 different anagrams of word 'A',
  then there are 57600 different evaluations for that parsed arrangement.
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+reference figure 3.
+ Mention that it's sparse because it becomes v hard to solve the things
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -5211,7 +5342,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE [.CONCATENATE A B ] [.C ]]
+Tree[.CONCAT [.CONCAT A B ] [.C ]]
 \end_layout
 
 \end_inset
@@ -5656,8 +5787,17 @@ Motivation
 \end_layout
 
 \begin_layout Standard
-One large factor in the rapid proliferation is in the our binary tree representa
-tion of concatenation.
+One large factor in the rapid proliferation 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+of what?
+\end_layout
+
+\end_inset
+
+ is in the our binary tree representation of concatenation.
  While keeping them in a similar representation to the rest of the expression
  nodes in our naive solution kept their representation in a similar form
  to the rest of the nodes, the fact that no indicator is required to generate
@@ -5667,7 +5807,15 @@ tion of concatenation.
 \end_layout
 
 \begin_layout Standard
-The number of trees with n leaves is given by the (n-1)
+The number of trees with 
+\begin_inset Formula $n$
+\end_inset
+
+ leaves is given by the (
+\begin_inset Formula $n-1$
+\end_inset
+
+)
 \begin_inset script superscript
 
 \begin_layout Plain Layout
@@ -5691,7 +5839,11 @@ Catalan numbers are given by the formula
 \end_inset
 
 , so ignoring any other type of expression (anagram, etc.), for a clue of
- length n we have 
+ length 
+\begin_inset Formula $n$
+\end_inset
+
+ we have 
 \begin_inset Formula $C_{n-1}$
 \end_inset
 
@@ -5728,7 +5880,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE [.CONCATENATE A B ] [.C ]]
+Tree[.CONCAT [.CONCAT A B ] [.C ]]
 \end_layout
 
 \end_inset
@@ -5780,7 +5932,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE [.A ] [.CONCATENATE B C ] ]
+Tree[.CONCAT [.A ] [.CONCAT B C ] ]
 \end_layout
 
 \end_inset
@@ -5839,7 +5991,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE [.CONCATENATE A B ] [.CONCATENATE C D ]]
+Tree[.CONCAT [.CONCAT A B ] [.CONCAT C D ]]
 \end_layout
 
 \end_inset
@@ -5878,7 +6030,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE [.A ] [.CONCATENATE [.B ] [.CONCATENATE C D ]]]
+Tree[.CONCAT [.A ] [.CONCAT [.B ] [.CONCAT C D ]]]
 \end_layout
 
 \end_inset
@@ -5918,6 +6070,15 @@ We can instead define a new version of our Concatenation Nodes which, instead
 \end_layout
 
 \begin_layout LyX-Code
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+How did I arrive a this? Maybe suggest it and then show this is the answer
+\end_layout
+
+\end_inset
+
 data ParseTree = ConcatNode ParseTree ParseTree | [...]
 \end_layout
 
@@ -5947,7 +6108,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE [.CONCATENATE A B ] [.CONCATENATE C D ]]
+Tree[.CONCAT [.CONCAT A B ] [.CONCAT C D ]]
 \end_layout
 
 \end_inset
@@ -6005,7 +6166,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE {[A B C D]} ]
+Tree[.CONCAT {[A B C D]} ]
 \end_layout
 
 \end_inset
@@ -6127,7 +6288,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE [.{[A CONCATENATE D]} {B C} ]]
+Tree[.CONCAT [.{[A CONCATENATE D]} {B C} ]]
 \end_layout
 
 \end_inset
@@ -6145,8 +6306,17 @@ leading to a even more parse trees than before!
 \end_layout
 
 \begin_layout Standard
-In order to prevent our new concatenation nodes nesting again we need to
- define a version of 
+In order to prevent our new concatenation nodes nesting again 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+give example
+\end_layout
+
+\end_inset
+
+we need to define a version of 
 \begin_inset Flex Code
 status open
 
@@ -6260,6 +6430,16 @@ Figure 6
  As each parse may have thousands of solutions, this should represent a
  significant improvement in the number of outputs, and so the solve time,
  of each clue.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+get rid of exponential one
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Verse
@@ -6337,7 +6517,7 @@ status open
 
 
 \backslash
-Tree[.CONCATENATE [.{[A CONCATENATE D]} {B C} ]]
+Tree[.CONCAT [.{[A CONCATENATE D]} {B C} ]]
 \end_layout
 
 \end_inset
@@ -6372,8 +6552,8 @@ Heuristics from Human Solvers
 \begin_layout Standard
 We can take cues for further improvements to our solving process by considering
  the heuristics that a human solver uses to navigate the huge state space
- and find the correct solution without having to check hundreds and thousands
- of possible solutions.
+ and find the correct solution without having to enumerate all possible
+ solutions.
 \end_layout
 
 \begin_layout Subsection
@@ -6615,11 +6795,12 @@ minLength (InsertionNode ind tree1 tree2) = (minLength tree1)
 \end_layout
 
 \begin_layout LyX-Code
-minLength (SubtractionNode ind tree1 tree2) = minimum[
+minLength (SubtractionNode ind tree1 tree2) = min (
 \end_layout
 
 \begin_layout LyX-Code
-                          (minLength tree2) - (maxLength tree1),1]
+                          (minLength tree2) -          (maxLength tree1))
+ 1
 \end_layout
 
 \begin_layout LyX-Code
@@ -6627,10 +6808,10 @@ minLength (SubtractionNode ind tree1 tree2) = minimum[
 \end_layout
 
 \begin_layout Standard
-Some clue types are can be defined directly from their inputs – both the
- maxium and minium length of an anagram node is the lenght of the input
- string – while an insertion node need to be defined based on the maxium
- and minimum of the two subtrees.
+Some clue types can be defined directly from their inputs – both the maxium
+ and minium length of an anagram node is the length of the input string
+ – while an insertion node need to be defined based on the maxium and minimum
+ of the two subtrees.
 \end_layout
 
 \begin_layout Standard
@@ -6741,12 +6922,13 @@ Motivation
 
 \begin_layout Standard
 Although we are now generating far fewer parses, we still have some solveable
- clues generating 100+ parses.
+ clues generating hundreds of parses.
  This means that for these clues we will have to perform on average 
 \begin_inset Formula $n/2$
 \end_inset
 
- evaluations – lazy evaluation means that our use of the 
+ evaluations to find the right clue, assuming it will be randomly distributed
+ down the list – lazy evaluation means that our use of the 
 \begin_inset Flex Code
 status open
 
@@ -6766,7 +6948,7 @@ filter
 
 \end_inset
 
-will yield the first result computed from the head of the list toward the
+ will yield the first result computed from the head of the list toward the
  tail.
  
 \end_layout
@@ -6988,6 +7170,15 @@ we can then define
 \end_layout
 
 \begin_layout LyX-Code
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ok, so TF doesn't like the underscores appaz 
+\end_layout
+
+\end_inset
+
 cost_parse :: Parse -> Int
 \end_layout
 
@@ -7030,6 +7221,17 @@ parse = sortBy cost_parse .
 \begin_layout Standard
 It should be noted that the weights here are intuitive only.
  
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Woah say much more about why we do this, ok? Pull out params into constant,
+ and then give what I chose as mine
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8274,7 +8476,7 @@ add_partial x  = decreaseMax (length x) .
 \end_layout
 
 \begin_layout LyX-Code
-noPrefix (Constraints p mx mn) = (Constraints NoPrefix mx mn)
+noPrefix (Constraints p mx mn) = (Conare straints NoPrefix mx mn)
 \end_layout
 
 \begin_layout Standard
@@ -8438,15 +8640,51 @@ Analysis of Single clue solving against benchmarks
 \end_layout
 
 \begin_layout Subsection
-Benchmark Suite
+Test Suite
 \end_layout
 
-\begin_layout Enumerate
-From Everyman – why
+\begin_layout Standard
+These clues are evaluated against a testing suite comprising of 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+insert number here
 \end_layout
 
-\begin_layout Enumerate
-Exclude the multi-word clues
+\end_inset
+
+ [number here] clues extracted from the Observer's Everyman series.
+ These were chosen for being published in a major British newspaper, and
+ for being both scrapable from publically open websites (as The Times' and
+ Telegraph's are not) and for being Ximenean
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Macnutt, as Ximenes, was the first setter for the Everyman in the 1940s.
+\end_layout
+
+\end_inset
+
+ (as the Guardian's are not).
+ 
+\end_layout
+
+\begin_layout Standard
+The clues selected have been limited to those with single-word answers,
+ as few of the multi-word answers appear in wordlists.
+ Clues with numbers are not included, as they are often the self-referential
+ type (see the section on 
+\series bold
+Meta-reference
+\series default
+), and thus cannot be solved in isolation.
+ 
+\end_layout
+
+\begin_layout Subsection
+Accuracy given data Accuracy 
 \end_layout
 
 \begin_layout Standard
@@ -8460,10 +8698,6 @@ Here's the things I want to calculate, then graph, and then talk about
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsection
-Accuracy given data Accuracy 
 \end_layout
 
 \begin_layout Enumerate
@@ -8502,6 +8736,13 @@ Computation required and feasibility in the real world
 
 \begin_layout Subsection
 Discussion of parallelization 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
@@ -8729,26 +8970,14 @@ Solving strategy
 \begin_layout Standard
 The prolem we have now is one of recursion.
  As crossword grids are usually heavily intersected, we will have to deal
- with cycles in our intersection graph: for example, 1-across intersects
- 2-down, which intersects 10-across, which intersects 3-down, which intersects
- 1-across again!
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Show picture of the upper half of a crossword grid
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We therefore have to find a strategy to deal with this.
+ with cycles in our intersection graph: for example in 
+\series bold
+Figure 8
+\series default
+, we can see many such cycles.
+ One example: 1-across intersects 2-down, which intersects 10-across, which
+ intersects 3-down, which intersects 1-across again! We therefore have to
+ find a strategy to deal with this.
 \end_layout
 
 \begin_layout Standard
@@ -8775,48 +9004,6 @@ status open
 \begin_inset Graphics
 	filename crossword-grid.pdf
 	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "34col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-
-\series bold
-Selected possible answers generated 
-\end_layout
-
-\begin_layout Plain Layout
-1.
- [LARK, FOOL, PLAY, GAME]
-\end_layout
-
-\begin_layout Plain Layout
-2.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-complete these
-\end_layout
 
 \end_inset
 
@@ -8942,6 +9129,16 @@ Another solution which may solve some of the issues of the others is by
  a likelihood for each of the generated solutions, and then using the intersecti
 on letters of those solutions to help weight future iterations of the solve.
  
+\series bold
+Table 1
+\series default
+ illustrates how this may occur.
+\end_layout
+
+\begin_layout Standard
+This solution could work correctly in the case that no solutions can be
+ found for one clue: those missing would simply bear no weight on their
+ intersections.
 \end_layout
 
 \begin_layout Standard
@@ -8951,13 +9148,309 @@ sideways false
 status open
 
 \begin_layout Plain Layout
+
+\series bold
+Iteration 1:
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Tabular
-<lyxtabular version="3" rows="3" columns="3">
+<lyxtabular version="3" rows="9" columns="9">
 <features rotate="0" tabularvalignment="middle">
-<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top" width="0pt">
 <column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
 <row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+I
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+C
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+M
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -8984,7 +9477,7 @@ status open
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -9001,8 +9494,66 @@ status open
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A
+\end_layout
+
+\end_inset
+</cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+U
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -9042,7 +9593,7 @@ cellcolor{black}
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -9051,8 +9602,66 @@ cellcolor{black}
 
 \end_inset
 </cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+I
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+X
+\end_layout
+
+\end_inset
+</cell>
 </row>
 <row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+W
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+B
+\end_layout
+
+\end_inset
+</cell>
 <cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
 \begin_inset Text
 
@@ -9079,7 +9688,291 @@ cellcolor{black}
 
 \end_inset
 </cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+H
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+J
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
 \begin_inset Text
 
 \begin_layout Plain Layout
@@ -9094,11 +9987,174 @@ cellcolor{black}
 \end_inset
 
 
-\begin_inset Caption Standard
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CAT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RUB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
 
 \begin_layout Plain Layout
 
+\series bold
+T
+\series default
+IE
 \end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HOP
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PUP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MEW
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GUN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RUN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PIG
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PUR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AXE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JOG
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
 
 \end_inset
 
@@ -9106,6 +10162,3133 @@ cellcolor{black}
 \end_layout
 
 \begin_layout Plain Layout
+This is the initial solution, taking no information from other clues - solutions
+ pictured closer to the grid represent more probable solutions.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+Iteration 2:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="9">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+I
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+C
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+M
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cellcolor{black}
+\end_layout
+
+\end_inset
+
+
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+I
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+W
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+B
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+H
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+J
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CA
+\series bold
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\series default
+UR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+T
+\series default
+IE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\series default
+UN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PUP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RUB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GUN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JOG
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PIG
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MEW
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AXE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HOP
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Based on the available solution in 1a., PUR has become more likely than RUB,
+ as 1a.
+ has no solutions begining with 'R.' HOP has changed to RUN for similar reasons.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\series bold
+Iteration 3:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="9">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+C
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+I
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+M
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cellcolor{black}
+\end_layout
+
+\end_inset
+
+
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+I
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+W
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+B
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+H
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+J
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\series default
+IG
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\series default
+UR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+T
+\series default
+IE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\series default
+UN
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PUP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RUB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+GUN
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JOG
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CAT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MEW
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AXE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HOP
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Based on the change to 1d., 1a's probabilities also change – the influence
+ on its intial letter as P is now greater than the influence from its final
+ letter.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\series bold
+Iteration 4:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="9">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+C
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+I
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+M
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cellcolor{black}
+\end_layout
+
+\end_inset
+
+
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+I
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+X
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+W
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+B
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset script superscript
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+E
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+U
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+H
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+P
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+J
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+O
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="4">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1A
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2D
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3A
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\series default
+I
+\series bold
+G
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+P
+\series default
+U
+\series bold
+R
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+G
+\series default
+U
+\series bold
+N
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+R
+\series default
+U
+\series bold
+N
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PUP
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+RUB
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+TIE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+JOG
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+CAT
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+MEW
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+AXE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HOP
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+l
+\end_layout
+
+\begin_layout Plain Layout
+Now, 2d updates based on the changes to the other cells to reach a stable
+ solution.
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Example of how iterative function application might converge to solution
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -9119,27 +13302,284 @@ Improving current solving capabilities
 \end_layout
 
 \begin_layout Subsection
-Human as an oracle 
+Improving the knowledgebase
+\end_layout
+
+\begin_layout Standard
+Currently, a large quantities of clues are unsolvable due to missing information.
+ Most of the current information comes from thesaurus definitions, and is
+ stored in a directed graph structure, similarly to a thesaurus: each word
+ is connected to all the words it is in some way equivalent to.
+ This is a clumsy representation of the real world: we lose the information
+ that 'dog' related to 'poodle' in a different way from the way it relates
+ to 'mamal' (hyponymically, and hypernymically, respectively).
+ Furthermore, if we want to augment the knowledgebase with further information
+ about dogs (dogs = man's best friend), then we'd also have to add that
+ fact to all hyponyms ('poodle', 'labrador', and so on).
+ If we wanted to add a propagatable fact to something much higher level,
+ such as 'mamal' or 'solid object', then the number of new 'facts' or graph
+ connections we'd have to add would grow quickly indeed! Very quickly, our
+ database would become very difficult to manipulate, or hold in RAM for
+ quick access.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Using Propositional Logic
+\end_layout
+
+\begin_layout Standard
+We would like to be able to infer a fact, such as the fact that Mahler was,
+ as a composer, someone who scored
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In order to solve the sorts of clues we ruled out in Chapter II: HE SCORED
+ HARLEM WINDS (6)   (= 
+\begin_inset Quotes eld
+\end_inset
+
+MAHLER
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Instead of doing this through direct entry into the database, we could use
+ a prepositional logic language like 
+\noun on
+prolog
+\noun default
+ to represent this as a minimal sets of facts.
+\end_layout
+
+\begin_layout LyX-Code
+composer(malher).
+\end_layout
+
+\begin_layout LyX-Code
+composer(brahms).
+\end_layout
+
+\begin_layout LyX-Code
+[...]
+\end_layout
+
+\begin_layout LyX-Code
+scored(X) :- conductor(X).
+\end_layout
+
+\begin_layout LyX-Code
+scored(pele).
+\end_layout
+
+\begin_layout LyX-Code
+[...]
+\end_layout
+
+\begin_layout Standard
+Thus, we could take 'HE SCORED', and generate a query to our logical database
+ asking 
+\begin_inset Quotes eld
+\end_inset
+
+for which X did X score
+\begin_inset Quotes erd
+\end_inset
+
+ (or as an SWI prompt: 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+?- scored(X).
+\end_layout
+
+\end_inset
+
+), which would return the set of everyone that can be infered by the knowledgeba
+se to match the criteria.
+\end_layout
+
+\begin_layout Standard
+With the use of knowledgebases come many additional avenues for complexity:
+ How can we transform a natural-language phrase into an answerable question
+ in an appropriate logic language? How can we represent sufficient amount
+ of inference rules for the database to be useful while still dealing with
+ exceptions (e.g.
+ penguins are birds, birds can fly, but penguins can't fly).
+ The field is, itself, a large and complex one, but may warrant further
+ investigation.
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Subsection
-Generating probable solutions with missing data 
+Generating solutions with missing data 
+\end_layout
+
+\begin_layout Standard
+In cases in which we don't have suitable data to generate any solutions
+ at all, it would be useful to generate tentative solutions with assumptions
+ stated around the missing data.
+ So in the clue 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Ban Lear: Mad! (7)
+\end_layout
+
+\end_inset
+
+, with correct solution 
+\begin_inset Quotes eld
+\end_inset
+
+barking
+\begin_inset Quotes erd
+\end_inset
+
+, the program could return
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.{CONCAT} [.SYN "ban" ] [.{"lear" = KING???} ] ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Verse
+The issue is that the number of words we could generate with the ability
+ to generate any combination of letters from any subpart is infaesibly large,
+ especially for longer and more complex clues.
 \end_layout
 
 \begin_layout Subsubsection
-Generative vs Filtering
+Solving Forwards and Backwards 
 \end_layout
 
-\begin_layout Subsubsection
-“if Lear means/is a King...” 
+\begin_layout Standard
+One solution to this is in re-working the entire method by which we solve
+ the clues.
+ Our solver is currently works 'forwards': based on the available clue text,
+ we attempt to parse into a tree which, when evaluated, generates all possible
+ outputs.
+ Another option would be to work in reverse: from the selected definition,
+ evaluate all words that are synonyms, and parse to match the letters in
+ the solution with parts of the clue text.
+ In some ways, this could be though of generating possible clues for a given
+ solution, and matching them to the given clue.
 \end_layout
 
-\begin_layout Section
-Deployment as a web app
+\begin_layout Standard
+This method could reasonably work for a simple subset of expressions, such
+ as limiting to, for example: synonyms and concatenation.
+ 
+\series bold
+Figure 9
+\series default
+ shows a possible output, illustrating how such a search could take place.
 \end_layout
 
-\begin_layout Section
-Tweaking the values on the weighting function
+\begin_layout LyX-Code
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+Select definition: Mad
+\end_layout
+
+\begin_layout LyX-Code
+Select synonym of definition: BARKING
+\end_layout
+
+\begin_layout LyX-Code
+Split definition into parts: BAR  KING
+\end_layout
+
+\begin_layout LyX-Code
+Match clue text to first part: BAR = ban - confirmed in thesaurus
+\end_layout
+
+\begin_layout LyX-Code
+Match clue text to second part: KING = lear - not confirmed
+\end_layout
+
+\begin_layout LyX-Code
+Possible solution found.
+ Searching for more...
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+Split definition into parts: BARK ING
+\end_layout
+
+\begin_layout LyX-Code
+[...]
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Sample output from a 'reverse' solver
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
@@ -9182,15 +13622,6 @@ A benchmarking suite to check performance + accuracy
 
 \begin_layout Subsection
 Clues from real newspapers 
-\end_layout
-
-\begin_layout Subsection
-A solution markup and automated verification => is answer enough or do we
- just want to provide a method 
-\end_layout
-
-\begin_layout Subsection
-Rating clues on a scale / on multiple scales 
 \end_layout
 
 \begin_layout Part
