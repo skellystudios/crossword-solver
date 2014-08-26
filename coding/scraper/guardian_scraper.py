@@ -25,7 +25,7 @@ clues = dict()
 intersections = dict()
 
 identifier = 'everyman'
-start = 3500
+start = 2971
 end = 3537
 
 for c in range(start, end):	
@@ -80,9 +80,9 @@ for c in range(start, end):
 #print answers
 #print intersections
 
-f = open('ClueBank.hs','w')
+f = open('Benchmark.hs','w')
 
-f.write('module ClueBank where \n') # python will convert \n to os.linesep
+f.write('module Benchmark where \n') # python will convert \n to os.linesep
 
 f.write("-- From %s nos %s to %s \n\n" % (identifier, start, end))
 
