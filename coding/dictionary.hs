@@ -14,13 +14,12 @@ wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tu
 is_prefix = is_wordlist_prefix
 is_wordlist_prefix x = Data.Set.member x wl_pref
 wl_pref = Data.Set.fold add_prefixes Data.Set.empty wordlist_extended'	
-
 add_prefixes word set = Data.Set.union (Data.Set.fromList (prefixes word)) set
 
 prefixes = rprefixes . reverse 
 rprefixes (x:xs) = [reverse xs++[x]] ++ rprefixes xs
 rprefixes [] = []
-
+ 
 
 manual_syn "notice" = ["ack", "acknowledge", "sign"] 
 manual_syn "coat" = ["jacket"]
@@ -59,7 +58,7 @@ is_syn x y = elem x (syn y)
 
 syn :: String -> [String]
 syn ('t':'o':' ':xs) = syn xs
-syn x = thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
+syn x = Prelude.filter (not $ null) $ thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
 
 
 

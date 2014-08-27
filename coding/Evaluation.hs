@@ -66,7 +66,7 @@ is_gte_min (Min mn) n = n >= mn
 is_gte_min NoMin n = True
 
 is_less_than_min (Min mn) n = n < mn 
-is_less_than_min NoMin n = True
+is_less_than_min NoMin n = False
 
 extend_prefix (Prefix p) x = Prefix (p ++ x)
 extend_prefix NoPrefix x = NoPrefix

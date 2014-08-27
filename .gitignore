@@ -11,4 +11,6 @@ videos/*
 *.yuv
 */#*#
 coding/data/old-thesaurus-list
-
+coding/data/*
+dictionary_mark_2/*
+coding/scraper/venv/*

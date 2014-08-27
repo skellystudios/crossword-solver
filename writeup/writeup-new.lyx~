@@ -74,6 +74,7 @@ End
 \suppress_date false
 \justification true
 \use_refstyle 1
+\notefontcolor #ff0027
 \index Index
 \shortcut idx
 \color #008000
@@ -218,7 +219,7 @@ Cryptic crosswords are widely thought to be at the crossroads of various
 \end_inset
 
 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -251,7 +252,7 @@ ons that can help improve the time taken to arrive at at the correct solution.
 \begin_layout Standard
 I have developed a system which can solve a significat percentage of cryptic
  crossword clues 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -393,7 +394,7 @@ clues are less straightforward, appearing on the surface to be a valid syntactic
  the same answer as with the definition by apply a series of transformations
  and operations.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -414,7 +415,7 @@ It is the task of determining the correct answer for this type of clue that
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -470,7 +471,7 @@ tically, working on whole-grid solutions rather than individual clues.
  statistical studies into errors made during manual solving, and psychological
  studies into solving.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -703,7 +704,7 @@ Scannerless Parsing
 \end_inset
 
 .
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -1149,7 +1150,7 @@ mixed pears
 
 ).
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -1183,7 +1184,7 @@ Strings consisting of one or more words can be at once tokens representing
  number of equivalent words (roughly, synonyms: see later for discussion
  about this equivalence relation).
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -1316,7 +1317,7 @@ Structure of a cryptic clue
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -1453,7 +1454,7 @@ I include these two operators first, as they really form the backbone or
  They are also unique in being implicitly clued, rather than requiring an
  indicator word to signify their presence.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -1547,7 +1548,7 @@ on in our metasemantics, we could define multiple definitions of each operator
  a computer solution (i.e.
  the parse tree).
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -1659,7 +1660,7 @@ Comic bare for short comedy play (7,5)
 
 \begin_layout Standard
 In which case we find the more general case one proposed structure: 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -1710,7 +1711,7 @@ Even so, most setters that claim to be Ximenean will allow small abbreviations
  We therefore must define a new class which includes String Literals as
  well as the abbreviation where appropriate.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -1896,7 +1897,7 @@ The hidden word clue finds a word which appears as a substring (ignoring
 
 \begin_layout LyX-Code
 'Smack which appears in East Anglian ports.(4)' 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2028,7 +2029,7 @@ In a subtraction clue, a number of letters are removed from the target.
  set must be in the target, and the length of the subtraction set must be
  less than the length of the target.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2163,7 +2164,7 @@ The letters in the set are thought to be removed in the order in which they’re
  If we also had an anagram indicator, as in “Boy muddled standing missing
  trap” we can apply the muddled to standing to get “dansting” before removing
  “sting” to get the answer “Dan”.
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2333,7 +2334,7 @@ There may be many reasons for this.
 \begin_layout Standard
 While I benefit heavily from many of the features of Haskell, the work here
  could be implemented without too much adjustment in many other functional
- languages, and many modern multi-paradigm languages.
+ languages, and many modern multi-paradigm languages, such as Python.
 \end_layout
 
 \begin_layout Section
@@ -2934,7 +2935,7 @@ this is often a finite state machine, which will consumer characters based
  on rules to produce potential lexemes.
  Some more simple scanners can operate under greedy assumptions (called
  the Maximal Munch principle by
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -2984,7 +2985,7 @@ function 3
 \noun default
  is a constant function which always yields the integer literal 3, but this
  misses the point of having a scanner separately.
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3008,7 +3009,7 @@ The Evaluator
 \begin_layout Standard
 This stage of the tokeniser...
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3426,7 +3427,7 @@ Tree[.DEFINITION
 \end_inset
 
 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3443,7 +3444,7 @@ give a better example - over and lover confusing here
 \end_inset
 
 we therefore perform what is called Recursive Descent Parsing [Lewis]
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3838,7 +3839,7 @@ y as the depth of the nesting increases.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -3989,7 +3990,7 @@ eval (Def d pt l) = [Answer x (Def d pt l) |
 
 \begin_layout LyX-Code
                                         x <- evalTree pt]
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -4335,7 +4336,7 @@ Figure 1.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -5389,7 +5390,7 @@ There are 4 ways that a word 'A' can be inserted into a 5-letter word 'B'.
  of word 'B', and if there are also 120 different anagrams of word 'A',
  then there are 57600 different solutions for that parsed arrangement.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -5433,8 +5434,7 @@ Tree[.CONCAT [.CONCAT A B ] [.C ]]
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Number of evaluated solutions generated for varying clue lengths over 75
- sample clues
+Number of solutions evaluated for varying clue lengths over 75 sample clues
 \end_layout
 
 \end_inset
@@ -5485,8 +5485,8 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Number of evaluated solutions generated by restricting the maximum thesaurus
- length for the clue 
+Number of solutions evaluated by restricting the maximum thesaurus length
+ for the clue 
 \begin_inset Quotes eld
 \end_inset
 
@@ -5863,7 +5863,7 @@ Motivation
 
 \begin_layout Standard
 One large factor in the rapid proliferation 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -6145,7 +6145,7 @@ We can instead define a new version of our Concatenation Nodes which, instead
 \end_layout
 
 \begin_layout LyX-Code
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -6382,7 +6382,7 @@ leading to a even more parse trees than before!
 
 \begin_layout Standard
 In order to prevent our new concatenation nodes nesting again 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -6505,7 +6505,7 @@ Figure 6
  As each parse may have thousands of solutions, this should represent a
  significant improvement in the number of outputs, and so the solve time,
  of each clue.
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -6964,8 +6964,8 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename results/parse-lengths-constrained ConstrainParse.pdf
-	width 100col%
+	filename results/length-constraints.pdf
+	width 95text%
 
 \end_inset
 
@@ -7157,7 +7157,7 @@ More formally, we're looking for a heuristic which weights toward consuming
 Furthermore, these expressions consume more of the string in indicators
  than other types (reversal nodes consume one word from the clue as its
  indicator, while synonyms and concatenation both don't consume any indicators)
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -7245,15 +7245,19 @@ we can then define
 \end_layout
 
 \begin_layout LyX-Code
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
-ok, so TF doesn't like the underscores appaz 
+May want to rationalize a styleguide for code re: underscores or not
 \end_layout
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout LyX-Code
 cost_parse :: Parse -> Int
 \end_layout
 
@@ -7296,12 +7300,12 @@ parse = sortBy cost_parse .
 \begin_layout Standard
 It should be noted that the weights here are intuitive only.
  
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
-Woah say much more about why we do this, ok? Pull out params into constant,
- and then give what I chose as mine
+Woah say much more about why we do this Pull out params into constant, and
+ then give what I chose as mine
 \end_layout
 
 \end_inset
@@ -7336,16 +7340,6 @@ status open
 \begin_layout Plain Layout
 Generate much more data for this and display in a nice way.
  
-\end_layout
-
-\end_inset
-
-
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-TODO: generate much more data for this and display in a nice way
 \end_layout
 
 \end_inset
@@ -8347,15 +8341,53 @@ eval (Def d pt len) = [Answer x (Def d pt len) |
 \end_layout
 
 \begin_layout Subsubsection
-Analysis of how good that is
+Analysis
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
-Do this
+Do analysis of graph - reference exponential increase
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/length-constraints.pdf
+	width 95col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Number of solutions evaluated before and after implementing length-based
+ constraints 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -8389,7 +8421,7 @@ It can't be that, as there are no words that start with
 \end_layout
 
 \begin_layout Quotation
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -8409,7 +8441,7 @@ Currently, we are performing a large amount of wasteful evaluations on subtrees
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -8694,11 +8726,48 @@ Analysis
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
-Do some analysis of how good this all is, ok?
+Do some analysis of this vs figure - moderate improvement
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/prefix-constraints.pdf
+	width 95col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Number of solutions evaluated after implementing prefix-based constraints
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -8711,7 +8780,41 @@ Do some analysis of how good this all is, ok?
 \end_layout
 
 \begin_layout Section
-Analysis of Single clue solving against benchmarks 
+Analysis of Single clue solving against test suite 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Good clue: (Clue ("Rule amended to include married primate",5),"LEMUR")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Could be correct:
+\end_layout
+
+\begin_layout Plain Layout
+(Clue ("Teases Spurs",4),"RIBS") - SETS
+\end_layout
+
+\begin_layout Plain Layout
+(Clue ("Petty officer material",8),"CORPORAL") - somebody
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -8720,7 +8823,7 @@ Test Suite
 
 \begin_layout Standard
 These clues are evaluated against a testing suite comprising of 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -8729,7 +8832,7 @@ insert number here
 
 \end_inset
 
- [number here] clues extracted from the Observer's Everyman series.
+ clues extracted from the Observer's Everyman series.
  These were chosen for being published in a major British newspaper, and
  for being both scrapable from publically open websites (as The Times' and
  Telegraph's are not) and for being Ximenean
@@ -8759,15 +8862,152 @@ Meta-reference
 \end_layout
 
 \begin_layout Subsection
-Accuracy given data Accuracy 
+Solving Accuracy
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+An analysis on the accuracy of the program's solving capabilities can be
+ found in 
+\series bold
+Figure 10
+\series default
+
+\begin_inset Note Greyedout
+status collapsed
+
+\begin_layout Plain Layout
+check reference is up to date.
+ or fix the damn auto reference thing
+\end_layout
+
+\end_inset
+
+.
+ The details of each individual status are discussed here.
+\end_layout
+
+\begin_layout Subsubsection
+Solveable and verifiable
+\end_layout
+
+\begin_layout Standard
+If a clue is solvable and verifiable it means that the program succesfully
+ generated the correct split of definition and wordplay, generated a correct
+ parse tree, correctly evaluated the parse tree to the correct answer, and
+ verified the answer using the definition.
+ One example of a clue solved this way is
+\end_layout
+
+\begin_layout LyX-Code
+Rule amended to include married primate (5)
+\end_layout
+
+\begin_layout Standard
+for which the program generates the parse tree
+\end_layout
+
+\begin_layout LyX-Code
+(Def "primate" (InsertionNode (IIndicator ["to","include"]) 
+\end_layout
+
+\begin_layout LyX-Code
+                       (SynonymNode "married") 
+\end_layout
+
+\begin_layout LyX-Code
+                       (AnagramNode (AIndicator ["amended"]) ["rule"]))
+\end_layout
+
+\begin_layout Standard
+along with the correct answer
+\end_layout
+
+\begin_layout LyX-Code
+Answer "lemur" 
+\end_layout
+
+\begin_layout Standard
+which it can successfully match to the definition of primate based on our
+ thesaurus/knowledgebase.
+\end_layout
+
+\begin_layout Standard
+15% of previously unseen clues from the test suite could be solved in this
+ way – this figure was derived by running the program over the entire testing
+ suite and filtering for where the generated answer could be verified against
+ the definition, and where it matched the correct answer from the test suite.
+\end_layout
+
+\begin_layout Standard
+Along with clues which couldn't be accurately verified, there were also
+ some 'false positive' answers: clues where there was a solution which could
+ be verified but did not match the correct answer as expected by the test
+ suite.
+ One example 
+\begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-Here's the things I want to calculate, then graph, and then talk about
+Teases Spurs (4)
+\end_layout
+
+\end_inset
+
+, for which the correct answer is 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+RIBS
+\end_layout
+
+\end_inset
+
+.
+ My knowledgebase didn't contain the equivalence between 'ribs' and 'spurs',
+ but the program generated the answer 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+SETS
+\end_layout
+
+\end_inset
+
+, drawing off the senses 'sets' = 'besets' = 'teases' and 'spurs' = 'starts'
+ = 'sets'.
+ While this, and others like it, are not the correct answers from the original
+ context of the clue, and would likely not fit in the completed grid, in
+ isolation they are valid answers for the clues themselves - although sometimes
+ 'low quality' answers based on more spurious semantic links, as in the
+ example given.
+ Around 2% of the clues in the Solveable and verifiable category were false
+ positives.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/clue-solve-split.pdf
+	width 99col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
 \end_layout
 
 \end_inset
@@ -8775,46 +9015,100 @@ Here's the things I want to calculate, then graph, and then talk about
 
 \end_layout
 
-\begin_layout Enumerate
-Number of clues that generate the correct answer
+\end_inset
+
+
+\begin_inset Float figure
+placement h
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/most common clue issues.pdf
+	width 95col%
+
+\end_inset
+
+
 \end_layout
 
-\begin_layout Enumerate
-Number of clues that generate the correct answer and know it's correct
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
 \end_layout
 
-\begin_layout Enumerate
-Time to solve clues
+\end_inset
+
+
 \end_layout
 
-\begin_deeper
-\begin_layout Enumerate
-Correct answer
+\end_inset
+
+
 \end_layout
 
-\begin_layout Enumerate
-Incorrect answers
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/solving-time.pdf
+	width 99col%
+
+\end_inset
+
+
 \end_layout
 
-\end_deeper
-\begin_layout Enumerate
-Analysis of incorrect answers - statistically, y'all
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
-assuming reasonable data could be acquired 
+Performance Discussion
 \end_layout
 
 \begin_layout Subsection
 Computation required and feasibility in the real world 
 \end_layout
 
-\begin_layout Subsection
-Discussion of parallelization 
+\begin_layout Standard
+s
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage newpage
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
 \end_inset
 
 
@@ -8948,7 +9242,325 @@ data NodeType = NodeType {
 \end_layout
 
 \begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
  }
+\end_layout
+
+\begin_layout Section
+Improving current solving capabilities
+\end_layout
+
+\begin_layout Subsection
+Improving the knowledgebase
+\end_layout
+
+\begin_layout Standard
+Currently, a large quantities of clues are unsolvable due to missing information.
+ Most of the current information comes from thesaurus definitions, and is
+ stored in a directed graph structure, similarly to a thesaurus: each word
+ is connected to all the words it is in some way equivalent to.
+ This is a clumsy representation of the real world: we lose the information
+ that 'dog' related to 'poodle' in a different way from the way it relates
+ to 'mamal' (hyponymically, and hypernymically, respectively).
+ Furthermore, if we want to augment the knowledgebase with further information
+ about dogs (dogs = man's best friend), then we'd also have to add that
+ fact to all hyponyms ('poodle', 'labrador', and so on).
+ If we wanted to add a propagatable fact to something much higher level,
+ such as 'mamal' or 'solid object', then the number of new 'facts' or graph
+ connections we'd have to add would grow quickly indeed! Very quickly, our
+ database would become very difficult to manipulate, or hold in RAM for
+ quick access.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Using Propositional Logic
+\end_layout
+
+\begin_layout Standard
+We would like to be able to infer a fact, such as the fact that Mahler was,
+ as a composer, someone who scored
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In order to solve the sorts of clues we ruled out in Chapter II: HE SCORED
+ HARLEM WINDS (6) (= 
+\begin_inset Quotes eld
+\end_inset
+
+MAHLER
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Instead of doing this through direct entry into the database, we could use
+ a prepositional logic language like 
+\noun on
+prolog
+\noun default
+ to represent this as a minimal sets of facts.
+\end_layout
+
+\begin_layout LyX-Code
+composer(malher).
+\end_layout
+
+\begin_layout LyX-Code
+composer(brahms).
+\end_layout
+
+\begin_layout LyX-Code
+[...]
+\end_layout
+
+\begin_layout LyX-Code
+scored(X) :- conductor(X).
+\end_layout
+
+\begin_layout LyX-Code
+scored(pele).
+\end_layout
+
+\begin_layout LyX-Code
+[...]
+\end_layout
+
+\begin_layout Standard
+Thus, we could take 'HE SCORED', and generate a query to our logical database
+ asking 
+\begin_inset Quotes eld
+\end_inset
+
+for which X did X score
+\begin_inset Quotes erd
+\end_inset
+
+ (or as an SWI prompt: 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+?- scored(X).
+\end_layout
+
+\end_inset
+
+), which would return the set of everyone that can be infered by the knowledgeba
+se to match the criteria.
+\end_layout
+
+\begin_layout Standard
+With the use of knowledgebases come many additional avenues for complexity:
+ How can we transform a natural-language phrase into an answerable question
+ in an appropriate logic language? How can we represent sufficient amount
+ of inference rules for the database to be useful while still dealing with
+ exceptions (e.g.
+ penguins are birds, birds can fly, but penguins can't fly).
+ The field is, itself, a large and complex one, but may warrant further
+ investigation.
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout Subsection
+Generating solutions with missing data 
+\end_layout
+
+\begin_layout Standard
+In cases in which we don't have suitable data to generate any solutions
+ at all, it would be useful to generate tentative solutions with assumptions
+ stated around the missing data.
+ So in the clue 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Ban Lear: Mad! (7)
+\end_layout
+
+\end_inset
+
+, with correct solution 
+\begin_inset Quotes eld
+\end_inset
+
+barking
+\begin_inset Quotes erd
+\end_inset
+
+, the program could return
+\end_layout
+
+\begin_layout Verse
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tree[.{CONCAT} [.SYN "ban" ] [.{"lear" = KING???} ] ]
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Verse
+The issue is that the number of words we could generate with the ability
+ to generate any combination of letters from any subpart is infaesibly large,
+ especially for longer and more complex clues.
+\end_layout
+
+\begin_layout Subsubsection
+Solving Forwards and Backwards 
+\end_layout
+
+\begin_layout Standard
+One solution to this is in re-working the entire method by which we solve
+ the clues.
+ Our solver is currently works 'forwards': based on the available clue text,
+ we attempt to parse into a tree which, when evaluated, generates all possible
+ outputs.
+ Another option would be to work in reverse: from the selected definition,
+ evaluate all words that are synonyms, and parse to match the letters in
+ the solution with parts of the clue text.
+ In some ways, this could be though of generating possible clues for a given
+ solution, and matching them to the given clue.
+\end_layout
+
+\begin_layout Standard
+This method could reasonably work for a simple subset of expressions, such
+ as limiting to, for example: synonyms and concatenation.
+ 
+\series bold
+
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+Update ref
+\end_layout
+
+\end_inset
+
+Figure 13
+\series default
+ shows a possible output, illustrating how such a search could take place.
+\end_layout
+
+\begin_layout LyX-Code
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout LyX-Code
+Select definition: Mad
+\end_layout
+
+\begin_layout LyX-Code
+Select synonym of definition: BARKING
+\end_layout
+
+\begin_layout LyX-Code
+Split definition into parts: BAR  KING
+\end_layout
+
+\begin_layout LyX-Code
+Match clue text to first part: BAR = ban - confirmed in thesaurus
+\end_layout
+
+\begin_layout LyX-Code
+Match clue text to second part: KING = lear - not confirmed
+\end_layout
+
+\begin_layout LyX-Code
+Possible solution found.
+ Searching for more...
+\end_layout
+
+\begin_layout LyX-Code
+
+\end_layout
+
+\begin_layout LyX-Code
+Split definition into parts: BARK ING
+\end_layout
+
+\begin_layout LyX-Code
+[...]
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Example output from a possible 'reverse' solver
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Parallelization 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Write stuff about parallelization 
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -9102,10 +9714,6 @@ A crossword grid
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
@@ -9118,7 +9726,7 @@ All permutations
 \begin_layout Standard
 We can take the combination of all the possible words generated by each
  clue, and 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -9159,7 +9767,7 @@ In a similar way to the way we evaluated the items in the parse forest left-to-r
 ight checking combinations and culling where no available solution fitted
  the constraints, so we could decide upon an arbitrary order to evaluate
  the clues, and then backtrack where necessary – for example, 
-\begin_inset Note Note
+\begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
@@ -9217,7 +9825,28 @@ This solution could work correctly in the case that no solutions can be
 \end_layout
 
 \begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float table
+placement H
 wide false
 sideways false
 status open
@@ -9225,7 +9854,7 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-Iteration 1:
+Iteration 1: 
 \end_layout
 
 \begin_layout Plain Layout
@@ -10078,7 +10707,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-1A
+1a.
 \end_layout
 
 \end_inset
@@ -10087,7 +10716,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-1D
+1d.
 \end_layout
 
 \end_inset
@@ -10096,7 +10725,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-2D
+2d.
 \end_layout
 
 \end_inset
@@ -10105,7 +10734,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-3A
+3a.
 \end_layout
 
 \end_inset
@@ -11102,7 +11731,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-1A
+1a.
 \end_layout
 
 \end_inset
@@ -11111,7 +11740,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-1D
+1d.
 \end_layout
 
 \end_inset
@@ -11120,7 +11749,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-2D
+2d.
 \end_layout
 
 \end_inset
@@ -11129,7 +11758,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-3A
+3a.
 \end_layout
 
 \end_inset
@@ -12133,7 +12762,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-1A
+1a.
 \end_layout
 
 \end_inset
@@ -12142,7 +12771,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-1D
+1d.
 \end_layout
 
 \end_inset
@@ -12151,7 +12780,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-2D
+2d.
 \end_layout
 
 \end_inset
@@ -12160,7 +12789,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-3A
+3a.
 \end_layout
 
 \end_inset
@@ -12304,7 +12933,7 @@ HOP
 \end_layout
 
 \begin_layout Plain Layout
-Based on the change to 1d., 1a's probabilities also change – the influence
+Based on the change to 1d., 1a.'s probabilities also change – the influence
  on its intial letter as P is now greater than the influence from its final
  letter.
 \end_layout
@@ -13172,7 +13801,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-1A
+1a.
 \end_layout
 
 \end_inset
@@ -13181,7 +13810,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-1D
+1d.
 \end_layout
 
 \end_inset
@@ -13190,7 +13819,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-2D
+2d.
 \end_layout
 
 \end_inset
@@ -13199,7 +13828,7 @@ G
 \begin_inset Text
 
 \begin_layout Plain Layout
-3A
+3a.
 \end_layout
 
 \end_inset
@@ -13351,199 +13980,9 @@ l
 \end_layout
 
 \begin_layout Plain Layout
-Now, 2d updates based on the changes to the other cells to reach a stable
- solution.
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Example of how iterative function application might converge to solution
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Improving current solving capabilities
-\end_layout
-
-\begin_layout Subsection
-Improving the knowledgebase
-\end_layout
-
-\begin_layout Standard
-Currently, a large quantities of clues are unsolvable due to missing information.
- Most of the current information comes from thesaurus definitions, and is
- stored in a directed graph structure, similarly to a thesaurus: each word
- is connected to all the words it is in some way equivalent to.
- This is a clumsy representation of the real world: we lose the information
- that 'dog' related to 'poodle' in a different way from the way it relates
- to 'mamal' (hyponymically, and hypernymically, respectively).
- Furthermore, if we want to augment the knowledgebase with further information
- about dogs (dogs = man's best friend), then we'd also have to add that
- fact to all hyponyms ('poodle', 'labrador', and so on).
- If we wanted to add a propagatable fact to something much higher level,
- such as 'mamal' or 'solid object', then the number of new 'facts' or graph
- connections we'd have to add would grow quickly indeed! Very quickly, our
- database would become very difficult to manipulate, or hold in RAM for
- quick access.
+Now, 2d.
+ updates based on the changes to the other cells to reach a stable solution.
  
-\end_layout
-
-\begin_layout Subsubsection
-Using Propositional Logic
-\end_layout
-
-\begin_layout Standard
-We would like to be able to infer a fact, such as the fact that Mahler was,
- as a composer, someone who scored
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-In order to solve the sorts of clues we ruled out in Chapter II: HE SCORED
- HARLEM WINDS (6)   (= 
-\begin_inset Quotes eld
-\end_inset
-
-MAHLER
-\begin_inset Quotes erd
-\end_inset
-
-)
-\end_layout
-
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-Instead of doing this through direct entry into the database, we could use
- a prepositional logic language like 
-\noun on
-prolog
-\noun default
- to represent this as a minimal sets of facts.
-\end_layout
-
-\begin_layout LyX-Code
-composer(malher).
-\end_layout
-
-\begin_layout LyX-Code
-composer(brahms).
-\end_layout
-
-\begin_layout LyX-Code
-[...]
-\end_layout
-
-\begin_layout LyX-Code
-scored(X) :- conductor(X).
-\end_layout
-
-\begin_layout LyX-Code
-scored(pele).
-\end_layout
-
-\begin_layout LyX-Code
-[...]
-\end_layout
-
-\begin_layout Standard
-Thus, we could take 'HE SCORED', and generate a query to our logical database
- asking 
-\begin_inset Quotes eld
-\end_inset
-
-for which X did X score
-\begin_inset Quotes erd
-\end_inset
-
- (or as an SWI prompt: 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-?- scored(X).
-\end_layout
-
-\end_inset
-
-), which would return the set of everyone that can be infered by the knowledgeba
-se to match the criteria.
-\end_layout
-
-\begin_layout Standard
-With the use of knowledgebases come many additional avenues for complexity:
- How can we transform a natural-language phrase into an answerable question
- in an appropriate logic language? How can we represent sufficient amount
- of inference rules for the database to be useful while still dealing with
- exceptions (e.g.
- penguins are birds, birds can fly, but penguins can't fly).
- The field is, itself, a large and complex one, but may warrant further
- investigation.
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout Subsection
-Generating solutions with missing data 
-\end_layout
-
-\begin_layout Standard
-In cases in which we don't have suitable data to generate any solutions
- at all, it would be useful to generate tentative solutions with assumptions
- stated around the missing data.
- So in the clue 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-Ban Lear: Mad! (7)
-\end_layout
-
-\end_inset
-
-, with correct solution 
-\begin_inset Quotes eld
-\end_inset
-
-barking
-\begin_inset Quotes erd
-\end_inset
-
-, the program could return
-\end_layout
-
-\begin_layout Verse
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -13551,100 +13990,19 @@ status open
 
 
 \backslash
-Tree[.{CONCAT} [.SYN "ban" ] [.{"lear" = KING???} ] ]
-\end_layout
-
-\end_inset
-
- 
+thispagestyle{empty}
 \end_layout
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Verse
-The issue is that the number of words we could generate with the ability
- to generate any combination of letters from any subpart is infaesibly large,
- especially for longer and more complex clues.
-\end_layout
-
-\begin_layout Subsubsection
-Solving Forwards and Backwards 
-\end_layout
-
-\begin_layout Standard
-One solution to this is in re-working the entire method by which we solve
- the clues.
- Our solver is currently works 'forwards': based on the available clue text,
- we attempt to parse into a tree which, when evaluated, generates all possible
- outputs.
- Another option would be to work in reverse: from the selected definition,
- evaluate all words that are synonyms, and parse to match the letters in
- the solution with parts of the clue text.
- In some ways, this could be though of generating possible clues for a given
- solution, and matching them to the given clue.
-\end_layout
-
-\begin_layout Standard
-This method could reasonably work for a simple subset of expressions, such
- as limiting to, for example: synonyms and concatenation.
- 
-\series bold
-Figure 9
-\series default
- shows a possible output, illustrating how such a search could take place.
-\end_layout
-
-\begin_layout LyX-Code
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout LyX-Code
-Select definition: Mad
-\end_layout
-
-\begin_layout LyX-Code
-Select synonym of definition: BARKING
-\end_layout
-
-\begin_layout LyX-Code
-Split definition into parts: BAR  KING
-\end_layout
-
-\begin_layout LyX-Code
-Match clue text to first part: BAR = ban - confirmed in thesaurus
-\end_layout
-
-\begin_layout LyX-Code
-Match clue text to second part: KING = lear - not confirmed
-\end_layout
-
-\begin_layout LyX-Code
-Possible solution found.
- Searching for more...
-\end_layout
-
-\begin_layout LyX-Code
-
-\end_layout
-
-\begin_layout LyX-Code
-Split definition into parts: BARK ING
-\end_layout
-
-\begin_layout LyX-Code
-[...]
 \end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Sample output from a 'reverse' solver
+Example of how iterative function application might converge to solution
 \end_layout
 
 \end_inset

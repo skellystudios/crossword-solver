@@ -2,7 +2,7 @@ import cookielib
 import urllib2
 import urllib
 import re
-from bs4 import BeautifulSoup
+from bs4 import 	
 import string
 from collections import defaultdict
 
@@ -89,7 +89,7 @@ f.write("-- From %s nos %s to %s \n\n" % (identifier, start, end))
 f.write('\t import Types \n\n') # python will convert \n to os.linesep
 
 
-f.write('\t cluebank = [') # python will convert \n to os.linesep
+f.write('\t benchmark = [') # python will convert \n to os.linesep
 
 
 for c in range(start,end):	

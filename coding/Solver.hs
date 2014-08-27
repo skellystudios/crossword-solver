@@ -10,7 +10,7 @@ import Data.Binary
   
 import Wordlists
 import Anagram
-import Benchmarks
+import HalfBenchmark
 import Types
 import Utils
 import Indicators
@@ -71,7 +71,7 @@ main = do
 
 -- Timeout is in microseconds
 seconds = 1000000
-dosolve x = timeout (10*seconds) $ do
+dosolve x = timeout (20*seconds) $ do
             print $ solve x
 
 

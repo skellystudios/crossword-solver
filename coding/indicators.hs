@@ -18,6 +18,7 @@ isDefIndicator _ = False
 
 
 isConsIndicator ["on"] = True
+isConsIndicator ["with"] = True
 isConsIndicator ["to"] = True
 isConsIndicator ["over"] = True
 isConsIndicator _ = False
@@ -165,6 +166,7 @@ insertionIndicators = Data.Set.fromList [
 isReverseInsertionWord :: [String] -> Bool
 isReverseInsertionWord xs = Data.Set.member (concatWithSpaces xs) reverseInsertionIndicators
 reverseInsertionIndicators = Data.Set.fromList [
+	"to include",
 	"on",
 	"to pen",
 	"frames",
@@ -353,6 +355,7 @@ isLLIndicator ["in", "the ", "end"] = True
 isLLIndicator ["end", "of"] = True
 isLLIndicator _ = False
 
+isPartialIndicator ["bit", "of"] = True
 isPartialIndicator ["mostly"] = True
 isPartialIndicator ["almost"] = True
 isPartialIndicator ["nearly"] = True
