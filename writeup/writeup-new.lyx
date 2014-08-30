@@ -250,7 +250,7 @@ ons that can help improve the time taken to arrive at at the correct solution.
 \end_layout
 
 \begin_layout Standard
-I have developed a system which can solve a significat percentage of cryptic
+I have developed a system which can solve a significant percentage of cryptic
  crossword clues 
 \begin_inset Note Greyedout
 status open
@@ -299,6 +299,23 @@ A provost at Eton once boasted that he could do The Times crossword in the
 \end_inset
 
 Citation Needed
+\end_layout
+
+\begin_layout Paragraph
+Contributions
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Itemize what the contributions are
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -8702,6 +8719,19 @@ pre
  will be its first one.
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Not finished writing here!!!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout LyX-Code
 eval_tree (InsertionNode ind x y) c = concat[insertInto x' y' | 
 \end_layout
@@ -8776,6 +8806,9 @@ Number of solutions evaluated after implementing prefix-based constraints
 \end_layout
 
 \begin_layout LyX-Code
+\begin_inset Newpage pagebreak
+\end_inset
+
 
 \end_layout
 
@@ -8784,32 +8817,16 @@ Analysis of Single clue solving against test suite
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
+\begin_inset Note Note
 status open
 
 \begin_layout Plain Layout
-Good clue: (Clue ("Rule amended to include married primate",5),"LEMUR")
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Could be correct:
+showing data ---> "could be solved" introduction comparissons to watson
+ 100 clues --> random sample computational complexity --> show tables 
 \end_layout
 
 \begin_layout Plain Layout
-(Clue ("Teases Spurs",4),"RIBS") - SETS
-\end_layout
-
-\begin_layout Plain Layout
-(Clue ("Petty officer material",8),"CORPORAL") - somebody
+why the pink one take significantly longer order parses and 
 \end_layout
 
 \end_inset
@@ -8822,16 +8839,16 @@ Test Suite
 \end_layout
 
 \begin_layout Standard
-These clues are evaluated against a testing suite comprising of 
 \begin_inset Note Greyedout
 status open
 
 \begin_layout Plain Layout
-insert number here
+Make sense from this
 \end_layout
 
 \end_inset
 
+ These clues are evaluated against a testing suite comprising of 10,000
  clues extracted from the Observer's Everyman series.
  These were chosen for being published in a major British newspaper, and
  for being both scrapable from publically open websites (as The Times' and
@@ -8858,11 +8875,27 @@ The clues selected have been limited to those with single-word answers,
 Meta-reference
 \series default
 ), and thus cannot be solved in isolation.
- 
 \end_layout
 
 \begin_layout Subsection
-Solving Accuracy
+Thesaurus and Knowledgebase data
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Write about data sources here
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Solvable Clues
 \end_layout
 
 \begin_layout Standard
@@ -8990,9 +9023,289 @@ While this, and others like it, are not the correct answers from the original
  positives.
 \end_layout
 
+\begin_layout Subsubsection
+Solveable but not verifiable
+\end_layout
+
+\begin_layout Standard
+Clues in this category succesfully generated the correct split of definition
+ and wordplay, generated a correct parse tree, correctly evaluated the parse
+ tree to the correct answer, however didn't manage to match that answer
+ to the definition.
+ Sometimes, multiple answers could be produced, most of which would not
+ be valid answers for this clue.
+ 
+\end_layout
+
+\begin_layout Standard
+For example the clue
+\end_layout
+
+\begin_layout LyX-Code
+A new member returned with a backer (5)
+\end_layout
+
+\begin_layout Standard
+will correctly return the solution 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+ANGEL
+\end_layout
+
+\end_inset
+
+, but cannot match it to 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+A BACKER
+\end_layout
+
+\end_inset
+
+.
+ It also generates other answers, such as
+\end_layout
+
+\begin_layout LyX-Code
+Answer "inarm" 
+\end_layout
+
+\begin_layout LyX-Code
+(Def "returned with a backer" 
+\end_layout
+
+\begin_layout LyX-Code
+      (ConcatNode [SynonymNode "a",SynonymNode "new",SynonymNode "member"])
+\end_layout
+
+\begin_layout Standard
+which, to the system, are equally valid readings as the correct one, as
+ there is no semantic link available for either.
+\end_layout
+
+\begin_layout Standard
+Clues in this category will often take orders of magnitude more time to
+ solve, as all solutions need to be generated.
+ Because of the extensive time taken to solve, the figure of 13% was generated
+ by sampling over 700 clues from the testing suite.
+\end_layout
+
+\begin_layout Subsection
+Unsolvable
+\end_layout
+
+\begin_layout Standard
+Continuting to refer to 
+\series bold
+Figure 10
+\series default
+, categories from here onwards were not solvable by the program.
+ In order to analyse these clues, a random sample of 100 clues that were
+ not correctly solved and verified were drawn from the testing suite, and
+ examined by hand to determine the correct parse, and the factors missing
+ from the data in order to solve them.
+ These were then assigned one or more of the following labels: 
+\end_layout
+
+\begin_layout Itemize
+Answer not in wordlist
+\end_layout
+
+\begin_layout Itemize
+Expression Indicator Not Found
+\end_layout
+
+\begin_layout Itemize
+Unparsable Structure
+\end_layout
+
+\begin_layout Itemize
+New/unknown clue type
+\end_layout
+
+\begin_layout Itemize
+Knowledge not in dataset
+\end_layout
+
+\begin_layout Itemize
+Synonym required in clue not in dataset
+\end_layout
+
+\begin_layout Itemize
+No dictionary match between Answer and Definition
+\end_layout
+
+\begin_layout Standard
+The frequency of these labels in this group can be seen in 
+\series bold
+Figure 11
+\begin_inset Note Greyedout
+status collapsed
+
+\begin_layout Plain Layout
+
+\series bold
+update figure reference
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Solvable with easily collectable data
+\end_layout
+
+\begin_layout Standard
+Clues in this category are those which recieved only the labels 'No dictionary
+ match between Answer and Definition', 'Answer not in wordlist', 'Synonym
+ required in clue not in dataset', 'Expression Indicator Not Found'.
+ I have deemed these to fall into the category of 'easily collectable data'
+ – that is, data that is finite or has a clear scope and could be consumed
+ by the system in the same way as other data.
+\end_layout
+
+\begin_layout Paragraph
+Answer not in wordlist
+\end_layout
+
+\begin_layout Standard
+In order only to output useful words and to limit useless evaluations, large
+ wordlist is used in addition to the knowledgebase.
+ If a word is not in the wordlist, then it cannot be given as a solution.
+ Thus, in the clue
+\end_layout
+
+\begin_layout LyX-Code
+Girl feeding pygmy rattlesnake (4)
+\end_layout
+
+\begin_layout Standard
+the answer 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Myra
+\end_layout
+
+\end_inset
+
+ is not given, even though the program can generate the right parse tree.
+ 
+\end_layout
+
+\begin_layout Standard
+These issues could be resolved by collecting a larger wordlist including,
+ for example, proper names, places: one possible source for this information
+ would be Wikipedia article subjects, along with commerically available
+ listings.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Synonym required in clue not in dataset 
+\end_layout
+
+\begin_layout Standard
+These are clues that generate a valid parse but cannot be solved as the
+ equivalence information is not there to perform the correct evaluation.
+ For example 
+\end_layout
+
+\begin_layout LyX-Code
+Exaggerate concerning party (6)
+\end_layout
+
+\begin_layout Standard
+which should yield 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+OVERDO
+\end_layout
+
+\end_inset
+
+, but the current thesaurus data lacks the link 'over' = 'concerning'.
+ Clues in this category lack only the sort of synonym-based information
+ one might find in a very thorough thesaurus.
+ Any more complex data such as membership (Handel is a composer, etc.) is
+ covered under the category of 
+\series bold
+Knowledge not in database
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+This could be rememdied by providing a more thorough and permissive thesaurus
+ than the one integrated into the knowledgebase currently.
+\end_layout
+
+\begin_layout Paragraph
+No dictionary match between Answer and Definition
+\end_layout
+
+\begin_layout Standard
+This has the same properties as the examples above.
+\end_layout
+
+\begin_layout Paragraph
+Expression Indicator Not Found
+\end_layout
+
+\begin_layout Standard
+In this case, the clue contains an expression type that we can generate
+ parse trees for with an indicator word that we haven't defined.
+ For example, in
+\end_layout
+
+\begin_layout LyX-Code
+Last in science failing to pass (6)    (= ELAPSE)
+\end_layout
+
+\begin_layout Standard
+we fail to parse 
+\begin_inset Quotes eld
+\end_inset
+
+last in science
+\begin_inset Quotes erd
+\end_inset
+
+ as a final letter expression with the indicator 
+\begin_inset Quotes eld
+\end_inset
+
+last in
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Most of these are common indicators which occur frequently by convention
+ in crosswords, and could be easily collected manually, and extracted from
+ crossword solving guides to give a much greater coverage than the system
+ currently offers.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Require more complex data
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float figure
-placement h
+placement H
 wide false
 sideways false
 status open
@@ -9011,7 +9324,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-
+Breakdown of solvability of clues from the testing suite
 \end_layout
 
 \end_inset
@@ -9023,7 +9336,7 @@ status open
 
 
 \begin_inset Float figure
-placement h
+placement H
 wide false
 sideways false
 status open
@@ -9042,7 +9355,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-
+Reasons for unsolvable clues
 \end_layout
 
 \end_inset
@@ -9057,6 +9370,7 @@ status open
 
 \begin_layout Standard
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -9075,7 +9389,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-
+Percentage of clues solvable before cutoff
 \end_layout
 
 \end_inset
@@ -9096,12 +9410,26 @@ status open
 Performance Discussion
 \end_layout
 
-\begin_layout Subsection
-Computation required and feasibility in the real world 
+\begin_layout Standard
+
+\series bold
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+
+\series bold
+Write about solving time, RAM required etc.
+ Maybe mention Watson, for comparison
 \end_layout
 
-\begin_layout Standard
-s
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Feasibility
 \end_layout
 
 \begin_layout Standard
@@ -9180,17 +9508,17 @@ un
  etc.) 
 \end_layout
 
-\begin_layout Paragraph
-\begin_inset Note Note
+\begin_layout Standard
+\begin_inset Note Greyedout
 status open
 
-\begin_layout Paragraph
-some more examples in here, or this section looks a bit stupid
+\begin_layout Plain Layout
+add some more examples of the other clue types -> 'after', etc.
 \end_layout
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Standard
@@ -9492,6 +9820,7 @@ Figure 13
 
 \begin_layout LyX-Code
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -9673,6 +10002,7 @@ Figure 8
 
 \begin_layout Standard
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -9734,7 +10064,8 @@ We can take the combination of all the possible words generated by each
 status open
 
 \begin_layout Plain Layout
-once we know more about the number of possible words generated, we can 
+once I know more about the number of possible words generated, finish this
+ 
 \end_layout
 
 \end_inset
@@ -14014,6 +14345,13 @@ Example of how iterative function application might converge to solution
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
 \end_inset
 
 

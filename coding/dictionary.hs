@@ -58,7 +58,7 @@ is_syn x y = elem x (syn y)
 
 syn :: String -> [String]
 syn ('t':'o':' ':xs) = syn xs
-syn x = Prelude.filter (not $ null) $ thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
+syn x = Prelude.filter (not . Prelude.null) $ thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
 
 
 
