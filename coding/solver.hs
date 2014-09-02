@@ -179,9 +179,9 @@ cost :: ParseTree -> Int
 cost (ConcatNode trees) = 20 * (length trees) + sum (map cost trees) 
 cost (AnagramNode ind strings) = 10
 cost (HiddenWordNode ind strings) = 40
-cost (InsertionNode ind tree1 tree2) = 40 + cost tree1 + cost tree2  -- weight against complex insertions?
+cost (InsertionNode ind tree1 tree2) = 10 + cost tree1 + cost tree2  -- weight against complex insertions?
 cost (SubtractionNode ind tree1 tree2) = 30 + cost tree1 + cost tree2
-cost (ReversalNode ind tree) = 20 + cost tree
+cost (ReversalNode ind tree) = 10 + cost tree
 cost (SynonymNode string) = 80 * length (words string)
 cost (FirstLetterNode ind strings) = 20
 cost (LastLetterNode ind strings) = 20
