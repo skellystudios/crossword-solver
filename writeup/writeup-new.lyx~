@@ -2,7 +2,7 @@
 \lyxformat 474
 \begin_document
 \begin_header
-\textclass article
+\textclass book
 \begin_preamble
 \usepackage{qtree}
 \newsavebox{\partbox} % Declare this only once, in your preamble!
@@ -53,7 +53,7 @@ End
 \paperfontsize 11
 \spacing other 1.2
 \use_hyperref false
-\papersize default
+\papersize a4paper
 \use_geometry true
 \use_package amsmath 1
 \use_package amssymb 1
@@ -79,10 +79,10 @@ End
 \shortcut idx
 \color #008000
 \end_index
-\leftmargin 3cm
-\topmargin 3cm
-\rightmargin 3cm
-\bottommargin 3cm
+\leftmargin 2.5cm
+\topmargin 2.5cm
+\rightmargin 2.5cm
+\bottommargin 2.5cm
 \secnumdepth 3
 \tocdepth 3
 \paragraph_separation indent
@@ -123,10 +123,6 @@ by
 Michael Skelly
 \end_layout
 
-\begin_layout --Separator--
-
-\end_layout
-
 \begin_layout Date
 April 25
 \begin_inset script superscript
@@ -156,8 +152,12 @@ Submitted in partial fulfilment of the requirements for the MSc Degree in
 
 \end_layout
 
-\begin_layout Abstract
+\begin_layout Paragraph*
 This is the abstract
+\end_layout
+
+\begin_layout Standard
+DK
 \end_layout
 
 \begin_layout Standard
@@ -165,7 +165,11 @@ This is the abstract
 \begin_inset Newpage pagebreak
 \end_inset
 
+
+\series bold
 Acknowledgements
+\series default
+
 \begin_inset VSpace bigskip
 \end_inset
 
@@ -198,7 +202,7 @@ LatexCommand tableofcontents
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Introduction to the Problem / Field
 \end_layout
 
@@ -467,13 +471,46 @@ Motivation and Objectives
 \end_layout
 
 \begin_layout Standard
-Cryptic crosswords are widely thought to be at the crossroads of various
- fields of human endevour considered to be right at the limit of current
- AI and Machine Learning – featuring wit, slang, allusion, linguistic ambiguity
- and misdirection.
- Along with this, they possess other characteristics that make brute force
- solutions difficult, if not impossible: the state space of all possible
- crossword grids is of the order 10
+Cryptic crosswords are widely thought to be at the junction of various fields
+ of human endevour considered to be right at the limit of current Artificial
+ Intelligence (AI) and Machine Learning – featuring wit, slang, allusion,
+ linguistic ambiguity and misdirection.
+ Clues cryptic clues appear to be in the form of a sentance fragment in
+ natural English: 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Sweetheart takes Non-Commissioned Officer to dance (8)
+\end_layout
+
+\end_inset
+
+.
+ Actually, however, they communicate a set of instructions to derive the
+ correct answer.
+ In this case, a word for sweetheart (`flame') is next to an abbreviation
+ of Non-Commisioned Officer (`nco') to form a word for a dance (`flamenco').
+ 
+\end_layout
+
+\begin_layout Standard
+More and more, the artificial intelligence community is making inroads into
+ problems like cryptic crosswords though to be only within the abilities
+ of humans.
+ In 2011 a computer system from IBM called Watson competed in the TV Gameshow
+ Jeopardy: a game in which players have to give the answers to cryptically
+ worded questions in as short a time as possible.
+ Watson, armed with 200-million pages worth of data and 16 terrabytes of
+ RAM, beat two former Jeopardy champions.
+ 
+\end_layout
+
+\begin_layout Standard
+As well as all the human features like specialist knowledge and linguistic
+ ambiguity, cryptic crosswords also possess other characteristics that make
+ brute force solutions difficult, if not impossible: the state space of
+ all possible crossword grids is of the order 10
 \begin_inset script superscript
 
 \begin_layout Plain Layout
@@ -493,43 +530,11 @@ Cryptic crosswords are widely thought to be at the crossroads of various
 \end_inset
 
 ), and worse still, a solution to a grid is non-trivial to verify (as the
- verification process is the nearly same as solving the clue!)
-\end_layout
-
-\begin_layout Standard
-In 2011 a computer system from IBM called Watson competed in the TV Gameshow
- Jeopardy: a game in which players have to give the answers to cryptically
- worded questions in as short a time as possible.
- Watson, armed with 200-million pages worth of data and 16 terrabytes of
- RAM, beat two former Jeopardy champions.
- 
-\end_layout
-
-\begin_layout Standard
-Clues cryptic clues appear to be in the form of a sentance fragment in natural
- English: 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-Sweetheart takes Non-Commissioned Officer to dance (8)
-\end_layout
-
-\end_inset
-
-.
- Actually, however, they communicate a set of instructions to derive the
- correct answer.
- In this case, a word for sweetheart ('flame') is next to an abbreviation
- of Non-Commisioned Officer ('nco') to form a word for a dance ('flamenco').
- 
-\end_layout
-
-\begin_layout Standard
-Nevertheless, techniques from combinatorics, compiler design and Natural
+ verification process is the nearly same as solving the clue!).
+ Nevertheless, techniques from combinatorics, compiler design and Natural
  Language Processing (
 \noun on
-nlp)
+NLP)
 \noun default
  and Artificial Intelligence (
 \noun on
@@ -541,8 +546,11 @@ ons that can help improve the time taken to arrive at at the correct solution.
 \end_layout
 
 \begin_layout Standard
-This project seeks to create a system which can solve clues from a cryptic
- crossword puzzle 
+This project seeks to create a system which can solve clues from cryptic
+ crossword puzzles by correctly parsing and solving as a human does, through
+ understanding of the internal structure of the clue, rather than by brute
+ force and statistical methods across a whole grid.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -558,8 +566,8 @@ In
 \series bold
 Part III
 \series default
-, I derive a framework capable of parsing an unseen crossword clue into
- the multiple possible parse trees.
+, I derive a framework in the functional programing language Haskell capable
+ of parsing an unseen crossword clue into the multiple possible parse trees.
  Based on definitions of different clue-type expressions, such as anagrams
  and hidden words, I specify conditions for a parse to include that clue
  type.
@@ -624,7 +632,7 @@ I propose how this figure could be improved with techniques from the field
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Literature Review
 \end_layout
 
@@ -637,6 +645,19 @@ Definition of Cryptic Crosswords
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Insert a crossword grid here to illustrate
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 A crossword is a puzzle, usually published in newspapers or magazines.
  They consist of a grid of squares, often 15 x 15.
  Some of the squares are white (i.e.
@@ -645,12 +666,16 @@ A crossword is a puzzle, usually published in newspapers or magazines.
  or across (horizontally, left to right) is a space for a word, to be written.
  These are marked by numbers in the initial square (the top-leftmost one),
  and referred to by those numbers, and the direction (e.g.
- '5 down', '8 across').
+ `5 down', `8 across').
  Horizontal runs can overlap vertical runs, and at the points at which they
- do, each of the two words, when written in, must have the same letter in
- that square.
- Along with the grid are a set of clues, which the solver can use to determine
- which word to write in each space (the 'answer' or 'solution').
+ meet, each of the two words, when completed, must have the same letter
+ in that square, as well as being a valid answer for each clue.
+ 
+\end_layout
+
+\begin_layout Standard
+Along with the grid are a set of clues, which the solver can use to determine
+ which word to write in each space (the `answer' or `solution').
  The aim of the puzzle is to find the set of solution words such that each
  clue's solution is correct for that clue, and fits in the grid correctly,
  with respect to the overlapping words.
@@ -709,8 +734,8 @@ Cryptic
 \series default
 clues are less straightforward, appearing on the surface to be a valid syntactic
  utterance in English, but actually consisting of a definition (as in the
- Straight clue) and some wordplay which the solver can use to arrive at
- the same answer as with the definition by apply a series of transformations
+ straight clue) and some wordplay which the solver can use to arrive at
+ the same answer as with the definition by applying a series of transformations
  and operations.
  
 \end_layout
@@ -730,18 +755,18 @@ Rule amended to include married primate (5)
  In this, the surfact reading (legislation being changed to accomodate coupled
  apes) is not relevant.
  What is actually required is to find a word which matches the definition,
- which 'primate', and also fulfils the wordplay, which in this case asks
- us to insert an equivalent for 'married' into an anagram of the letters
- in 'rule'.
- Here, we insert 'm' into 'leur' to form the solution 'LEMUR'.
+ which `primate', and also fulfils the wordplay, which in this case asks
+ us to insert an equivalent for `married' into an anagram of the letters
+ in `rule'.
+ Here, we insert `m' into `leur' to form the solution `LEMUR'.
  
 \end_layout
 
 \begin_layout Standard
 The challenge is that the definition and the wordplay are not clearly separated
- (in this case, 'rule', or 'rule amended' could equally be definitions),
+ (in this case, `rule', or `rule amended' could equally be definitions),
  and that there are multiple ways to apply to the transformations, but with
- only on yielding the correct answer.
+ only one yielding the correct answer.
  
 \end_layout
 
@@ -755,9 +780,9 @@ Cryptic Crosswords in the Literature
 \end_layout
 
 \begin_layout Standard
-While not a topic well covered in scientific literature in general, what
- few analytical studies around cryptic crosswords there are tend to be classifia
-ble into three main groups
+While not a topic well covered in scientific literature.
+ In general, analystical studies on cryptic crosswords tend to be classifiable
+ into three main groups:
 \end_layout
 
 \begin_layout Paragraph
@@ -765,10 +790,10 @@ Generation of Cryptic Clues
 \end_layout
 
 \begin_layout Standard
-The largest body of work that exists is centered around the generation of
- cryptic clues, focusing largely around analysis of how string literals
- from a pre-determined answer can be transformed by set clueing patterns,
- as well as some work around measures of the quality of generated clues.
+The largest body of work is centered on the generation of cryptic clues,
+ focusing largely around analysis of how string literals from a pre-determined
+ answer can be transformed by set clueing patterns, as well as some work
+ around measures of the quality of generated clues.
 \end_layout
 
 \begin_layout Paragraph
@@ -776,10 +801,11 @@ Interpreting Clues
 \end_layout
 
 \begin_layout Standard
-The next set are the select few who have done prior, similar investigations
- into interpreting cryptic clues, with some work put into formalizing definition
-s and notation for the sorts of clue types that appear in the majority of
- cryptic crosswords, and some attempts at solving based on these interpretations.
+The next set are those similar to the current study, which have done prior,
+ similar investigations into interpreting cryptic clues, with some work
+ put into formalizing definitions and notation for the sorts of clue types
+ that appear in the majority of cryptic crosswords, and some attempts at
+ solving based on these interpretations.
  
 \end_layout
 
@@ -823,11 +849,11 @@ Ambiguity
 Cryptic crosswords are deliberately ambiguous.
  Instruction indicators are indistinguishable from string literals, which
  are identical to words’ semantic meanings.
- Often, the setter will deliberately chose words to give rise to further
+ Often, the setter will deliberately choose words to give rise to further
  ambiguities.
- For example, the 
+ For example, 
 \emph on
-Telegraph
+The Telegraph
 \emph default
  printed
 \end_layout
@@ -837,7 +863,7 @@ Bug starts to move in dark, glowing endlessly (5)
 \end_layout
 
 \begin_layout Standard
-cluing for 'MIDGE'.
+clueing for `MIDGE'.
  Usually "endlessly" and similar mean "remove the last letter", but here
  it is one of five consecutive words to form an acronym from, with the words
  "starts to" as an indicator.
@@ -860,15 +886,15 @@ Lack of Standardization
 \end_layout
 
 \begin_layout Standard
-Although all cryptic crossword share some common conventions, there are
+Although all cryptic crosswords share some common conventions, there are
  no fixed rules shared between publications for what can and can’t be a
- clue, indicator etc..
+ clue, indicator etc.
  Although most publications have internal guidelines or style-guides, these
  are not accessible to the solver, and some publications (such as the 
 \emph on
 Guardian
 \emph default
-) have named setters whose styles and self-imposed rulesets differ, even
+) have named setters whose styles and self-imposed rule sets differ, even
  between one publication.
  Alistair Ferguson Ricthie, who set for 
 \emph on
@@ -883,6 +909,9 @@ in 1946.
 \end_layout
 
 \begin_layout Quote
+\begin_inset Quotes eld
+\end_inset
+
 We must expect the composer to play tricks, but we shall insist that he
  play fair.
  
@@ -895,21 +924,21 @@ The Book of the Crossword
  He may attempt to mislead by employing a form of words which can be taken
  in more than one way, and it is your fault if you take it the wrong way,
  but it is his fault if you can't logically take it the right way.
+\begin_inset Quotes erd
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Although 
-\emph on
-The Book of the Crossword
-\emph default
- there have been many books written on the subject of what should and should
- not constitute a valid cryptic crossword clue.
+Although there have been many books written on the subject of what should
+ and should not constitute a valid cryptic crossword clue.
  One of the most notable and influential was written by 
 \emph on
 Observer
 \emph default
- setter Derrick Somerset Macnutt, both cluing and writing under the name
- Ximenes, in his book 
+ setter Derrick Somerset Macnutt, who clued under the pseudonym Ximenes,
+ in his book 
 \emph on
 Ximenes on the Art of the Crossword Puzzle
 \emph default
@@ -919,6 +948,9 @@ Ximenes on the Art of the Crossword Puzzle
 \end_layout
 
 \begin_layout Quote
+\begin_inset Quotes eld
+\end_inset
+
 A good cryptic clue contains three elements: 
 \end_layout
 
@@ -936,28 +968,32 @@ A good cryptic clue contains three elements:
 \begin_layout Quote
 3.
  nothing else
+\begin_inset Quotes erd
+\end_inset
+
+
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-A crossword setter following these rules is said to adhere to 'Ximenean
+A crossword setter following these rules is said to adhere to `Ximenean
  principles' and their produced work to be Ximenean.
  Most mainstream crosswords exist on a continuum between being more closely
  Ximenean (examples include 
 \emph on
 The Times
 \emph default
-, the 
+, 
 \emph on
-Independent
+The Independent
 \emph default
 ) to being very libertarian (e.g.
  
 \emph on
-Guardian
+The Guardian
 \emph default
 ).
- No crossword in a major UK newspaper is 'strictly Ximenean'.
+ No crossword in a major UK newspaper is `strictly Ximenean'.
  
 \end_layout
 
@@ -987,8 +1023,9 @@ Programming Language Analogues
 \end_layout
 
 \begin_layout Standard
-Much of the current work on interpreting crosswords draws on work by Backus,
- Naur and Chomsky in creating a specification for the grammar of crosswords.
+Much of the current work on interpreting crosswords draws on studies by
+ Backus, Naur and Chomsky in creating a specification for the grammar of
+ crosswords.
  While these frameworks are useful for describing many different languages,
  interpretations of the grammar of cryptic crosswords seem to be perversely
  somewhat closer to mathematical and programming languages than to natural
@@ -996,7 +1033,7 @@ Much of the current work on interpreting crosswords draws on work by Backus,
  In some ways, the cryptic clue as a whole can be thought of as a program
  that generates the output string as its answer.
  The wordplay section is analogous to a program, and the definition section
- of a clue could be thought of as a checksum to verify the final answer.
+ of a clue can be thought of as a checksum to verify the final answer.
 \end_layout
 
 \begin_layout Subsubsection
@@ -1005,16 +1042,17 @@ Lexing, Parsing, Evaluating
 
 \begin_layout Standard
 The steps for compiling and running a computer program apply also to solving
- (or 'running') a crossword as a program.
+ (or `running') a crossword as a program.
  Each word in the input string needs to be tokenized, parsed into a relevant
- structure and then that structure evaluated to produce the final answer.
+ structure.
+ That structure is then evaluated to produce the final answer.
  Unusually for a programming language, however, the grammar of a cryptic
  crossword is highly ambiguous, and requires complex parsing.
  Firstly, programming languages are only usually required to output the
  one valid abstract syntax tree, however here we may need to output many
  thousands in order to evaluate them to see which yields the correct answer.
- Furthermore, the grammar cannot be expressed without using complex context-sens
-itive features such as lookbacks, lookaheads and backtracking.
+ Secondly, the grammar cannot be expressed without using complex context-sensiti
+ve features such as lookbacks, lookaheads and backtracking.
  Most major programming languages are parsed without these features, allowing
  information to flow in one direction from the lexer to the parser.
  To parse a cryptic crossword, lexing and parsing need to take place simultaneou
@@ -1071,8 +1109,8 @@ In which you can get three couples together and have sex (5)
 \end_layout
 
 \begin_layout Standard
-Clues such as these, and the question of computerised wit and humour, unfortunat
-ely exist out of the scope of this project.
+Clues such as these, and the question of computerised wit and humour, exist
+ outside the scope of this project.
 \end_layout
 
 \begin_layout Section
@@ -1094,7 +1132,7 @@ LACROSS
 \begin_layout Standard
 William and Woodhead produced language called LACROSS, which forms a sort
  of calculus for describing crossword clues.
- They also provide a BNF definition of this grammar.
+ They also provide a Backus–Naur Form (BNF) definition of this grammar.
  Their clues are of the general form 
 \end_layout
 
@@ -1230,7 +1268,7 @@ the ‘regularly’ of ‘Bill regularly’ may indicate alternate letters (‘t
 
 \begin_layout Quote
 ‘installed’ suggests the embedding (‘e’) of those letters within something
- meaning ‘ appliance’.
+ meaning ‘appliance’.
 \end_layout
 
 \begin_layout Standard
@@ -1299,7 +1337,7 @@ The (rev.) notation is most commonly used when the wordplay consists of a
 \end_layout
 
 \begin_layout Standard
-Letters abc removed, as in [c]OUNT to represent 'count' with c removed;
+Letters abc removed, as in [c]OUNT to represent `count' with c removed;
  the convention is to use lower case for the removed letters.
  
 \end_layout
@@ -1309,7 +1347,7 @@ Letters abc removed, as in [c]OUNT to represent 'count' with c removed;
 \end_layout
 
 \begin_layout Standard
-Letters placed inside others, as inC(AND)ID to mean 'and' inside 'cid'.
+Letters placed inside others, as inC(AND)ID to mean `and' inside `cid'.
  
 \end_layout
 
@@ -1427,11 +1465,11 @@ Story about bishop and food (5)
 \end_layout
 
 \begin_layout Standard
-then if we read this clue as requiring a word for 'story' around a word
- for 'bishop', selecting 'tale' as the first word means that we are limited
- to only one-letter long options for 'bishop'.
- In this case, we would choose 'b' as an abbreviation for bishop, to correctly
- form 'table'.
+then if we read this clue as requiring a word for `story' around a word
+ for `bishop', selecting `tale' as the first word means that we are limited
+ to only one-letter long options for `bishop'.
+ In this case, we would choose `b' as an abbreviation for bishop, to correctly
+ form `table'.
  
 \end_layout
 
@@ -1458,6 +1496,13 @@ Strings consisting of one or more words can be at once tokens representing
 \end_layout
 
 \begin_layout Standard
+\begin_inset VSpace bigskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Box Boxed
 position "t"
 hor_pos "c"
@@ -1465,7 +1510,7 @@ has_inner_box 1
 inner_pos "t"
 use_parbox 0
 use_makebox 0
-width "100col%"
+width "90col%"
 special "none"
 height "1in"
 height_special "totalheight"
@@ -1546,6 +1591,13 @@ the rough
  = hero
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace bigskip
 \end_inset
 
 
@@ -1731,16 +1783,16 @@ Structure of a cryptic clue
 \begin_layout Standard
 A cryptic crossword can be split into wo parts.
  One is the definition, which will perform the same function as a clue in
- a 'regular' crossword.
- The answer to the clue is usually a synonym for the definition ('circular'
- and 'round') or may be an example of the definition ('farm animal' and
- 'pig').
+ a `regular' crossword.
+ The answer to the clue is usually a synonym for the definition (`circular'
+ and `round') or may be an example of the definition (`farm animal' and
+ `pig').
  The other is the wordplay.
  This is an encoded and often ambiguous second method of deriving the answer,
  using techniques such as anagram, substitution and concatenation.
  The clue as a whole is presented as a concatenation of the two parts, sometimes
  with a subsidiary word indicating that one can be derived from the other
- (for example, 'from' or 'is').
+ (for example, `from' or `is').
  We can present this breakdown as: 
 \end_layout
 
@@ -1754,7 +1806,7 @@ Clue → Definition, (Indicator), Wordplay
 
 \begin_layout Standard
 The final clue will often resemble a valid English utterance, although this
- 'surface reading' very rarely has any relation to the answer.
+ `surface reading' very rarely has any relation to the answer.
  Later on we will consider other information and context within the definition
  of a clue.
 \end_layout
@@ -1774,7 +1826,7 @@ The definition carries a variety of linguistic features with it that the
  overall answer, and so the answer as derived by the wordplay, must match.
  These include aspect (noun, verb, adjective), plurality (tree, trees),
  tense (go, going, gone).
- These features may also be considered as 'context' to the clue itself.
+ These features may also be considered as `context' to the clue itself.
  We can define the definition as 
 \end_layout
 
@@ -1885,15 +1937,15 @@ status collapsed
 \begin_layout Plain Layout
 In this case, it becomes a difficult task to be precise about exactly which
  of these is the definition and which is the wordplay! Sometimes there is
- a defined answer: From 'Oinking tendency? (8)' we get both 'pen chant'
- and 'penchant', and we can see from the letters required (no space) that
+ a defined answer: From `Oinking tendency? (8)' we get both `pen chant'
+ and `penchant', and we can see from the letters required (no space) that
  the second half is the solution.
  In other cases, this may not be defined at all! 
 \end_layout
 
 \end_inset
 
- A clue that contains just this structure is said to be 'double definition'
+ A clue that contains just this structure is said to be `double definition'
 \end_layout
 
 \begin_layout LyX-Code
@@ -1903,22 +1955,22 @@ Metal guide (4) [= LEAD]
 \begin_layout Standard
 However, even in this simple example we see that this equivalence relationship
  is not at all straightforward.
- While 'guide' and 'lead' are synonyms (as verbs in the present tense),
- it's not true that 'lead' is a synonym for 'metal'.
- We must also include 'for example' in this relationship too, which causes
+ While `guide' and `lead' are synonyms (as verbs in the present tense),
+ it's not true that `lead' is a synonym for `metal'.
+ We must also include `for example' in this relationship too, which causes
  us to have to discard reflexivity.
- Although 'metal' can be a clue for 'lead', it's not the case that 'lead'
- can be a clue for 'metal' (in that case, we signify 'an example of' by
- writing 'lead, say' or 'bronze, for instance').
+ Although `metal' can be a clue for `lead', it's not the case that `lead'
+ can be a clue for `metal' (in that case, we signify `an example of' by
+ writing `lead, say' or `bronze, for instance').
  
 \end_layout
 
 \begin_layout Standard
 We also include abbreviations, which are perhaps more closely related to
  synonyms, although not usually found in thesauruses, along with some useful
- 'setters favourites', where an abbreviation of a synonym or of an example
+ `setters favourites', where an abbreviation of a synonym or of an example
  is particularly useful for cluing a difficult letter combination used in
- a wordplay ('Books' becomes 'NT', for 'New Testament').
+ a wordplay (`Books' becomes `NT', for `New Testament').
 \end_layout
 
 \begin_layout LyX-Code
@@ -1946,18 +1998,18 @@ Concatenation
 \end_layout
 
 \begin_layout Standard
-This is sometimes known in the literature as 'charade', and indicates one
+This is sometimes known in the literature as `charade', and indicates one
  word placed beside another.
  
 \end_layout
 
 \begin_layout LyX-Code
-Climb a trail (6)
+Climb a trail (6)appliance
 \end_layout
 
 \begin_layout Standard
-would yield the answer ASCENT, as the letter 'A' is placed next to a word
- for trail ('SCENT').
+would yield the answer ASCENT, as the letter `A' is placed next to a word
+ for trail (`SCENT').
  We represent this syntactically:
 \end_layout
 
@@ -1968,7 +2020,7 @@ Concatenation → Wordplay (ConcatIndicator) Wordplay
 \begin_layout Standard
 This represents a key tool for cluers to create more complex wordplay clues
  in the form of a charade, where two or more parts can be split out (sometimes
- syllabically as in 'bath', 'tub', or sometimes otherwise 'bat','htub')
+ syllabically as in `bath', `tub', or sometimes otherwise `bat',`htub')
  and clued separately, and then later joined to form the overall solution.
 \end_layout
 
@@ -2001,8 +2053,8 @@ Melon mistaken for a citrus fruit (5)
 \end_layout
 
 \begin_layout Standard
-we have an indicator ('mistaken') to show that we can find an anaagram of
- 'melon' to create a citrus fruit as the answer ('LEMON').
+we have an indicator (`mistaken') to show that we can find an anaagram of
+ `melon' to create a citrus fruit as the answer (`LEMON').
 \end_layout
 
 \begin_layout Standard
@@ -2017,8 +2069,8 @@ Anagram → Anagrind, String | String, Anagrind
 \end_layout
 
 \begin_layout Standard
-We see that this grammar means that the words are anagrammed as given: 'melon'
- is not transformed to 'honeydew' before anagramming.
+We see that this grammar means that the words are anagrammed as given: `melon'
+ is not transformed to `honeydew' before anagramming.
  Sometimes, however, in certain publications we find clues where there is
  some sort of operation applied to the letters before the anagram is applied.
  For example: 
@@ -2061,7 +2113,7 @@ In which case we find the more general case one proposed structure:
 \end_layout
 
 \begin_layout LyX-Code
-Anagram' → Anagrind, Wordplay | Wordplay, Anagrind 
+Anagram` → Anagrind, Wordplay | Wordplay, Anagrind 
 \end_layout
 
 \begin_layout Standard
@@ -2075,6 +2127,9 @@ Ximenes argued against this form of indirect anagram:
 \end_layout
 
 \begin_layout Quote
+\begin_inset Quotes eld
+\end_inset
+
 Secondly – and here, for once, I differ from Afrit – I hate what I call
  an indirect anagram.
  By that I mean "Tough form of monster" for HARDY (anagram of HYDRA).
@@ -2090,12 +2145,15 @@ n – is meant to help the solver.
  The indirect anagram, unless there are virtually no alternatives, hardly
  ever does.
  He only sees it after he has got his answer by other means.
- 
+\begin_inset Quotes erd
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 In sticking to solving Ximinean crosswords, we will treat clues such as
- these as 'ungramatical'.
+ these as `ungramatical'.
  Thus, our original definition of 
 \begin_inset Flex Code
 status open
@@ -2123,8 +2181,8 @@ Canine turned around for divine being (3)
 \end_layout
 
 \begin_layout Standard
-we have an indicator ('turned around') that a word for canine ('dog') can
- be reversed to form a divine being ('GOD').
+we have an indicator (`turned around') that a word for canine (`dog') can
+ be reversed to form a divine being (`GOD').
 \end_layout
 
 \begin_layout Standard
@@ -2139,7 +2197,7 @@ While this is functionally a subset of anagrams, there are some crucial
 
 \begin_layout Standard
 Further, while in anagrams, nested wordplay is not permitted, here we allow
- other operations (for example, finding a synonym of 'canine') before applying
+ other operations (for example, finding a synonym of `canine') before applying
  the transformation.
  Therefore, while the nested wordplay in 
 \begin_inset Flex Code
@@ -2202,9 +2260,9 @@ Contraction
 \end_layout
 
 \begin_layout Standard
-Clues of this form range from specific, such of first/last letters ('first
- in line' = 'l', 'last of the Mohicans' = 'm') to more general operators
- ('mostly harmless' can yield 'armless', 'harmles', 'harmle'...) whose definitions
+Clues of this form range from specific, such of first/last letters (`first
+ in line' = `l', `last of the Mohicans' = `m') to more general operators
+ (`mostly harmless' can yield `armless', `harmles', `harmle'...) whose definitions
  are more flexible.
 \end_layout
 
@@ -2283,8 +2341,8 @@ Notice supervisor is going nuts at first (4)
 \end_layout
 
 \begin_layout Standard
-cluing the answer 'SIGN' as with the indicator 'at first' and the first
- letters of each word in the phrase 'supervisor is going nuts'.
+cluing the answer `SIGN' as with the indicator `at first' and the first
+ letters of each word in the phrase `supervisor is going nuts'.
 \end_layout
 
 \begin_layout Paragraph
@@ -2304,8 +2362,8 @@ Dog found in culdesac or ginnel (5)
 \end_layout
 
 \begin_layout Standard
-the solution is 'CORGI, and which is concealed (indicated by 'found in')
- in 'culdesaC OR GInnel'.
+the solution is CORGI, and which is concealed (indicated by `found in')
+ in `culdesaC OR GInnel'.
  
 \end_layout
 
@@ -2320,10 +2378,10 @@ Homophone
 \end_layout
 
 \begin_layout Standard
-Also called 'sounds like', this operator produces homophones of a given
- word, for example 'right' and 'rite'.
+Also called `sounds like', this operator produces homophones of a given
+ word, for example `right' and `rite'.
  This operator is not applied to words that are both spelled and said the
- same, but with different meanings ('must' as an imperative and 'must' as
+ same, but with different meanings (`must' as an imperative and `must' as
  a noun).
  
 \end_layout
@@ -2339,7 +2397,7 @@ We hear twins shave (4)
 \end_layout
 
 \begin_layout Standard
-yields 'pare' whereas
+yields `pare' whereas
 \end_layout
 
 \begin_layout LyX-Code
@@ -2347,7 +2405,7 @@ Twins shave, we hear (4)
 \end_layout
 
 \begin_layout Standard
-yields 'pair'.
+yields `pair'.
  A formulation with the indicator in the middle, in this case, would result
  in a strong ambiguity.
  The homophone indicator is only applied to equivalence words, not to clued
@@ -2375,8 +2433,8 @@ Insertion
 Here are two styles of wordplay which are clued very differently, but are
  actually the same operator, which places one set of letter inside another.
  This is either presented as a insertion (e.g..
- 'end inside ls') or as a containment (e.g.
- 'ls around end').
+ `end inside ls') or as a containment (e.g.
+ `ls around end').
  This operation always preserves letter order, unless some nested indicator
  allows otherwise.
  
@@ -2569,7 +2627,7 @@ Self reference
 \end_layout
 
 \begin_layout Standard
-A type of clue called an '&lit' clue allows the setter to not include a
+A type of clue called an `&lit' clue allows the setter to not include a
  definition part if the text that makes up the wordplay also can also be
  read as the definition.
  Thus in 
@@ -2588,7 +2646,7 @@ vote
 \begin_inset Quotes erd
 \end_inset
 
- to give 'VETO', as well as the clue as a whole 'spoil vote' meaning 'veto'.
+ to give `VETO', as well as the clue as a whole `spoil vote' meaning `veto'.
 \end_layout
 
 \begin_layout Subsubsection
@@ -2597,7 +2655,7 @@ Reference to other clues
 
 \begin_layout Standard
 Some publications will have clues that reference the answer to other clues
- ('8 across.
+ (`8 across.
  Cake made badly by 7 down.').
  Sometimes these may also be cyclical (in this example, 7 down would reference
  8 across too).
@@ -2630,8 +2688,8 @@ Araucaria
 
 \end_layout
 
-\begin_layout Part
-Naive Approach 
+\begin_layout Chapter
+Naive Solution 
 \end_layout
 
 \begin_layout Section
@@ -2639,9 +2697,9 @@ Solving Through Functional Programming
 \end_layout
 
 \begin_layout Standard
-The approach I will take to parsing and solving cryptic crossword clues
- will be by using the functional programming language Haskell to generate
- and evaluate abstract syntax trees.
+The approach taken to parsing and solving cryptic crossword clues in this
+ project will be by using the functional programming language Haskell to
+ generate and evaluate abstract syntax trees.
  
 \end_layout
 
@@ -2707,9 +2765,10 @@ There may be many reasons for this.
 \end_layout
 
 \begin_layout Standard
-While I benefit heavily from many of the features of Haskell, the work here
- could be implemented without too much adjustment in many other functional
- languages, and many modern multi-paradigm languages, such as Python.
+While the described program benefits heavily from many of the features of
+ Haskell, the work here could be implemented without too much adjustment
+ in many other functional languages, and many modern multi-paradigm languages,
+ such as Python.
 \end_layout
 
 \begin_layout Section
@@ -3297,7 +3356,7 @@ variable name
 status open
 
 \begin_layout Plain Layout
-'available_credit'
+`available_credit'
 \end_layout
 
 \end_inset
@@ -3316,7 +3375,7 @@ The first is the
 \noun on
 scanner: 
 \noun default
-this is often a finite state machine, which will consumer characters based
+this is often a finite state machine, which will consume characters based
  on rules to produce potential lexemes.
  In a traditional programming language, the scanner might consume a string
  such as 
@@ -3652,7 +3711,7 @@ messed
 
 \end_inset
 
-, which would evaluate to 'disarrayed', 'untidy' etc.).
+, which would evaluate to `disarrayed', `untidy' etc.).
  The parser we produce will therefore combine a scanner and evaluator together
  into a scannerless parser.
 \end_layout
@@ -4174,7 +4233,7 @@ WORK HARD IN ATTEMPT TO GET CUP
 
 \end_inset
 
-, with definition (='
+, with definition (=`
 \begin_inset Flex Code
 status open
 
@@ -4904,20 +4963,6 @@ Figure 1.
  This is largely because of the sheer number of solutions that can be produced
  by one clue.
  
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Need a big summary of this table, and to explain that it's just a sample,
- and to give some top-level figures, or reasons why not
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -5956,9 +6001,9 @@ We see a similar but even greater effect on the number of solutions produced,
 \end_layout
 
 \begin_layout Standard
-There are 4 ways that a word 'A' can be inserted into a 5-letter word 'B'.
+There are 4 ways that a word `A' can be inserted into a 5-letter word `B'.
  There are 480 ways that it can be inserted into each of the 120 anagrams
- of word 'B', and if there are also 120 different anagrams of word 'A',
+ of word `B', and if there are also 120 different anagrams of word `A',
  then there are 57600 different solutions for that parsed arrangement.
  We can see from 
 \series bold
@@ -5978,19 +6023,6 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-Tree[.CONCAT [.CONCAT A B ] [.C ]]
-\end_layout
-
-\end_inset
-
- 
 \begin_inset Graphics
 	filename results/clue-length-to-evaluations evaluations.pdf
 	width 100col%
@@ -6104,7 +6136,7 @@ These clues are therefore presented as an illustrative sample of the sorts
 being generated.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 SHINY SILVER PAPER IN THE STREET (8)  (= 
 \begin_inset Quotes eld
 \end_inset
@@ -6145,7 +6177,7 @@ litter
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 PLAYWRIGHT AT HOME HAVING CAUGHT DISEASE (5) (="IBSEN
 \begin_inset Quotes erd
 \end_inset
@@ -6166,7 +6198,7 @@ This clue requires two pieces of category knowledge, firstly that Ibsen
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 HE SCORED HARLEM WINDS (6)   (= 
 \begin_inset Quotes eld
 \end_inset
@@ -6180,7 +6212,7 @@ MAHLER
 
 \begin_layout Standard
 Not only is knowledge of composer Gustav Mahler required, but also a cryptic
- understanding that 'HE SCORED' can refer to a member of the set of male
+ understanding that `HE SCORED' can refer to a member of the set of male
  composers.
  Note that this is structurally different from the examples above: while
  (1) was a more oblique version of a synonym (litter 
@@ -6204,7 +6236,7 @@ he scored
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 WHERE AND HOW A SUPERHERO MIGHT LABEL HIS FAUCET (4) (= 
 \begin_inset Quotes eld
 \end_inset
@@ -6412,7 +6444,7 @@ This clue represents the upper level of challenge for a computer based solver,
  
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Optimizations
 \end_layout
 
@@ -6596,7 +6628,7 @@ ABC
 
 \begin_layout Standard
 One strategy to deal with this would be to perform canonization on the trees,
- and prune all concatenation trees which don't conform to our decided 'ideal
+ and prune all concatenation trees which don't conform to our decided `ideal
  tree'.
  For example, we could choose to create a right-handed binary tree, wherein
  trees such as:
@@ -6741,7 +6773,7 @@ Tree[.CONCAT [ A B C D ] ]
 however, Haskell's data constructors do not allow an arbitrary number of
  elements in a datatype.
  We can, however, represent the items in the concatenation as a single list
- of parse trees, known as a 'forest'.
+ of parse trees, known as a `forest'.
 \end_layout
 
 \begin_layout Verse
@@ -6911,19 +6943,7 @@ sequence [ [1,2,3], [40,50], [666,777,888] ] =
 \end_layout
 
 \begin_layout LyX-Code
-  [ [1,40,666],[1,40,777],[1,40,888],[1,50,666],[1,50,777],
-\end_layout
-
-\begin_layout LyX-Code
-    [1,50,888],[2,40,666],[2,40,777],[2,40,888],[2,50,666],
-\end_layout
-
-\begin_layout LyX-Code
-    [2,50,777],[2,50,888],[3,40,666],[3,40,777],[3,40,888],
-\end_layout
-
-\begin_layout LyX-Code
-    [3,50,666],[3,50,777],[3,50,888] ]
+  [ [1,40,666],[1,40,777],[1,40,888],[1,50,666],[1,50,777] ...]
 \end_layout
 
 \begin_layout Subsubsection
@@ -7218,7 +7238,7 @@ Report coarse players (9)
 \end_layout
 
 \begin_layout Standard
-could identify 'coarse' as a possible anagram indicator, and yield a parse
+could identify `coarse' as a possible anagram indicator, and yield a parse
  such as
 \end_layout
 
@@ -7313,7 +7333,7 @@ Tree[.{INSERTION (=in)} [.SYNONYMN {"punch's dog"} ] [.{REVERSAL (=about)}
 \end_layout
 
 \begin_layout Standard
-Since the reversal of play ('yalp') is already 4 letters long, we can see
+Since the reversal of play (`yalp') is already 4 letters long, we can see
  that which ever word we choose to signify 
 \begin_inset Flex Code
 status open
@@ -7414,12 +7434,12 @@ minLength (SubtractionNode ind tree1 tree2) = min (
 \begin_layout Standard
 Some clue types can be defined directly from their inputs – both the maxium
  and minium length of an anagram node is the length of the input string
- – while an insertion node need to be defined based on the maxium and minimum
+ – while an insertion node needs to be defined based on the maxium and minimum
  of the two subtrees.
 \end_layout
 
 \begin_layout Standard
-Notable is that here we see some 'contextual bleed' from evaluation across
+Notable is that here we see some `contextual bleed' from evaluation across
  into the parsing, as we consider the semantics of what the thesaurus could
  yield for a synonym node in determining its minimum length.
 \end_layout
@@ -7570,7 +7590,7 @@ Lowest point in ruptured drain (5)
 
 \end_inset
 
-, we see the angram indicator 'ruptured' next to a 5 letter word:
+, we see the angram indicator `ruptured' next to a 5 letter word:
 \end_layout
 
 \begin_layout Verse
@@ -7675,7 +7695,7 @@ drain
 
 \begin_layout Standard
 More formally, we're looking for a heuristic which weights toward consuming
- words into indicators for more 'interesting' clue types: in that clues
+ words into indicators for more `interesting' clue types: in that clues
  using expressions more varied than synonym and concatenation are considered
  better clues, and so are more likely than not if they are an available
  parse.
@@ -7821,17 +7841,14 @@ parse = sortBy costParse .
 \end_layout
 
 \begin_layout Standard
-The weighting 
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-finish this thought
+The optimal values for each constant could be determined by taking a large
+ set of clues with known parses, and then performing argument optimisation
+ through hill climbing, or similar technique.
 \end_layout
 
-\end_inset
-
-
+\begin_layout Standard
+Experimentally, I determined that the following constants provided a satisfactor
+y improvement to the parse order.
 \end_layout
 
 \begin_layout LyX-Code
@@ -7875,9 +7892,10 @@ PARTIAL_CONST = 2
 \end_layout
 
 \begin_layout Standard
-Synonym nodes have a high weighting against consuming long lists of words
- – this is to prevent them from being low scoring (as they consume large
- portions the clue) while being unlikely to yield the correct answer.
+In my weighting, Synonym Nodes have a high weighting against consuming long
+ lists of words – this is to prevent them from being low scoring (as they
+ consume large portions the clue) while being unlikely to yield the correct
+ answer.
  
 \end_layout
 
@@ -7886,7 +7904,7 @@ Analysis
 \end_layout
 
 \begin_layout Standard
-The weighting above mean that the correct parse had the highest score in
+The weighting above means that the correct parse had the highest score in
  70% of the clues that the system can solve, as opposed to approximately
  10% when not sorted by weight.
  In cases where the clue can not be solved, the order of the parses is irrelevan
@@ -8093,7 +8111,7 @@ Implementation
 \begin_layout Standard
 In the example above, we see the length constraints preventing overflow
  - that is, a maximum length which the generated solution should not exceed.
- We also need to constrain against 'underflow', wherein the evaluation fails
+ We also need to constrain against `underflow', wherein the evaluation fails
  to yield enough letters to fit the solution.
  Constraining both maximum and minimum length will have the effect of forcing
  the generated solution length to be equal to the prescribed length.
@@ -8433,7 +8451,7 @@ noMax (Constraints p mx mn) = (Constraints p NoMax mn)
 \end_layout
 
 \begin_layout Standard
-fo 
+and
 \end_layout
 
 \begin_layout LyX-Code
@@ -8461,7 +8479,7 @@ eval_tree (PartialNode ind y) c =
 For our concatentation nodes, the requirement is slightly more complex,
  as the constraints imposed on the parse of any one tree depend on the each
  possible evaluation of all the other possible trees in the forest.
- In a simple example: From a clue such as
+ In a simple example: From a clue such as 
 \begin_inset Flex Code
 status open
 
@@ -8928,8 +8946,7 @@ eval (Def d pt len) = [Answer x (Def d pt len) |
 \end_layout
 
 \begin_layout LyX-Code
-                                        x <- evalTree pt (Constraints Max
- len Min len)]
+                           x <- evalTree pt (Constraints Max len Min len)]
 \end_layout
 
 \begin_layout Subsubsection
@@ -8937,16 +8954,16 @@ Analysis
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Do analysis of graph - reference exponential increase
-\end_layout
-
-\end_inset
-
-
+This optimisation radically improves the number of solutions evaluated for
+ a given parse.
+ 
+\series bold
+Figure 8
+\series default
+ shows how the exponential growth before constraints is brought under control,
+ and the overall number of parses greatly reduced with the average number
+ of solutions for a 5-word clue being reduced from 4.6 million to just 16
+ thousand.
 \end_layout
 
 \begin_layout Standard
@@ -9052,7 +9069,7 @@ Implementation
 \begin_layout Standard
 We want to add another contraint while solving, which is a check that what
  we are evaluating can be a prefix of a valid word.
- We add a function to calculate all proper prefixes of a given word
+ We add a function to calculate all proper prefixes of a given word:
 \end_layout
 
 \begin_layout LyX-Code
@@ -9295,35 +9312,43 @@ pre
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
+In this case, we need to use the 
+\begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-Not finished writing here!!!
+noPrefix
 \end_layout
 
 \end_inset
 
-
+ function to allow any prefix for these parts
 \end_layout
 
 \begin_layout LyX-Code
-eval_tree (InsertionNode ind x y) c = concat[insertInto x' y' | 
+eval_tree (InsertionNode ind x y) c = 
 \end_layout
 
 \begin_layout LyX-Code
-        y' <- eval_tree y (noMin .
- noPrefix $ c),
+           filter (fits c) $
 \end_layout
 
 \begin_layout LyX-Code
-        x' <- eval_tree x c', 
+           concat[insertInto x' y' | 
 \end_layout
 
 \begin_layout LyX-Code
-        c' = (decreaseMax (length y') .
- decreaseMin (length y') .
+                    y' <- eval_tree y (noMin .
+ noPrefix $ c), 
+\end_layout
+
+\begin_layout LyX-Code
+                    x' <- eval_tree x (add_partial y' .
  noPrefix $ c)] 
+\end_layout
+
+\begin_layout LyX-Code
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -9331,16 +9356,37 @@ Analysis
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
+
+\series bold
+Figure 9
+\series default
+ shows that in terms of number of solutions evaluated, this represents a
+ modest improvement, although less dramatic than previous optimisations.
+\end_layout
+
+\begin_layout Standard
+The real improvements can instead be seen in 
+\series bold
+Figure 10
+\series default
+, where we see that while the optimisation has minimal or even negative
+ effect for the quicker clues, it shows a significant decrease in the toal
+ solving time of the long-running clues.
+ As these long-running clues account for approximately 90% of total evaluation
+ time
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-Do some analysis of this vs figure - moderate improvement
+Estimated based on a sample of long running clues allowed to run until terminati
+on
 \end_layout
 
 \end_inset
 
-
+ if uncapped, this represents an improvement of around 68% on average running
+ times.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -9371,7 +9417,199 @@ Number of solutions evaluated after implementing prefix-based constraints
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
 \begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="2">
+<features rotate="0" tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Original Solve Time
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Average Change in Solve Time
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0–1 seconds
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
++33%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1–5 seconds
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-32%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5–10 seconds
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-22%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+10–20 seconds
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-48%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+20-60 seconds
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-43%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+60-120 seconds
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-67%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+120 seconds+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-76%
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effect of parse constraints on solve time 
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
@@ -9387,7 +9625,7 @@ Number of solutions evaluated after implementing prefix-based constraints
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Analysis
 \end_layout
 
@@ -9395,40 +9633,13 @@ Analysis
 Analysis of Single clue solving against test suite 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-showing data ---> "could be solved" introduction comparissons to watson
- 100 clues --> random sample computational complexity --> show tables 
-\end_layout
-
-\begin_layout Plain Layout
-why the pink one take significantly longer order parses and 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Test Suite
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Make sense from this
-\end_layout
-
-\end_inset
-
- These clues are evaluated against a testing suite comprising of 10,000
- clues extracted from the Observer's Everyman series.
+The test suit comprises of 7,000 clues extracted from the Observer's Everyman
+ series.
  These were chosen for being published in a major British newspaper, and
  for being both scrapable from publically open websites (as The Times' and
  Telegraph's are not) and for being Ximenean
@@ -9457,20 +9668,93 @@ Meta-reference
 \end_layout
 
 \begin_layout Subsection
-Thesaurus and Knowledgebase data
+Wordlist and Knowledgebase data
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
+The data from the solver comes in two parts: a wordlist and a knowledgebase.
+ The wordlist comes from the Moby Project
+\begin_inset Foot
 status open
 
 \begin_layout Plain Layout
-Write about data sources here
+http://icon.shef.ac.uk/Moby/
 \end_layout
 
 \end_inset
 
+, and comprises of 610,000 different words and phrases.
+ The wordlist determines which words can be generated by the solver.
+ The knowedge-base consists of the thesaurus from the Moby project which
+ provides synonyms, along with limited data on hyponyms and hypernyms
+\begin_inset Foot
+status open
 
+\begin_layout Plain Layout
+Where hyponyms of 
+\begin_inset Quotes eld
+\end_inset
+
+bird
+\begin_inset Quotes erd
+\end_inset
+
+ include 
+\begin_inset Quotes eld
+\end_inset
+
+crow
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+eagle
+\begin_inset Quotes erd
+\end_inset
+
+, and hypernyms are 
+\begin_inset Quotes eld
+\end_inset
+
+animal
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+organism
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+ These entries have all been collectively augmented by including verb conjugatio
+ns and plurals, as performed by NodeBox's linguistics library for Python
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+http://nodebox.net/code/index.php/Linguistics#verb_conjugation
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The resulting dictionaries are compiled into Haskell Data maps, and compiled
+ into binary files to be loaded into RAM at runtime.
 \end_layout
 
 \begin_layout Subsection
@@ -9481,10 +9765,44 @@ Solvable Clues
 An analysis on the accuracy of the program's solving capabilities can be
  found in 
 \series bold
-Figure 10
+Figure 11
 \series default
 .
  The details of each individual status are discussed here.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename results/clue-solve-split.pdf
+	width 99col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Breakdown of solvability of clues from the testing suite
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -9533,17 +9851,18 @@ which it can successfully match to the definition of primate based on our
 \end_layout
 
 \begin_layout Standard
-15% of previously unseen clues from the test suite could be solved in this
- way – this figure was derived by running the program over the entire testing
- suite and filtering for where the generated answer could be verified against
- the definition, and where it matched the correct answer from the test suite.
+Fifteen percent of previously unseen clues from the test suite could be
+ solved in this way – this figure was derived by running the program over
+ the entire testing suite and filtering for where the generated answer could
+ be verified against the definition, and where it matched the correct answer
+ from the test suite.
 \end_layout
 
 \begin_layout Standard
-Along with clues which couldn't be accurately verified, there were also
- some 'false positive' answers: clues where there was a solution which could
- be verified but did not match the correct answer as expected by the test
- suite.
+Along with clues which could not be accurately verified, there were also
+ some `false positive' answers, that is, clues where there was a solution
+ which could be verified but did not match the correct answer as expected
+ by the test suite.
  One example 
 \begin_inset Flex Code
 status open
@@ -9565,7 +9884,7 @@ RIBS
 \end_inset
 
 .
- My knowledgebase didn't contain the equivalence between 'ribs' and 'spurs',
+ My knowledgebase did not contain the equivalence between `ribs' and `spurs',
  but the program generated the answer 
 \begin_inset Flex Code
 status open
@@ -9576,8 +9895,8 @@ SETS
 
 \end_inset
 
-, drawing off the senses 'sets' = 'besets' = 'teases' and 'spurs' = 'starts'
- = 'sets'.
+, drawing off the senses `sets' = `besets' = `teases' and `spurs' = `starts'
+ = `sets'.
  
 \end_layout
 
@@ -9585,9 +9904,9 @@ SETS
 While this, and others like it, are not the correct answers from the original
  context of the clue, and would likely not fit in the completed grid, in
  isolation they are valid answers for the clues themselves - although sometimes
- 'low quality' answers based on more spurious semantic links, as in the
+ `low quality' answers based on more spurious semantic links, as in the
  example given.
- Around 2% of the clues in the Solveable and verifiable category were false
+ Around 2% of the clues in the Solveable and Verifiable category were false
  positives.
 \end_layout
 
@@ -9667,16 +9986,27 @@ Unsolvable
 \end_layout
 
 \begin_layout Standard
-Continuting to refer to 
+Continuing to refer to 
 \series bold
 Figure 10
 \series default
 , categories from here onwards were not solvable by the program.
  In order to analyse these clues, a random sample of 100 clues that were
  not correctly solved and verified were drawn from the testing suite, and
- examined by hand to determine the correct parse, and the factors missing
- from the data in order to solve them.
- These were then assigned one or more of the following labels: 
+ examined by hand to:
+\end_layout
+
+\begin_layout Enumerate
+determine the correct parse 
+\end_layout
+
+\begin_layout Enumerate
+categorize factors missing from the data/program in order to solve them.
+ 
+\end_layout
+
+\begin_layout Standard
+These were then assigned one or more of the following labels: 
 \end_layout
 
 \begin_layout Itemize
@@ -9684,11 +10014,11 @@ Answer not in wordlist
 \end_layout
 
 \begin_layout Itemize
-Expression Indicator Not Found
+Expression indicator not found
 \end_layout
 
 \begin_layout Itemize
-Unparsable Structure
+Unparsable structure
 \end_layout
 
 \begin_layout Itemize
@@ -9710,187 +10040,10 @@ No dictionary match between Answer and Definition
 \begin_layout Standard
 The frequency of these labels in this group can be seen in 
 \series bold
-Figure 11.
-\end_layout
-
-\begin_layout Subsubsection
-Solvable with easily collectable data
+Figure 12.
 \end_layout
 
 \begin_layout Standard
-Clues in this category are those which recieved only the labels 'No dictionary
- match between Answer and Definition', 'Answer not in wordlist', 'Synonym
- required in clue not in dataset', 'Expression Indicator Not Found'.
- I have deemed these to fall into the category of 'easily collectable data'
- – that is, data that is finite or has a clear scope and could be consumed
- by the system in the same way as other data.
-\end_layout
-
-\begin_layout Paragraph
-Answer not in wordlist
-\end_layout
-
-\begin_layout Standard
-In order only to output useful words and to limit useless evaluations, large
- wordlist is used in addition to the knowledgebase.
- If a word is not in the wordlist, then it cannot be given as a solution.
- Thus, in the clue
-\end_layout
-
-\begin_layout LyX-Code
-Girl feeding pygmy rattlesnake (4)
-\end_layout
-
-\begin_layout Standard
-the answer 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-Myra
-\end_layout
-
-\end_inset
-
- is not given, even though the program can generate the right parse tree.
- 
-\end_layout
-
-\begin_layout Standard
-These issues could be resolved by collecting a larger wordlist including,
- for example, proper names, places: one possible source for this information
- would be Wikipedia article subjects, along with commerically available
- listings.
- 
-\end_layout
-
-\begin_layout Paragraph
-Synonym required in clue not in dataset 
-\end_layout
-
-\begin_layout Standard
-These are clues that generate a valid parse but cannot be solved as the
- equivalence information is not there to perform the correct evaluation.
- For example 
-\end_layout
-
-\begin_layout LyX-Code
-Exaggerate concerning party (6)
-\end_layout
-
-\begin_layout Standard
-which should yield 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-OVERDO
-\end_layout
-
-\end_inset
-
-, but the current thesaurus data lacks the link 'over' = 'concerning'.
- Clues in this category lack only the sort of synonym-based information
- one might find in a very thorough thesaurus.
- Any more complex data such as membership (Handel is a composer, etc.) is
- covered under the category of 
-\series bold
-Knowledge not in database
-\series default
-.
-\end_layout
-
-\begin_layout Standard
-This could be rememdied by providing a more thorough and permissive thesaurus
- than the one integrated into the knowledgebase currently.
-\end_layout
-
-\begin_layout Paragraph
-No dictionary match between Answer and Definition
-\end_layout
-
-\begin_layout Standard
-This has the same properties as the examples above.
-\end_layout
-
-\begin_layout Paragraph
-Expression Indicator Not Found
-\end_layout
-
-\begin_layout Standard
-In this case, the clue contains an expression type that we can generate
- parse trees for with an indicator word that we haven't defined.
- For example, in
-\end_layout
-
-\begin_layout LyX-Code
-Last in science failing to pass (6)    (= ELAPSE)
-\end_layout
-
-\begin_layout Standard
-we fail to parse 
-\begin_inset Quotes eld
-\end_inset
-
-last in science
-\begin_inset Quotes erd
-\end_inset
-
- as a final letter expression with the indicator 
-\begin_inset Quotes eld
-\end_inset
-
-last in
-\begin_inset Quotes erd
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-Most of these are common indicators which occur frequently by convention
- in crosswords, and could be easily collected manually, and extracted from
- crossword solving guides to give a much greater coverage than the system
- currently offers.
- 
-\end_layout
-
-\begin_layout Subsubsection
-Require more complex data
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename results/clue-solve-split.pdf
-	width 99col%
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Breakdown of solvability of clues from the testing suite
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
 \begin_inset Float figure
 placement H
 wide false
@@ -9924,6 +10077,278 @@ Reasons for unsolvable clues
 
 \end_layout
 
+\begin_layout Subsubsection
+Solvable with easily collectable data
+\end_layout
+
+\begin_layout Standard
+Clues in this category are those which recieved only the labels `No dictionary
+ match between Answer and Definition', `Answer not in wordlist', `Synonym
+ required in clue not in dataset', `Expression Indicator Not Found'.
+ I have deemed these to fall into the category of `easily collectable data'
+ – that is, data that is finite or has a clear scope and could be consumed
+ by the system in the same way as other data.
+\end_layout
+
+\begin_layout Paragraph
+Answer not in wordlist
+\end_layout
+
+\begin_layout Standard
+In order only to output useful words and to limit useless evaluations, a
+ wordlist is used in addition to the knowledgebase.
+ If a word is not in the wordlist, then it cannot be given as a solution.
+ Thus, in the clue
+\end_layout
+
+\begin_layout LyX-Code
+Girl feeding pygmy rattlesnake (4)
+\end_layout
+
+\begin_layout Standard
+the answer 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+Myra
+\end_layout
+
+\end_inset
+
+ is not given, even though the program can generate the right parse tree.
+ 
+\end_layout
+
+\begin_layout Standard
+These issues could be resolved by collecting a larger wordlist including,
+ for example, proper names, places.
+ One possible source for this information would be Wikipedia article subjects,
+ along with commerically available listings.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Synonym required in clue not in dataset 
+\end_layout
+
+\begin_layout Standard
+These are clues that generate a valid parse but cannot be solved as the
+ equivalence information is not there to perform the correct evaluation.
+ For example 
+\end_layout
+
+\begin_layout LyX-Code
+Exaggerate concerning party (6)
+\end_layout
+
+\begin_layout Standard
+should yield 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+OVERDO
+\end_layout
+
+\end_inset
+
+, but the current thesaurus data lacks the link `over' = `concerning'.
+ Clues in this category lack only the sort of synonym-based information
+ one might find in a very thorough thesaurus.
+ Any more complex data such as membership (Handel is a composer, etc.) is
+ covered under the category of 
+\series bold
+Knowledge not in database
+\series default
+.
+\end_layout
+
+\begin_layout Standard
+Clues in this category could be remedied by providing a more thorough and
+ permissive thesaurus than the one integrated into the knowledgebase currently.
+\end_layout
+
+\begin_layout Paragraph
+No dictionary match between Answer and Definition
+\end_layout
+
+\begin_layout Standard
+This has the same properties as the examples above.
+\end_layout
+
+\begin_layout Paragraph
+Expression Indicator Not Found
+\end_layout
+
+\begin_layout Standard
+In this case, the clue contains an expression type that we can generate
+ parse trees for with an indicator word that we haven't defined.
+ For example in
+\end_layout
+
+\begin_layout LyX-Code
+Last in science failing to pass (6)    (= ELAPSE)
+\end_layout
+
+\begin_layout Standard
+the system fails to parse 
+\begin_inset Quotes eld
+\end_inset
+
+last in science
+\begin_inset Quotes erd
+\end_inset
+
+ as a final letter expression with the indicator 
+\begin_inset Quotes eld
+\end_inset
+
+last in
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Most of these are common indicators which occur frequently by convention
+ in crosswords, and could be collected manually, and extracted from crossword
+ solving guides to give a much greater coverage than the system currently
+ offers.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Require more complex data
+\end_layout
+
+\begin_layout Standard
+These clues require data outside of the `thesaurus' level equivalence, or
+ may require specialist techniques to parse and retieve the data.
+ For example in the clue
+\end_layout
+
+\begin_layout LyX-Code
+More than one spoke with one on wireless endlessly (5)
+\end_layout
+
+\begin_layout Standard
+we are required to parse the phrase 
+\begin_inset Quotes eld
+\end_inset
+
+more than one spoke
+\begin_inset Quotes erd
+\end_inset
+
+ into the plural of radius, being RADII.
+ 
+\end_layout
+
+\begin_layout Standard
+In the clue
+\end_layout
+
+\begin_layout LyX-Code
+Noah's son rose heading off in a muddle (9) (= SHEMOZZLE)
+\end_layout
+
+\begin_layout Standard
+we are required to know that Shem is one of the three sons of Noah, and
+ to be able to accurately parse `Noah's son' to refer to one member of the
+ set of sons of Noah.
+\end_layout
+
+\begin_layout Standard
+These sorts of questions would require more than simply providing extra
+ thesaurus definitions.
+ To return the name `Shem', the setter could easily have clued 
+\begin_inset Quotes eld
+\end_inset
+
+Son of Noah
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Noah's offspring
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Noah begat him
+\begin_inset Quotes erd
+\end_inset
+
+, or many other variants which would be unfeasible to have pre-computed
+ in a thesaurus.
+ To solve these clues, we are required to have extensive information, and
+ to be able to query that information in a loose format.
+ The 
+\series bold
+Future Work
+\series default
+ section details how this might be achieved using logical programming.
+\end_layout
+
+\begin_layout Subsubsection
+Program modifications needed
+\end_layout
+
+\begin_layout Standard
+Some clues contain operators that are not part of the current program.
+ For example the clue
+\end_layout
+
+\begin_layout LyX-Code
+Emphasised editor is under pressure (8) (= STRESSED)
+\end_layout
+
+\begin_layout Standard
+features an operator which concatenates one part of a clue after another
+ (the indicator being `is under', as this clue was originally a `down' clue).
+ An `append after' operator is not programmed into the current system.
+ Again, the 
+\series bold
+Future Work
+\series default
+ section details how the program could be extended to include new clue types
+\end_layout
+
+\begin_layout Subsubsection
+Not solvable with current approach
+\end_layout
+
+\begin_layout Standard
+Some clues are simply not within the bounds of what currently could be solved
+ with our current approach to parsing and solving.
+ The clue 
+\end_layout
+
+\begin_layout LyX-Code
+Bloodhound in film (6)
+\end_layout
+
+\begin_layout Standard
+is a cryptic definition for the word SLEUTH, asking us to think laterally
+ to conjure an word fitting the description in some oblique manner.
+ The challenges posed by clues such as these are significantly different
+ to the general problem this project is solving, and would require significant
+ innovation in computer intelligence to solve.
+ 
+\end_layout
+
+\begin_layout Subsection
+Performance 
+\end_layout
+
 \begin_layout Standard
 \begin_inset Float figure
 placement H
@@ -9941,6 +10366,10 @@ status open
 
 \end_layout
 
+\begin_layout Subsubsection
+Feasibility
+\end_layout
+
 \begin_layout Plain Layout
 \begin_inset Caption Standard
 
@@ -9953,17 +10382,17 @@ Percentage of clues solvable before cutoff
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
 \end_layout
 
 \begin_layout Subsection
-Performance Discussion
+Conclusion
+\end_layout
+
+\begin_layout Standard
+While functional programming 
 \end_layout
 
 \begin_layout Standard
@@ -9975,8 +10404,20 @@ status open
 \begin_layout Plain Layout
 
 \series bold
-Write about solving time, RAM required etc.
- Maybe mention Watson, for comparison
+Write this:
+\end_layout
+
+\begin_layout Plain Layout
+It's good to think about these.
+ The takeaway messages.
+\end_layout
+
+\begin_layout Plain Layout
+Naive solvers are essentially intractable.
+ Clue length constraints are key to making the problem tractable.
+ Around 70% of the clues considered could be solved simply by having the
+ right data.
+ The last n% are much harder and likely to be left for the human to solve.
 \end_layout
 
 \end_inset
@@ -9984,10 +10425,6 @@ Write about solving time, RAM required etc.
 .
 \end_layout
 
-\begin_layout Subsubsection
-Feasibility
-\end_layout
-
 \begin_layout Standard
 \begin_inset Newpage pagebreak
 \end_inset
@@ -10002,7 +10439,7 @@ Feasibility
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Future Work
 \end_layout
 
@@ -10011,7 +10448,7 @@ Adding new clue types
 \end_layout
 
 \begin_layout Standard
-Analysis of un-answerable clues has highlighted types of clues expressions
+Analysis of unsolvable clues has highlighted types of clues expressions
  not found in the literature.
  These include:
 \end_layout
@@ -10061,20 +10498,24 @@ un
 \begin_inset Quotes erd
 \end_inset
 
- etc.) 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-add some more examples of the other clue types -> 'after', etc.
-\end_layout
-
+ etc.), phrases like 
+\begin_inset Quotes eld
 \end_inset
 
-.
+after
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+placed behind
+\begin_inset Quotes erd
+\end_inset
+
+ indicate a change in the order of a concatenation.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -10137,6 +10578,52 @@ data NodeType = NodeType {
  }
 \end_layout
 
+\begin_layout Standard
+We could then store a list of pre-defined NodeTypes as 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+nodetypes
+\end_layout
+
+\end_inset
+
+ and parse by mapping over the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+parseTree
+\end_layout
+
+\end_inset
+
+ function of each for our target string.
+ Our definition of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+evaluate
+\end_layout
+
+\end_inset
+
+would also then change to call the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+eval_tree
+\end_layout
+
+\end_inset
+
+ function of the node directly.
+ 
+\end_layout
+
 \begin_layout Section
 Improving current solving capabilities
 \end_layout
@@ -10146,18 +10633,18 @@ Improving the knowledgebase
 \end_layout
 
 \begin_layout Standard
-Currently, a large quantities of clues are unsolvable due to missing information.
+Currently, large numbers of clues are unsolvable due to missing information.
  Most of the current information comes from thesaurus definitions, and is
- stored in a directed graph structure, similarly to a thesaurus: each word
- is connected to all the words it is in some way equivalent to.
+ stored in a directed graph structure, in a similar way to a thesaurus:
+ each word is connected to all the words it is in some way equivalent to.
  This is a clumsy representation of the real world: we lose the information
- that 'dog' related to 'poodle' in a different way from the way it relates
- to 'mamal' (hyponymically, and hypernymically, respectively).
+ that `dog' related to `poodle' in a different way from the way it relates
+ to `mammal' (hyponymically, and hypernymically, respectively).
  Furthermore, if we want to augment the knowledgebase with further information
  about dogs (dogs = man's best friend), then we'd also have to add that
- fact to all hyponyms ('poodle', 'labrador', and so on).
+ fact to all hyponyms (`poodle', `labrador', and so on).
  If we wanted to add a propagatable fact to something much higher level,
- such as 'mamal' or 'solid object', then the number of new 'facts' or graph
+ such as `mammal' or `solid object', then the number of new `facts' or graph
  connections we'd have to add would grow quickly indeed! Very quickly, our
  database would become very difficult to manipulate, or hold in RAM for
  quick access.
@@ -10227,7 +10714,7 @@ scored(pele).
 \end_layout
 
 \begin_layout Standard
-Thus, we could take 'HE SCORED', and generate a query to our logical database
+Thus, we could take `HE SCORED', and generate a query to our logical database
  asking 
 \begin_inset Quotes eld
 \end_inset
@@ -10342,7 +10829,7 @@ Solving Forwards and Backwards
 \begin_layout Standard
 One solution to this is in re-working the entire method by which we solve
  the clues.
- Our solver is currently works 'forwards': based on the available clue text,
+ Our solver is currently works `forwards': based on the available clue text,
  we attempt to parse into a tree which, when evaluated, generates all possible
  outputs.
  Another option would be to work in reverse: from the selected definition,
@@ -10422,7 +10909,7 @@ Split definition into parts: BARK ING
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Example output from a possible 'reverse' solver
+Example output from a possible `reverse' solver
 \end_layout
 
 \end_inset
@@ -10440,16 +10927,22 @@ Parallelization
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Greyedout
-status open
-
-\begin_layout Plain Layout
-Write stuff about parallelization 
+The nature of how we form multiple abstract syntax trees and then parse
+ them individually means that there is potentially considerable computational
+ gain to be had through parallelization.
+ Any evaluation of a ParseTree which subsequently evaluated sub-parse trees
+ resembles a Master/Worker arrangement.
+ In the cases were we do not need to wait for the results of one tree to
+ evaluate the second, we can parallelize immediately.
+ In cases where we impose constraints on the second based on the first,
+ it may still be worthwhile to evaluate at worker level without the constraints,
+ and then have the master filter based on the constraints.
 \end_layout
 
-\end_inset
-
-
+\begin_layout Standard
+This process could be futher improved with memoization: storing the results
+ of previous sub-tree calculations could eliminate wasted parsing where
+ two different parses of a clue share sub-parts.
 \end_layout
 
 \begin_layout Section
@@ -10471,10 +10964,10 @@ An obvious extension of this system is to allow it to solve whole grids
 
 \begin_layout Standard
 This extra information would form another filterint criteria: this would
- need to be applied to the 'weak' solve: the list of all possible solutions
+ need to be applied to the `weak' solve: the list of all possible solutions
  that could be produced by the clue, including those that our thesaurus
  is unable to match as a synonym of the definition.
- For the 'strong' solve, this extra data is redundant – if we haven't been
+ For the `strong' solve, this extra data is redundant – if we haven't been
  able to generate any answers, then further filtering is useless.
  
 \end_layout
@@ -10554,6 +11047,19 @@ Figure 8
  One example: 1-across intersects 2-down, which intersects 10-across, which
  intersects 3-down, which intersects 1-across again! We therefore have to
  find a strategy to deal with this.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Write about the current work on this
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -10654,7 +11160,7 @@ Lazy evaluation and backtracking
 \end_layout
 
 \begin_layout Standard
-In a similar way to the way we evaluated the items in the parse forest left-to-r
+In a similar way to the how we evaluated the items in the parse forest left-to-r
 ight checking combinations and culling where no available solution fitted
  the constraints, so we could decide upon an arbitrary order to evaluate
  the clues, and then backtrack where necessary – for example, 
@@ -12793,7 +13299,7 @@ HOP
 \begin_layout Plain Layout
 Based on the available solution in 1a., PUR has become more likely than RUB,
  as 1a.
- has no solutions begining with 'R.' HOP has changed to RUN for similar reasons.
+ has no solutions begining with `R.' HOP has changed to RUN for similar reasons.
 \end_layout
 
 \begin_layout Plain Layout
@@ -14913,50 +15419,34 @@ Example of how iterative function application might converge to solution
 
 \end_layout
 
-\begin_layout Part
+\begin_layout Chapter
 Appendix 
 \end_layout
 
-\begin_layout Section
-Data considerations 
+\begin_layout Standard
+\begin_inset Note Greyedout
+status open
+
+\begin_layout Plain Layout
+Put here the categorisation of the bad clues table, and maybe some sample
+ program outputs
 \end_layout
 
-\begin_layout Subsection
-Corpus / wordlist 
+\end_inset
+
+
 \end_layout
 
-\begin_layout Subsubsection
-Loading in an unsafe IO manner can 
-\end_layout
-
-\begin_layout Subsubsection
-Conjugated forms -> we should match tense, plurality etc.
- Expanding out keywords (e.g.
- Anagram indicators) 
-\end_layout
-
-\begin_layout Subsection
-Knowledge -> capital of Paris 
-\end_layout
-
-\begin_layout Subsection
-Derived knowledge -> Qulog to create knowlegebase?
-\end_layout
-
-\begin_layout Subsection
-Unsupervised learned?
-\end_layout
-
-\begin_layout Section
-A benchmarking suite to check performance + accuracy
-\end_layout
-
-\begin_layout Subsection
-Clues from real newspapers 
-\end_layout
-
-\begin_layout Part
+\begin_layout Chapter
 References
+\end_layout
+
+\begin_layout Standard
+Visser, E.
+ (August 1997).
+ Scannerless Generalized-LR Parsing (in English).
+ The Netherlands: University of Amsterdam.
+ Retrieved 22 November 2012.
 \end_layout
 
 \begin_layout Paragraph
