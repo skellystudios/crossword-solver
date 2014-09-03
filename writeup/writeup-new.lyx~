@@ -101,7 +101,14 @@ End
 
 \begin_body
 
-\begin_layout Date
+\begin_layout Standard
+\paragraph_spacing double
+\align center
+\begin_inset VSpace 1cm
+\end_inset
+
+
+\size large
 Imperial College London
 \begin_inset Newline newline
 \end_inset
@@ -109,40 +116,68 @@ Imperial College London
 Department of Computing
 \end_layout
 
-\begin_layout Title
+\begin_layout Standard
+\paragraph_spacing double
+\align center
+\begin_inset VSpace 7cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\align center
 
 \series bold
 \size huge
 Solving Cryptic Crosswords through Functional Programming
 \end_layout
 
-\begin_layout Author
+\begin_layout Standard
+\paragraph_spacing double
+\align center
+
+\size larger
 by
 \end_layout
 
-\begin_layout Author
+\begin_layout Standard
+\paragraph_spacing double
+\align center
+
+\size largest
 Michael Skelly
 \end_layout
 
-\begin_layout Date
-April 25
-\begin_inset script superscript
-
-\begin_layout Plain Layout
-th
-\end_layout
-
+\begin_layout Standard
+\paragraph_spacing double
+\align center
+\begin_inset VSpace 4cm
 \end_inset
 
- 2014
-\end_layout
 
-\begin_layout Date
-Submitted in partial fulfilment of the requirements for the MSc Degree in
- Advanced Computing of Imperial College London 
 \end_layout
 
 \begin_layout Standard
+\paragraph_spacing onehalf
+\align center
+
+\size large
+Submitted in partial fulfilment of the requirements for the MSc Degree in
+ Advanced Computing of Imperial College London
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+\align center
+
+\size large
+September 2014
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
 \begin_inset Newpage pagebreak
 \end_inset
 
@@ -469,12 +504,8 @@ Mother Tongue
 
 \begin_layout Standard
 Cryptic crosswords are widely thought to be at the junction of various fields
- of human 
-\lang british
-endeavour
-\lang english
- considered to be right at the limit of current Artificial Intelligence
- (AI) and Machine Learning.
+ of human endevour considered to be right at the limit of current Artificial
+ Intelligence (AI) and Machine Learning.
  They employ features traditionally difficult for computers to handle: wit,
  slang, allusion, linguistic ambiguity and misdirection.
  On the surface, cryptic clues appear to be in the form of a sentence fragment
@@ -498,7 +529,7 @@ Sweetheart takes Non-Commissioned Officer to dance (8)
 
 \begin_layout Standard
 More and more, the AI community is making inroads into problems – like solving
- cryptic crosswords – though to be only within the abilities of humans.
+ cryptic crosswords – thought to be only within the abilities of humans.
  
 \begin_inset Note Note
 status open
@@ -510,9 +541,9 @@ Start with why we need intelligence to solve, then move into watson.
 
 \end_inset
 
- In 2011 a computer system from IBM called Watson competed in the TV Gameshow
- Jeopardy: a game in which players have to give the answers to cryptically
- worded questions in as short a time as possible.
+ For example, in 2011 a computer system from IBM called Watson competed
+ in the TV Gameshow Jeopardy: a game in which players have to give the answers
+ to cryptically worded questions in as short a time as possible.
  Watson, armed with 200-million pages worth of data and 16 terabytes of
  RAM, beat two former Jeopardy champions.
  
@@ -536,13 +567,14 @@ As well as all the human features like specialist knowledge and linguistic
 \begin_inset script superscript
 
 \begin_layout Plain Layout
-90.
+90
 \end_layout
 
 \end_inset
 
-Worse still, a solution to a grid is non-trivial to verify, as the verification
- process is the nearly same as solving the clue.
+.
+ Worse still, a solution to a grid is non-trivial to verify, as the verification
+ process is nearly the same as solving the clue.
  Nevertheless, techniques from combinatorics, compiler design, Natural Language
  Processing (
 \noun on
@@ -556,23 +588,14 @@ NLP)
 
 \begin_layout Standard
 This project seeks to create a system that can solve clues from cryptic
- crossword puzzles by correctly parsing and solving as a human does, through
+ crossword puzzles by correctly parsing and solving as a human does: through
  understanding of the internal structure of the clue, rather than by brute
  force and statistical methods across a whole grid.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-You need to talk briefly about the technology you use.
- How about something like “The solver is implemented in Haskell, which is
- a strongly-typed, higher order polymorphic functional programming language.
- Haskell was chosen because…” etc.
-\end_layout
-
-\end_inset
-
-
+ The solver is implemented in Haskell, which is a strongly-typed, higher-order
+ polymorphic functional programming language.
+ Haskell was chosen because of its suitability for parsing and manipulating
+ abstract syntax trees, and for the safe, provable style in which programs
+ can be derived and manipulated.
 \end_layout
 
 \begin_layout Standard
@@ -610,18 +633,8 @@ can be optimized.
  We use a series of program transformations, in the Bird-Meertons style,
  to derive a much more efficient solver.
  Specifically, we incorporate a series of constraints that a human solver
- will naturally take into account when exploring possible solutions: required
- solution length, prefixes of available words, known letters
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Do I want to keep this here?
-\end_layout
-
-\end_inset
-
-.
+ will naturally take into account when exploring possible solutions: fitting
+ the required length of the clue and limiting output to valid words.
  We analyse the results, and show that by reducing the state space and evaluatio
 n scope, we have reduced the solving time to within 10 seconds for most
  solveable clues.
@@ -869,7 +882,7 @@ tically, working on whole-grid solutions rather than individual clues.
  A number of left-of-field studies have also been undertaken, e.g.
  statistical studies into errors made during manual solving, and psychological
  studies into solving, although these use cryptic crosswords as a tool to
- study human behaviour, rather than a subject itself.
+ study human behaviour, rather than as a subject in itself.
 \end_layout
 
 \begin_layout Subsection
@@ -927,11 +940,11 @@ Lack of Standardization
 \begin_layout Standard
 Although all cryptic crosswords share some common conventions, there are
  no fixed rules shared between publications for what can and can’t be a
- clue, indicator etc.
+ clue, indicator or definition.
  Although most publications have internal guidelines or style-guides, these
- are not accessible to the solver, and some publications (such as the 
+ are not accessible to the solver, and some publications (such as 
 \emph on
-Guardian
+The Guardian
 \emph default
 ) have named setters whose styles and self-imposed rule sets differ, even
  between one publication.
@@ -1209,7 +1222,7 @@ S
 
 \end_inset
 
-) (etc.) or as placeholders for the operators (
+)  or as placeholders for the operators (
 \begin_inset Flex Code
 status open
 
@@ -1551,9 +1564,9 @@ Story about bishop and food (5)
 \end_layout
 
 \begin_layout Standard
-then if we read this clue as requiring a word for `story' around a word
- for `bishop', selecting `tale' as the first word means that we are limited
- to only one-letter long options for `bishop'.
+if we read this clue as requiring a word for `story' around a word for `bishop',
+ selecting `tale' as the first word means that we are limited to only one-letter
+ long options for `bishop'.
  In this case, we would choose `b' as an abbreviation for bishop, to correctly
  form `table'.
  
@@ -1716,7 +1729,7 @@ Rough
  large.
  We also need to differentiate words functioning as indicators (here, `rough
  as an anagram indidcator') from raw string literals that are subject to
- Hidden Word or Anageram operators, or occasionally concatenated in their
+ Hidden Word or Anagram operators, or occasionally concatenated in their
  raw form (as the letters 
 \begin_inset Quotes eld
 \end_inset
@@ -1725,7 +1738,7 @@ rough
 \begin_inset Quotes erd
 \end_inset
 
-) .
+).
 \end_layout
 
 \begin_layout Standard
@@ -2018,7 +2031,7 @@ Word Equivalence
 In the most simple of clues, we have the definition, along with a word or
  phrase that is somehow semantically equivalent to that definition
 \begin_inset Foot
-status collapsed
+status open
 
 \begin_layout Plain Layout
 In this case, it becomes a difficult task to be precise about exactly which
@@ -2026,13 +2039,13 @@ In this case, it becomes a difficult task to be precise about exactly which
  a defined answer: From `Oinking tendency? (8)' we get both `pen chant'
  and `penchant', and we can see from the letters required (no space) that
  the second half is the solution.
- In other cases, this may not be defined at all! 
+ In other cases, this may not be defined at all.
 \end_layout
 
 \end_inset
 
 .
- A clue that contains just this structure is said to be `double definition'
+ A clue that contains just this structure is said to be a `double definition'
 \end_layout
 
 \begin_layout LyX-Code
@@ -2200,7 +2213,7 @@ Anagram` → Anagrind, Wordplay | Wordplay, Anagrind
 \end_layout
 
 \begin_layout Standard
-Wherein we know that the repeated evaluation of the Wordplay will eventually
+wherein we know that the repeated evaluation of the wordplay will eventually
  result in a string literal that can be anagrammed.
  In 
 \emph on
@@ -3818,7 +3831,7 @@ messed
 
 \end_inset
 
-, which would evaluate to `disarrayed', `untidy' etc.).
+, which would evaluate to `disarrayed', `untidy' and so on).
  The parser we produce will therefore combine a scanner and evaluator together
  into a scannerless parser.
 \end_layout
@@ -9823,11 +9836,11 @@ Test Suite
 \end_layout
 
 \begin_layout Standard
-The test suit comprises of 7,000 clues extracted from the Observer's Everyman
+The test suite comprises of 7,000 clues extracted from the Observer's Everyman
  series.
  These were chosen for being published in a major British newspaper, and
  for being both scrapable from publically open websites (as The Times' and
- Telegraph's are not) and for being Ximenean
+ Telegraph's are not) and Ximenean
 \begin_inset Foot
 status open
 
@@ -9845,9 +9858,9 @@ Macnutt, as Ximenes, was the first setter for the Everyman in the 1940s.
 The clues selected have been limited to those with single-word answers,
  as few of the multi-word answers appear in wordlists.
  Clues with numbers are not included, as they are often the self-referential
- type (see the section on 
+ type (see 
 \series bold
-Meta-reference
+2.3.7 Meta-reference
 \series default
 ), and thus cannot be solved in isolation.
 \end_layout
@@ -9870,8 +9883,8 @@ http://icon.shef.ac.uk/Moby/
 
 , and comprises of 610,000 different words and phrases.
  The wordlist determines which words can be generated by the solver.
- The knowedge-base consists of the thesaurus from the Moby project which
- provides synonyms, along with limited data on hyponyms and hypernyms
+ The knowedgebase consists of the thesaurus from the Moby project, which
+ provides synonyms and limited data on hyponyms and hypernyms
 \begin_inset Foot
 status open
 
@@ -10267,10 +10280,10 @@ Solvable with easily collectable data
 \end_layout
 
 \begin_layout Standard
-Clues in this category are those which recieved only the labels `No dictionary
+Clues in this category are those which received only the labels `No dictionary
  match between Answer and Definition', `Answer not in wordlist', `Synonym
  required in clue not in dataset', `Expression Indicator Not Found'.
- I have deemed these to fall into the category of `easily collectable data'
+ These were deemed to fall into the category of `easily collectable data'
  – that is, data that is finite or has a clear scope and could be consumed
  by the system in the same way as other data.
 \end_layout
@@ -10280,7 +10293,7 @@ Answer not in wordlist
 \end_layout
 
 \begin_layout Standard
-In order only to output useful words and to limit useless evaluations, a
+In order to only output useful words and to limit useless evaluations, a
  wordlist is used in addition to the knowledgebase.
  If a word is not in the wordlist, then it cannot be given as a solution.
  Thus, in the clue
@@ -10309,7 +10322,7 @@ Myra
 These issues could be resolved by collecting a larger wordlist including,
  for example, proper names, places.
  One possible source for this information would be Wikipedia article subjects,
- along with commerically available listings.
+ along with commercially available listings.
  
 \end_layout
 
@@ -10341,8 +10354,8 @@ OVERDO
 , but the current thesaurus data lacks the link `over' = `concerning'.
  Clues in this category lack only the sort of synonym-based information
  one might find in a very thorough thesaurus.
- Any more complex data such as membership (Handel is a composer, etc.) is
- covered under the category of 
+ Any more complex data such as membership (Handel is a composer, for example)
+ is covered under the category of 
 \series bold
 Knowledge not in database
 \series default
@@ -10398,7 +10411,7 @@ last in
 
 \begin_layout Standard
 Most of these are common indicators which occur frequently by convention
- in crosswords, and could be collected manually, and extracted from crossword
+ in crosswords that could be collected manually and extracted from crossword
  solving guides to give a much greater coverage than the system currently
  offers.
  
@@ -10410,7 +10423,7 @@ Require more complex data
 
 \begin_layout Standard
 These clues require data outside of the `thesaurus' level equivalence, or
- may require specialist techniques to parse and retieve the data.
+ may require specialist techniques to parse and retrieve the data.
  For example in the clue
 \end_layout
 
@@ -10493,7 +10506,7 @@ Some clues contain operators that are not part of the current program.
 \end_layout
 
 \begin_layout LyX-Code
-Emphasised editor is under pressure (8) (= STRESSED)
+Emphasized editor is under pressure (8) (= STRESSED)
 \end_layout
 
 \begin_layout Standard
@@ -10523,7 +10536,7 @@ Bloodhound in film (6)
 
 \begin_layout Standard
 is a cryptic definition for the word SLEUTH, asking us to think laterally
- to conjure an word fitting the description in some oblique manner.
+ to conjure a word fitting the description in some oblique manner.
  The challenges posed by clues such as these are significantly different
  to the general problem this project is solving, and would require significant
  innovation in computer intelligence to solve.
@@ -10532,6 +10545,61 @@ is a cryptic definition for the word SLEUTH, asking us to think laterally
 
 \begin_layout Subsection
 Performance 
+\end_layout
+
+\begin_layout Standard
+The clues here were evaluated on a 2014 MacBook Pro, with an 2.4GHz Intel
+ Core i5 processor, and 8GB of RAM.
+ For comparison, IBM's Watson runs on 2,880 3.5GHz processor cores and has
+ 16 terabytes of RAM
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Source: http://www.cs.umbc.edu/2011/02/is-watson-the-smartest-machine-on-earth/
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Clues were evaluated with a cutoff, to determine the proportion of which
+ could be solved within a time bound.
+ 
+\series bold
+Figure 5.3 
+\series default
+shows that of the 28% of clues solvable with the current knowlegebase, over
+ half of them could be solved within 10 seconds.
+ The blog 'Times for the Times'
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+http://times-xwd-times.livejournal.com/
+\end_layout
+
+\end_inset
+
+ regularly posts time taken to solve the day's 
+\shape italic
+Times
+\shape default
+ crossword of 15–40 minutes, which makes 1 minute per clue a reasonable
+ estimate at expert, regular human solvers.
+ 
+\end_layout
+
+\begin_layout Standard
+In solving the clues, GHC used around 4.4GB of RAM to represent the dictionary
+ and wordlist and ran at peak 100% processor capacity during solving.
+ This shows that instant improvement on these times could be made by increasing
+ the hardware capacity.
+ The heap size did not grow significantly during the processing, probably
+ due to Haskell's evaluation.
 \end_layout
 
 \begin_layout Standard
@@ -10615,8 +10683,8 @@ Adding new clue types
 \end_layout
 
 \begin_layout Standard
-Analysis of unsolvable clues has highlighted types of clues expressions
- not found in the literature.
+Analysis of unsolvable clues has highlighted types of clue types not found
+ in the literature.
  These include:
 \end_layout
 
@@ -10653,19 +10721,19 @@ homme
 \begin_inset Quotes eld
 \end_inset
 
-el
+el/un
 \begin_inset Quotes erd
 \end_inset
 
-, 
-\begin_inset Quotes eld
-\end_inset
+)
+\end_layout
 
-un
-\begin_inset Quotes erd
-\end_inset
+\begin_layout Paragraph
+Rearrangement
+\end_layout
 
- etc.), phrases like 
+\begin_layout Standard
+phrases like 
 \begin_inset Quotes eld
 \end_inset
 
@@ -10686,6 +10754,11 @@ placed behind
 \end_layout
 
 \begin_layout Standard
+as well as other clue types like Homophones not yet implemented in the solver
+ due to lack of homophone data.
+\end_layout
+
+\begin_layout Standard
 In order to simplify the process of adding additional clue types, we can
  observe that each clue type is characterized by a specific pattern in just
  a few key functions: 
@@ -10699,7 +10772,7 @@ eval_tree, parseClue, cost, maxLength, minLength
 \end_inset
 
 .
- We could modularise our system and make it more easily extensible for new
+ We could modularize our system and make it more easily extensible for new
  clue types by encoding this information in a 
 \begin_inset Flex Code
 status open
@@ -10746,7 +10819,17 @@ data NodeType = NodeType {
 \end_layout
 
 \begin_layout Standard
-We could then store a list of pre-defined NodeTypes as 
+We could then store a list of pre-defined 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+NodeTypes
+\end_layout
+
+\end_inset
+
+ as 
 \begin_inset Flex Code
 status open
 
@@ -10777,7 +10860,7 @@ evaluate
 
 \end_inset
 
-would also then change to call the 
+ would also then change to call the 
 \begin_inset Flex Code
 status open
 
@@ -10805,7 +10888,7 @@ Currently, large numbers of clues are unsolvable due to missing information.
  stored in a directed graph structure, in a similar way to a thesaurus:
  each word is connected to all the words it is in some way equivalent to.
  This is a clumsy representation of the real world: we lose the information
- that `dog' related to `poodle' in a different way from the way it relates
+ that `dog' relates to `poodle' in a different way to the way it relates
  to `mammal' (hyponymically, and hypernymically, respectively).
  Furthermore, if we want to augment the knowledgebase with further information
  about dogs (dogs = man's best friend), then we'd also have to add that
@@ -10900,8 +10983,8 @@ status open
 
 \end_inset
 
-), which would return the set of everyone that can be infered by the knowledgeba
-se to match the criteria.
+), which would return the set of everyone that can be inferred by the knowledgeb
+ase to match the criteria.
 \end_layout
 
 \begin_layout Standard
@@ -10910,9 +10993,8 @@ With the use of knowledgebases come many additional avenues for complexity:
  in an appropriate logic language? How can we represent sufficient amount
  of inference rules for the database to be useful while still dealing with
  exceptions (e.g.
- penguins are birds, birds can fly, but penguins can't fly).
- The field is, itself, a large and complex one, but may warrant further
- investigation.
+ penguins are birds, birds can fly, but penguins can't fly)? The field is,
+ itself, a large and complex one, but may warrant further investigation.
 \end_layout
 
 \begin_layout LyX-Code
@@ -10983,9 +11065,9 @@ Tree[.{CONCAT} [.SYN "ban" ] [.{"lear" = KING???} ] ]
 
 \end_layout
 
-\begin_layout Verse
-The issue is that the number of words we could generate with the ability
- to generate any combination of letters from any subpart is infaesibly large,
+\begin_layout Standard
+The issue is that the number of words we could produce with the ability
+ to generate any combination of letters from any subpart is unfeasibly large,
  especially for longer and more complex clues.
 \end_layout
 
@@ -11002,8 +11084,8 @@ One solution to this is in re-working the entire method by which we solve
  Another option would be to work in reverse: from the selected definition,
  evaluate all words that are synonyms, and parse to match the letters in
  the solution with parts of the clue text.
- In some ways, this could be though of generating possible clues for a given
- solution, and matching them to the given clue.
+ In some ways, this could be thought of as generating possible clues for
+ a given solution, and matching them to the given clue.
 \end_layout
 
 \begin_layout Standard
@@ -11085,9 +11167,9 @@ Parallelization
 The nature of how we form multiple abstract syntax trees and then parse
  them individually means that there is potentially considerable computational
  gain to be had through parallelization.
- Any evaluation of a ParseTree which subsequently evaluated sub-parse trees
+ Any evaluation of a parse tree with subsequently evaluated sub-parse trees
  resembles a Master/Worker arrangement.
- In the cases were we do not need to wait for the results of one tree to
+ In the cases where we do not need to wait for the results of one tree to
  evaluate the second, we can parallelize immediately.
  In cases where we impose constraints on the second based on the first,
  it may still be worthwhile to evaluate at worker level without the constraints,
@@ -11095,7 +11177,7 @@ The nature of how we form multiple abstract syntax trees and then parse
 \end_layout
 
 \begin_layout Standard
-This process could be futher improved with memoization: storing the results
+This process could be further improved with memoization: storing the results
  of previous sub-tree calculations could eliminate wasted parsing where
  two different parses of a clue share sub-parts.
 \end_layout
@@ -11118,7 +11200,7 @@ An obvious extension of this system is to allow it to solve whole grids
 \end_layout
 
 \begin_layout Standard
-This extra information would form another filterint criteria: this would
+This extra information would form another filtering criteria, which would
  need to be applied to the `weak' solve: the list of all possible solutions
  that could be produced by the clue, including those that our thesaurus
  is unable to match as a synonym of the definition.
@@ -11192,7 +11274,7 @@ Solving strategy
 \end_layout
 
 \begin_layout Standard
-The prolem we have now is one of recursion.
+The problem we have now is one of recursion.
  As crossword grids are usually heavily intersected, we will have to deal
  with cycles in our intersection graph: for example in 
 \series bold
@@ -11288,11 +11370,11 @@ Lazy evaluation and backtracking
 \end_layout
 
 \begin_layout Standard
-In a similar way to the how we evaluated the items in the parse forest left-to-r
-ight checking combinations and culling where no available solution fitted
- the constraints, so we could decide upon an arbitrary order to evaluate
- the clues, and then backtrack where necessary – for example, lock-in the
- answer to clue 1, and try to solve clue 4 given those constraints.
+In a similar way to how we evaluated the items in the parse forest left-to-right
+, checking combinations and culling where no available solution fitted the
+ constraints, so we could decide upon an arbitrary order to evaluate the
+ clues, and then backtrack where necessary – for example, lock-in the answer
+ to clue 1, and try to solve clue 4 given those constraints.
  If one or more fit, then try each of them recursively in turn; if none
  fit, then backtrack and try a new solution to clue 1.
  
@@ -11303,9 +11385,30 @@ This method could work well, as it only requires us to compute the solutions
  necessary when we need them.
  Although we may end up with re-computation of answers, we could avoid this
  through memoization of the solution to each clue given a set of constraints.
- This could be futher improved by observing that the solutions to a clue
- constrained by a set of known letters (?????A) are a superset of those
- given tighter constraints (????MA), so further computation may be required.
+ This could be further improved by observing that, for example the solutions
+ to a clue constrained by a set of known letters (e.g.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+?????A
+\end_layout
+
+\end_inset
+
+) are a superset of those given tighter constraints (e.g.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+????MA
+\end_layout
+
+\end_inset
+
+), so further computation may be required.
  
 \end_layout
 
@@ -11323,10 +11426,10 @@ Functional iteration
 \end_layout
 
 \begin_layout Standard
-Another solution which may solve some of the issues of the others is by
- generating a finite set of solutions for each of the clues, generating
- a likelihood for each of the generated solutions, and then using the intersecti
-on letters of those solutions to help weight future iterations of the solve.
+One solution which may solve some of the problems in the other solutions
+ is to generate a finite set of solutions for each of the clues, calculate
+ a likelihood for each of the solutions, and then using the intersection
+ letters of those solutions to help weight future iterations of the solve.
  
 \series bold
 Table 1
@@ -13418,7 +13521,8 @@ HOP
 \begin_layout Plain Layout
 Based on the available solution in 1a., PUR has become more likely than RUB,
  as 1a.
- has no solutions begining with `R.' HOP has changed to RUN for similar reasons.
+ has no solutions beginning with `R.' HOP has changed to RUN for similar
+ reasons.
 \end_layout
 
 \begin_layout Plain Layout
