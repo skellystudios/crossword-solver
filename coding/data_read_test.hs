@@ -4,26 +4,26 @@ import qualified Data.Map as Map
 
 import System.IO.Unsafe
 
-read_wordlist = do
+readWordlist = do
     ls <- fmap Text.lines (Text.readFile "data/straight-wordlist")
-    (return . string_read . toString . head) ls
+    (return . stringRead . toString . head) ls
     
-wordlist = unsafePerformIO $ do read_wordlist
+wordlist = unsafePerformIO $ do readWordlist
 
-read_thesaurus = do
+readThesaurus = do
     ls <- fmap Text.lines (Text.readFile "data/thesaurus-list")
-    (return . Map.fromList . map_read . toString . head) ls
+    (return . Map.fromList . mapRead . toString . head) ls
     
 
-thesaurus = unsafePerformIO $ do read_thesaurus
+thesaurus = unsafePerformIO $ do readThesaurus
 
 toString = Text.unpack
 
 -- do n <- readFile "data.dat" ; print n
 
 -- 
-map_read :: String -> [(String, [String])]
-map_read = read
+mapRead :: String -> [(String, [String])]
+mapRead = read
 
-string_read :: String -> [String]
-string_read = read
+stringRead :: String -> [String]
+stringRead = read

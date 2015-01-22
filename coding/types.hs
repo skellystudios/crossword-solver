@@ -3,8 +3,6 @@ module Types where
 data Clue = Clue (String, Int)
 	deriving (Show)
 
-data Clue2 = Clue2 String (Int)
-
 data Parse = DefNode String ParseTree Int
   deriving (Show, Eq, Ord)
 
@@ -30,5 +28,5 @@ data EvalConstraints = Constraints PrefixConstraint MaxLength MinLength
 data PrefixConstraint = Prefix String | Unconstrained | NoPrefix
 
 
-get_parse (Answer s p) = p
-get_solution (Answer s p) = s
+getParse (Answer s p) = p
+getSolution (Answer s p) = s

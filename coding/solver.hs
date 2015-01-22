@@ -24,58 +24,16 @@ import ClueBank
 import Guardian
 import Everyman
 
--- import GHC
-
--- import Control.Deepseq
---  \(Clue \("[\w\s]*",(\d[\d,]+)\), "\w*"\),
--- \(Clue \("[\w—\s]*",\d,[\d,]*\), "\w*"\),
-
--- ghc -prof -auto-all solver.hs
--- ghc-pkg list base
-
-{-
-
-SELECT CONCAT("\"",WORD,"\" = [", GROUP_CONCAT( CONCAT("\"",abbreviation,"\"")),"]") 
-FROM (SELECT DISTINCT word, abbreviation FROM abbreviations) ab
-GROUP BY word;
-
-:set +s
-
-[(Clue (x,n), Y) | (Clue (x,n), y) <- cluebank, length (words x) == 4]  
-
--}
-
-
-{-  USE NULL INSTEAD OF LENGTH == 0  -}
-  
-
-  {-
-
-  Removal of first and last letters
-  Removal of central letter(s)
-  Removal of alternate letters
-
-
-
-  \[\]\n
-
-  -}
 
 
 main = do 
-       -- GHC.Profiling.stopProfTimer
-        print $  solve_clue 11
-      --  GHC.Profiling.startProfTimer
-        print $  is_wordlist_prefix "x"
-         -- print $ {-# SCC "second" #-} (map solve clues)
+        print $  solveClue 11
+        print $  isWordlistPrefix "x"
 
 -- Timeout is in microseconds
 seconds = 1000000
 dosolve x = timeout (20*seconds) $ do
             print $ solve x
-
-
-
 
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
@@ -91,26 +49,21 @@ partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- pa
 lowercase :: Clue -> Clue
 lowercase (Clue (xs, n)) = Clue (map toLower xs, n)
 
-
-xxxxxxisInWordlist x = True
-
 parse :: Clue -> [Parse]
 parse (Clue (xs, n)) = parseWithIndicator (words xs, n) ++ parseWithoutIndicator (words xs, n)
 
 parseWithoutIndicator :: ([String], Int) -> [Parse]
 parseWithoutIndicator (xs, n) = let parts = twoParts xs
-        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), xxxxxxisInWordlist(concatWithSpaces (fst part)), y' <- (parseClue (snd part) n)]
+        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), isInWordlist(concatWithSpaces (fst part)), y' <- (parseClue (snd part) n)]
 
 parseWithIndicator :: ([String], Int) -> [Parse]
 parseWithIndicator (xs, n) = let parts = threeParts xs
-        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), xxxxxxisInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
-        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), xxxxxxisInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
+        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
+        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
 
 parseClue :: [String] -> Int -> [ParseTree]
 parseClue ys n= (if length ys > 1 then parseConcatNodes ys n else [])
 	++ (parseWithoutConcat ys n)
-
-
 
 parseWithoutConcat :: [String] -> Int -> [ParseTree]
 parseWithoutConcat ys n = parseSynonymNodes ys n
@@ -172,8 +125,8 @@ parsePartialNodes xs n = let parts = twoParts xs
 
 -------------- COST EVALUATION -------------
 
-cost_parse (DefNode s tree n) = cost tree * (length_penalty s)
-length_penalty ws = 60 + (length (words ws))   -- Magic constant here ):
+costParse (DefNode s tree n) = cost tree * (lengthPenalty s)
+lengthPenalty ws = 60 + (length (words ws))   -- Magic constant here ):
 
 cost :: ParseTree -> Int
 cost (ConcatNode trees) = 20 * (length trees) + sum (map cost trees) 
@@ -193,16 +146,16 @@ cost (ConsIndicatorNode xs) = 0
 
 --------------------- KNOWN LETTER CONSTRAINS ---------------------
 
-known_letter_fits :: String -> String -> Bool
-known_letter_fits [] [] = True
-known_letter_fits [] (y:ys) = False
-known_letter_fits (x:xs) [] = False
-known_letter_fits (x:xs) (y:ys) = if x=='?' then (known_letter_fits xs ys) else 
-                        if x==y then (known_letter_fits xs ys) else
+knownLetterFits :: String -> String -> Bool
+knownLetterFits [] [] = True
+knownLetterFits [] (y:ys) = False
+knownLetterFits (x:xs) [] = False
+knownLetterFits (x:xs) (y:ys) = if x=='?' then (knownLetterFits xs ys) else 
+                        if x==y then (knownLetterFits xs ys) else
                           False
 
 answerFits ::  String -> Answer -> Bool
-answerFits fitstring (Answer x y)  = known_letter_fits fitstring x
+answerFits fitstring (Answer x y)  = knownLetterFits fitstring x
 
 stripFits :: String -> [Answer] -> [Answer]
 stripFits s = filter (answerFits s) 
@@ -210,77 +163,70 @@ stripFits s = filter (answerFits s)
 answerPart :: Answer -> String
 answerPart (Answer x y) = x
 
-check_answer_equals :: String -> [Answer] -> [Answer]
-check_answer_equals y z = filter (\x -> answerPart x == y) z
+checkAnswerEquals :: String -> [Answer] -> [Answer]
+checkAnswerEquals y z = filter (\x -> answerPart x == y) z
 
 --------------------------- EVALUATION ----------------------------
 
-is_not_a_cheat :: Parse -> Bool
-is_not_a_cheat (DefNode def (SynonymNode ys) n) = length (syn def) >= 1
-is_not_a_cheat _ = True
+isNotACheat :: Parse -> Bool
+isNotACheat (DefNode def (SynonymNode ys) n) = length (syn def) >= 1
+isNotACheat _ = True
 
-remove_cheats = filter is_not_a_cheat
+removeCheats = filter isNotACheat
 
-check_valid_words ::  [Answer] -> [Answer]
-check_valid_words = filter check_valid_word
+checkValidWords ::  [Answer] -> [Answer]
+checkValidWords = filter checkValidWord
 
-check_valid_word :: Answer -> Bool
-check_valid_word (Answer x (DefNode y z n)) = isInWordlist x 
+checkValidWord :: Answer -> Bool
+checkValidWord (Answer x (DefNode y z n)) = isInWordlist x 
 
-constrain_parse_lengths :: [Parse] -> [Parse]
-constrain_parse_lengths = filter valid_parse_length
+constrainParseLengths :: [Parse] -> [Parse]
+constrainParseLengths = filter validParseLength
 
-valid_parse_length :: Parse -> Bool
-valid_parse_length (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
-
-
-constrain_lengths :: [Answer] -> [Answer]
-constrain_lengths = filter constrain_length
-
-constrain_length :: Answer -> Bool
-constrain_length (Answer string (DefNode def clue n))  = length (string) == n
-
-check_synonyms :: [Answer] -> [Answer]
-check_synonyms = filter check_synonym
-
-check_synonym :: Answer -> Bool
-check_synonym (Answer string (DefNode def clue n)) = Data.Set.member string (Data.Set.fromList (syn def))  
-
-cost_solved x = if check_synonym x then 0 else cost_parse (get_parse x)
-
-sort_solved = map (snd) . sort . map (\x -> (cost_solved x, x))
-
-sort_most_likely = map (snd) . sort . map (\x -> (cost_parse x, x))
-
-possible_words = check_valid_words . constrain_lengths  . evaluate . parse
+validParseLength :: Parse -> Bool
+validParseLength (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
 
 
+constrainLengths :: [Answer] -> [Answer]
+constrainLengths = filter constrainLength
 
+constrainLength :: Answer -> Bool
+constrainLength (Answer string (DefNode def clue n))  = length (string) == n
 
+checkSynonymns :: [Answer] -> [Answer]
+checkSynonymns = filter checkSynonymn
 
-solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . remove_cheats . sort_most_likely . constrain_parse_lengths . parse . lowercase
+checkSynonymn :: Answer -> Bool
+checkSynonymn (Answer string (DefNode def clue n)) = Data.Set.member string (Data.Set.fromList (syn def))  
+
+costSolved x = if checkSynonymn x then 0 else costParse (getParse x)
+
+sortSolved = map (snd) . sort . map (\x -> (costSolved x, x))
+
+sortMostLikely = map (snd) . sort . map (\x -> (costParse x, x))
+
+possibleWords = checkValidWords . constrainLengths  . evaluate . parse
 
 
 
 
-solve' = solve_no_syn_sorted
+solve = head' . checkSynonymns . checkValidWords . constrainLengths .  evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . lowercase
 
-solve_no_syn_sorted = head' . sort_solved  . take 100 . solve_no_syn
+solve' = solveNoSynSorted
 
-solve_no_syn_unsorted = head'  . solve_no_syn
+solveNoSynSorted = head' . sortSolved  . take 100 . solveNoSyn
 
-solve_no_syn = check_valid_words . constrain_lengths  . evaluate . remove_cheats . sort_most_likely . constrain_parse_lengths . parse . lowercase
+solveNoSynUnsorted = head'  . solveNoSyn
 
-solve_clue = solve . clue
+solveNoSyn = checkValidWords . constrainLengths  . evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . lowercase
+
+solveClue = solve . clue
 
 head' :: [a] -> [a]
 head' []     = []
 head' (x:xs) = [x]
 
-compare_clue (Clue (s,n)) (Clue (t,m)) = compare n m 
- 
-x :: Clue2 -> Clue
-x (Clue2 xs (n)) = Clue (xs, n) 
+compareClue (Clue (s,n)) (Clue (t,m)) = compare n m 
 
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT

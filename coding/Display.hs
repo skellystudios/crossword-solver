@@ -19,9 +19,9 @@ spaces n = "    " ++ spaces (n-1)
 
 showTreeL x n = showTree x n ++ "\n"
 
-print_this def = (putStr . showDef) def
+printThis def = (putStr . showDef) def
 
-print_all defs = mapM print_this defs
+printAll defs = mapM printThis defs
 
-answer_string (Answer x y) = x
-just_answers = map answer_string
+answerString (Answer x y) = x
+justAnswers = map answerString
