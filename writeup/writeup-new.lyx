@@ -226,12 +226,12 @@ Abstract
 \end_layout
 
 \begin_layout Standard
-Cryptic crosswords utilise many features that are traditionally seen as
+Cryptic crosswords utilize many features that are traditionally seen as
  difficult for Artificial Intelligence: wit, slang, allusion, linguistic
  ambiguity and misdirection.
- Compounding this, they are crosswords are also highly branching and computation
-ally difficult: the state space of all possible crossword grids is of the
- order 10
+ Compounding this, crosswords are also highly branching and computationally
+ difficult: the state space of all possible crossword grids is of the order
+ 10
 \begin_inset script superscript
 
 \begin_layout Plain Layout
@@ -252,7 +252,7 @@ We show how an elegant, succinct solution for solving single clues can be
  Our solution, using only a straightforward corpus, is still able to solve
  around 30% of unseen clues from a major British newspaper, in the order
  of a few seconds.
- We give evidence that this could be substrantially expanded to around 70%
+ We give evidence that this could be substantially expanded to around 70%
  by simply extending the corpus.
 \size large
 
@@ -642,18 +642,7 @@ Sweetheart takes Non-Commissioned Officer to dance (8)
 \begin_layout Standard
 More and more, the AI community is making inroads into problems – like solving
  cryptic crosswords – thought to be only within the abilities of humans.
- 
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-Start with why we need intelligence to solve, then move into watson.
- Are there other examples?
-\end_layout
-
-\end_inset
-
- For example, in 2011 a computer system from IBM called Watson competed
+  For example, in 2011 a computer system from IBM called Watson competed
  in the TV Gameshow Jeopardy: a game in which players have to give the answers
  to cryptically worded questions in as short a time as possible.
  Watson, armed with 200-million pages worth of data and 16 terabytes of
@@ -7810,7 +7799,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename results/length-constraints.pdf
+	filename results/ConstrainParse.pdf
 	width 95text%
 
 \end_inset
@@ -7819,8 +7808,8 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Average number of parses before and after canonization by clue length, averaged
- over 710 clues, on a logarithmic scale
+Average number of parses before and after length filtering, averaged over
+ 710 clues, on a logarithmic scale
 \end_layout
 
 \end_inset

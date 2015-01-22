@@ -226,12 +226,12 @@ Abstract
 \end_layout
 
 \begin_layout Standard
-Cryptic crosswords utilise many features that are traditionally seen as
+Cryptic crosswords utilize many features that are traditionally seen as
  difficult for Artificial Intelligence: wit, slang, allusion, linguistic
  ambiguity and misdirection.
- Compounding this, they are crosswords are also highly branching and computation
-ally difficult: the state space of all possible crossword grids is of the
- order 10
+ Compounding this, crosswords are also highly branching and computationally
+ difficult: the state space of all possible crossword grids is of the order
+ 10
 \begin_inset script superscript
 
 \begin_layout Plain Layout
@@ -252,7 +252,7 @@ We show how an elegant, succinct solution for solving single clues can be
  Our solution, using only a straightforward corpus, is still able to solve
  around 30% of unseen clues from a major British newspaper, in the order
  of a few seconds.
- We give evidence that this could be substrantially expanded to around 70%
+ We give evidence that this could be substantially expanded to around 70%
  by simply extending the corpus.
 \size large
 
@@ -25261,7 +25261,11 @@ References
 [2] R.
  Frost and J.
  Launchbury, 'Constructing natural language interpreters in a lazy functional
- language', The Computer Journal, vol 32, iss 2, pp.
+ language', 
+\shape italic
+The Computer Journal
+\shape default
+, vol 32, iss 2, pp.
  108--121, 1989.
 \begin_inset Newline newline
 \end_inset
@@ -25291,8 +25295,11 @@ Available: http://www.cs.engr.uky.edu/~lewis/essays/compilers/rec-des.html.
 \noindent
 [4] G.
  Smith and J.
- Boulay, 'The Generation of Cryptic Crossword Clues', The Computer Journal,
- 1986.
+ Boulay, 'The Generation of Cryptic Crossword Clues', 
+\shape italic
+The Computer Journal
+\shape default
+, 1986.
 \begin_inset Newline newline
 \end_inset
 
@@ -25303,8 +25310,11 @@ Available: http://www.cs.engr.uky.edu/~lewis/essays/compilers/rec-des.html.
 \noindent
 [5] H.
  Berghel and C.
- Yi, 'Crossword compiler-compilation', The Computer Journal, vol 32, iss
- 3, pp.
+ Yi, 'Crossword compiler-compilation', 
+\shape italic
+The Computer Journal
+\shape default
+, vol 32, iss 3, pp.
  276--280, 1989.
 \begin_inset Newline newline
 \end_inset
@@ -25324,8 +25334,11 @@ Available: http://www.cs.engr.uky.edu/~lewis/essays/compilers/rec-des.html.
  Grosland, F.
  Jiang, S.
  Pollard and K.
- Weinmeister, 'PROVERB: The probabilistic cruciverbalist', New York Times
- (NYT), vol 792, iss 10, p.
+ Weinmeister, 'PROVERB: The probabilistic cruciverbalist', 
+\shape italic
+New York Times (NYT)
+\shape default
+, vol 792, iss 10, p.
  70, 1999.
 \begin_inset Newline newline
 \end_inset
@@ -25337,8 +25350,11 @@ Available: http://www.cs.engr.uky.edu/~lewis/essays/compilers/rec-des.html.
 \noindent
 [7] P.
  Williams and D.
- Woodhead, 'Computer assisted analysis of cryptic crosswords', The Computer
- Journal, vol 22, iss 1, pp.
+ Woodhead, 'Computer assisted analysis of cryptic crosswords', 
+\shape italic
+The Computer Journal
+\shape default
+, vol 22, iss 1, pp.
  67--70, 1979.
 \begin_inset Newline newline
 \end_inset
@@ -25350,8 +25366,11 @@ Available: http://www.cs.engr.uky.edu/~lewis/essays/compilers/rec-des.html.
 \noindent
 [8] M.
  Hart and R.
- Davis, 'Cryptic crossword clue interpreter', Information and Software Technolog
-y, vol 34, iss 1, pp.
+ Davis, 'Cryptic crossword clue interpreter',
+\shape italic
+ Information and Software Technology
+\shape default
+, vol 34, iss 1, pp.
  16--27, 1992.
 \begin_inset Newline newline
 \end_inset
@@ -25363,8 +25382,11 @@ y, vol 34, iss 1, pp.
 \noindent
 [9] R.
  Davis and E.
- Juvshol, 'Microcomputer compilation and solution of crosswords', Microprocessor
-s and Microsystems, vol 9, iss 10, pp.
+ Juvshol, 'Microcomputer compilation and solution of crosswords', 
+\shape italic
+Microprocessors and Microsystems
+\shape default
+, vol 9, iss 10, pp.
  500--506, 1985.
 \begin_inset Newline newline
 \end_inset
@@ -25387,7 +25409,10 @@ s and Microsystems, vol 9, iss 10, pp.
 \noindent
 [11] S.
  Naranan, 'A statistical study of failures in solving crossword puzzles',
- Journal of Quantitative Linguistics, vol 17, iss 3, pp.
+\shape italic
+ Journal of Quantitative Linguistics,
+\shape default
+ vol 17, iss 3, pp.
  191--211, 2010.
 \begin_inset Newline newline
 \end_inset
@@ -25429,7 +25454,11 @@ s and Microsystems, vol 9, iss 10, pp.
 \begin_layout Standard
 \noindent
 [15] R.
- Bird, Pearls of functional algorithm design, 1st ed.
+ Bird,
+\shape italic
+ Pearls of functional algorithm design
+\shape default
+, 1st ed.
  Cambridge: Cambridge University Press, 2010.
 \begin_inset Newline newline
 \end_inset
@@ -25440,7 +25469,11 @@ s and Microsystems, vol 9, iss 10, pp.
 \begin_layout Standard
 \noindent
 [16] D.
- Macnutt, Ximenes on the art of the crossword, 1st ed.
+ Macnutt, 
+\shape italic
+Ximenes on the art of the crossword
+\shape default
+, 1st ed.
  London: Methuen, 1966.
 \begin_inset Newline newline
 \end_inset

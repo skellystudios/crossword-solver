@@ -279,6 +279,9 @@ head' (x:xs) = [x]
 
 compare_clue (Clue (s,n)) (Clue (t,m)) = compare n m 
  
+x :: Clue2 -> Clue
+x (Clue2 xs (n)) = Clue (xs, n) 
+
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT
 clue 2 = Clue ("notice in flying coat", 6) -- JACKET 
