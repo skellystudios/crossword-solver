@@ -1,5 +1,4 @@
 module Utils where 
 
-
-concatWithSpaces (x:[]) = x
-concatWithSpaces (x:xs) = x ++ " " ++ concatWithSpaces xs
+-- MS: There used to be functions here, but I made them redundant.
+blank = ""

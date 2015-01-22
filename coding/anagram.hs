@@ -5,7 +5,7 @@ import qualified Data.Set
 import Utils
 
 isAnagramWord :: [String] -> Bool
-isAnagramWord xs = Data.Set.member (concatWithSpaces xs) anagramIndicators
+isAnagramWord xs = Data.Set.member (unwords xs) anagramIndicators
 
 
 anagramIndicators = Data.Set.fromList [

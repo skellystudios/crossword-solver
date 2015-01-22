@@ -46,23 +46,28 @@ threeParts xs = [(x,y,z) | [x,y,z] <- partitions xs]
 partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
 
+-- MS: I didn't include the isDefIndicator bit in the report - it's basically the words like "is" etc
+split :: Clue -> [Split]
+split (Clue (text, length)) =
+  let parts = partitions . words $ text
+  in [Def (unwords d) w length | [d,w] <- parts, isInWordlist(unwords d)] 
+    ++ [Def (unwords d) w length | [w,d] <- parts, isInWordlist(unwords d)] 
+    ++ [Def (unwords d) w length | [d,i,w] <- parts, isDefIndicator(i), isInWordlist(unwords d)]
+    ++ [Def (unwords d) w length | [w,i,d] <- parts, isDefIndicator(i), isInWordlist(unwords d)]
+
 lowercase :: Clue -> Clue
 lowercase (Clue (xs, n)) = Clue (map toLower xs, n)
 
-parse :: Clue -> [Parse]
-parse (Clue (xs, n)) = parseWithIndicator (words xs, n) ++ parseWithoutIndicator (words xs, n)
+parse :: [Split] -> [Parse]
+parse = concatMap parseClue
 
-parseWithoutIndicator :: ([String], Int) -> [Parse]
-parseWithoutIndicator (xs, n) = let parts = twoParts xs
-        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), isInWordlist(concatWithSpaces (fst part)), y' <- (parseClue (snd part) n)]
+parseClue :: Split -> [Parse]
+parseClue (Def d w n) = 
+  let parses = ((if length w > 1 then parseConcatNodes w n else []) ++ (parseWithoutConcat w n))
+  in [DefNode d parse n | parse <- parses] 
 
-parseWithIndicator :: ([String], Int) -> [Parse]
-parseWithIndicator (xs, n) = let parts = threeParts xs
-        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
-        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), isInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
-
-parseClue :: [String] -> Int -> [ParseTree]
-parseClue ys n= (if length ys > 1 then parseConcatNodes ys n else [])
+parseClue' :: [String] -> Int -> [ParseTree]
+parseClue' ys n= (if length ys > 1 then parseConcatNodes ys n else [])
 	++ (parseWithoutConcat ys n)
 
 parseWithoutConcat :: [String] -> Int -> [ParseTree]
@@ -82,7 +87,7 @@ parseSynonymNodes xs n = if ((length . syn . unwords $ xs) > 0) then [SynonymNod
 
 parseConsNodes :: [String] -> Int -> [ParseTree]
 parseConsNodes xs n = let parts = twoParts xs
-                   in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
+                   in concat [[ConsNode x' y' |x' <- (parseClue' (fst part) n), y' <- (parseClue' (snd part) n)] | part <- parts]  
 parseConcatNodes :: [String] -> Int -> [ParseTree]
 parseConcatNodes xs n = [ConcatNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
 
@@ -95,17 +100,17 @@ parseAnagramNodes xs n = let parts = twoParts xs
 
 parseInsertionNodes :: [String] -> Int -> [ParseTree]
 parseInsertionNodes xs n = let parts = threeParts xs
-                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
-                  ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (parseClue' x n), z' <- (parseClue' z n)] 
+                  ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (parseClue' x n), z' <- (parseClue' z n)] 
 
 parseSubtractionNodes :: [String] -> Int -> [ParseTree]
 parseSubtractionNodes xs n = let parts = threeParts xs
-                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
-                  ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (parseClue' x n), z' <- (parseClue' z n)] 
+                  ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (parseClue' x n), z' <- (parseClue' z n)] 
 
 parseReversalNodes :: [String] -> Int -> [ParseTree]
 parseReversalNodes xs n  = let parts = twoParts xs
-                  in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (parseClue y n)]  
+                  in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (parseClue' y n)]  
 
 parseHiddenWordNodes :: [String]  -> Int -> [ParseTree]
 parseHiddenWordNodes xs n = let parts = twoParts xs
@@ -121,7 +126,7 @@ parseLastLetterNodes xs n = let parts = twoParts xs
 
 parsePartialNodes :: [String]  -> Int -> [ParseTree]
 parsePartialNodes xs n = let parts = twoParts xs
-                  in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (parseClue y n)]
+                  in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (parseClue' y n)]
 
 -------------- COST EVALUATION -------------
 
@@ -205,12 +210,12 @@ sortSolved = map (snd) . sort . map (\x -> (costSolved x, x))
 
 sortMostLikely = map (snd) . sort . map (\x -> (costParse x, x))
 
-possibleWords = checkValidWords . constrainLengths  . evaluate . parse
+possibleWords = checkValidWords . constrainLengths  . evaluate . parse . split
 
 
 
 
-solve = head' . checkSynonymns . checkValidWords . constrainLengths .  evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . lowercase
+solve = head' . checkSynonymns . checkValidWords . constrainLengths .  evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . split . lowercase
 
 solve' = solveNoSynSorted
 
@@ -218,7 +223,7 @@ solveNoSynSorted = head' . sortSolved  . take 100 . solveNoSyn
 
 solveNoSynUnsorted = head'  . solveNoSyn
 
-solveNoSyn = checkValidWords . constrainLengths  . evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . lowercase
+solveNoSyn = checkValidWords . constrainLengths  . evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . split . lowercase
 
 solveClue = solve . clue
 
