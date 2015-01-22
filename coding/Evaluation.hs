@@ -10,7 +10,10 @@ import Types
 import Dictionary
 import Wordlists
 
--- Now we evaluate
+
+evaluate :: [Parse] -> [Answer]
+evaluate = concatMap eval 
+
 eval :: Parse -> [Answer]
 eval (DefNode y z n) = let constraints = (n, n) in [Answer x (DefNode y z n) | x <- evalTree z (Constraints (Prefix []) (Max n) (Min n))] 
 
@@ -108,8 +111,10 @@ noMin (Constraints p mx mn) = (Constraints p mx NoMin)
 noMax :: EvalConstraints -> EvalConstraints
 noMax (Constraints p mx mn) = (Constraints p NoMax mn)
 
-evaluate :: [Parse] -> [Answer]
-evaluate = concatMap eval 
+
+-- MS: From here, we've mainly just got helper functions for parsing the different types of clues
+-- In the ideal representation, we'd probably lump all relevant parts of each clue type together:
+-- the parsing mechanism, the indicators, the evaluation function... maybe into a record, or something
 
 anagrams :: String -> [String]
 anagrams [] = [[]]

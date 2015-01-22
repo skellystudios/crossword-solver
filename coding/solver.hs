@@ -25,13 +25,33 @@ import Guardian
 import Everyman
 
 
+------------------ The key functions ------------------------
 
-main = do 
-        print $  solveClue 11
-        print $  isWordlistPrefix "x"
+-- MS: This is pretty much what you want for naive solver
+solve_naive = choose .  evaluate  . parse . split
 
--- Timeout is in microseconds
+choose = head' . checkSynonymns . constrainLengths
+
+-- MS: as we get further down the pipeline 
+solve = head' . checkSynonymns . checkValidWords . constrainLengths .  evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . split
+
+
+-- MS: These are used to generate outputs for analysis
+solveNoSynSorted = head' . sortSolved  . take 100 . solveNoSyn
+
+solveNoSynUnsorted = head'  . solveNoSyn
+
+-- MS: In this version we don't check that the overall answer is a synonym of the def -
+-- this allows us to find words the system is capable of producing but that aren't linked 
+-- in our thesaurus 
+solveNoSyn = checkValidWords . constrainLengths  . evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . split
+
+
+-- MS: This is useful if we want to see which clues can be solved in under x seconds, which is 
+-- crucial, as there are some clues which run indefinitely, and you can set the thing processing on the 
+-- benchmark and come back a week later and find that it's got three clues in and spent a week on clue 4 
 seconds = 1000000
+-- Timeout is in microseconds
 dosolve x = timeout (20*seconds) $ do
             print $ solve x
 
@@ -47,25 +67,24 @@ partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
 
 -- MS: I didn't include the isDefIndicator bit in the report - it's basically the words like "is" etc
+-- MS: Also I deel with things like putting things into lowercase here
 split :: Clue -> [Split]
 split (Clue (text, length)) =
-  let parts = partitions . words $ text
+  let parts = partitions . words . map toLower $ text
   in [Def (unwords d) w length | [d,w] <- parts, isInWordlist(unwords d)] 
     ++ [Def (unwords d) w length | [w,d] <- parts, isInWordlist(unwords d)] 
     ++ [Def (unwords d) w length | [d,i,w] <- parts, isDefIndicator(i), isInWordlist(unwords d)]
     ++ [Def (unwords d) w length | [w,i,d] <- parts, isDefIndicator(i), isInWordlist(unwords d)]
 
-lowercase :: Clue -> Clue
-lowercase (Clue (xs, n)) = Clue (map toLower xs, n)
-
 parse :: [Split] -> [Parse]
 parse = concatMap parseClue
 
 parseClue :: Split -> [Parse]
-parseClue (Def d w n) = 
-  let parses = ((if length w > 1 then parseConcatNodes w n else []) ++ (parseWithoutConcat w n))
-  in [DefNode d parse n | parse <- parses] 
+parseClue (Def d w n) = [DefNode d parse n | parse <- parseClue' w n] 
 
+-- MS: So in the report I kinda ignore the fact that we can't actually use parseClue in 
+-- the individual parse functions (e.g. parseAnagramNodes), as it takes a split, not a
+-- list of strings. 
 parseClue' :: [String] -> Int -> [ParseTree]
 parseClue' ys n= (if length ys > 1 then parseConcatNodes ys n else [])
 	++ (parseWithoutConcat ys n)
@@ -85,11 +104,16 @@ parseWithoutConcat ys n = parseSynonymNodes ys n
 parseSynonymNodes :: [String] -> Int -> [ParseTree]
 parseSynonymNodes xs n = if ((length . syn . unwords $ xs) > 0) then [SynonymNode (unwords xs)] else []
 
+-- MS: So the ConsNode was the most naive version, which was the binary tree. The ConcatNode was the later
+-- improvement that used a forest, to avoid massive duplicaiton of trees
 parseConsNodes :: [String] -> Int -> [ParseTree]
 parseConsNodes xs n = let parts = twoParts xs
-                   in concat [[ConsNode x' y' |x' <- (parseClue' (fst part) n), y' <- (parseClue' (snd part) n)] | part <- parts]  
+                   in concat [[ConsNode x' y' |x' <- (parseClue' (fst part) n), y' <- (parseClue' (snd part) n)] | part <- parts] 
+
+-- MS: Below is one of the more simple version. More complex versions include the following additional criteria in the list comprehension:
+-- , (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n , (sum . map minLength) xs >= n]                    
 parseConcatNodes :: [String] -> Int -> [ParseTree]
-parseConcatNodes xs n = [ConcatNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
+parseConcatNodes xs n = [ConcatNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] 
 
 parseConsIndicatorNodes :: [String] -> Int -> [ParseTree]
 parseConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorNode xs] else []
@@ -148,7 +172,6 @@ cost (PartialNode ind tree) = 60 + cost tree
 cost (ConsIndicatorNode xs) = 0
 
 
-
 --------------------- KNOWN LETTER CONSTRAINS ---------------------
 
 knownLetterFits :: String -> String -> Bool
@@ -173,6 +196,11 @@ checkAnswerEquals y z = filter (\x -> answerPart x == y) z
 
 --------------------------- EVALUATION ----------------------------
 
+-- MS: Sometimes we want to accept phrases as definitions, even if we can't match them
+-- to a thesaurus entry, as our dataset is incomplete. In these cases, this function
+-- stops us generating options like DEFINITION = "pause at these i" and wordplay = SYN_NODE(fancy)
+-- which we can't tell aren't right as our data isn't rich enough, but can always be generated
+-- and are wrong 99% of the time
 isNotACheat :: Parse -> Bool
 isNotACheat (DefNode def (SynonymNode ys) n) = length (syn def) >= 1
 isNotACheat _ = True
@@ -190,7 +218,6 @@ constrainParseLengths = filter validParseLength
 
 validParseLength :: Parse -> Bool
 validParseLength (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
-
 
 constrainLengths :: [Answer] -> [Answer]
 constrainLengths = filter constrainLength
@@ -210,28 +237,20 @@ sortSolved = map (snd) . sort . map (\x -> (costSolved x, x))
 
 sortMostLikely = map (snd) . sort . map (\x -> (costParse x, x))
 
-possibleWords = checkValidWords . constrainLengths  . evaluate . parse . split
+------ MISC -------
 
-
-
-
-solve = head' . checkSynonymns . checkValidWords . constrainLengths .  evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . split . lowercase
-
-solve' = solveNoSynSorted
-
-solveNoSynSorted = head' . sortSolved  . take 100 . solveNoSyn
-
-solveNoSynUnsorted = head'  . solveNoSyn
-
-solveNoSyn = checkValidWords . constrainLengths  . evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . split . lowercase
-
-solveClue = solve . clue
-
+-- MS: Use this so we don't throw an error when using map solve over a cluebank.
+-- Should probably be replaced with the Maybe monad.
 head' :: [a] -> [a]
 head' []     = []
 head' (x:xs) = [x]
 
 compareClue (Clue (s,n)) (Clue (t,m)) = compare n m 
+
+main = do 
+        print $  solveClue 11
+        print $  isWordlistPrefix "x"
+
 
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT
