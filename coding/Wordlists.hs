@@ -1,5 +1,5 @@
 
-module Wordlists (wordlist, outputWordlist, thesaurus, outputThesaurus, decodeThesaurus) where 
+module Wordlists (wordlist, thesaurus, decodeThesaurus) where 
 
 import Data.Set (Set,fromList) 
 import qualified Data.Text    as Text

@@ -247,10 +247,6 @@ head' (x:xs) = [x]
 
 compareClue (Clue (s,n)) (Clue (t,m)) = compare n m 
 
-main = do 
-        print $  solveClue 11
-        print $  isWordlistPrefix "x"
-
 
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT
