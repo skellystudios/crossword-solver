@@ -1,9 +1,13 @@
 module Types where 
 
+-- MS: So I'd completely forgotten about type synonyms until my writeup, so they don't feature
+-- MS: Also, I use a list of strings rather than a single string for the wordplay: its a tradeoff between having to constantly unpack the list vs removing the spaces 
+data Split = Def String [String] Int
+	deriving (Show)
+	
+-- MS: The clue format isn't exactly as specified, but as all my sample clues are already formated like this, I'm loath to change. 
 data Clue = Clue (String, Int)
 	deriving (Show)
-
-data Clue2 = Clue2 String (Int)
 
 data Parse = DefNode String ParseTree Int
   deriving (Show, Eq, Ord)
@@ -30,5 +34,5 @@ data EvalConstraints = Constraints PrefixConstraint MaxLength MinLength
 data PrefixConstraint = Prefix String | Unconstrained | NoPrefix
 
 
-get_parse (Answer s p) = p
-get_solution (Answer s p) = s
+getParse (Answer s p) = p
+getSolution (Answer s p) = s

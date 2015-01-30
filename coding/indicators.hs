@@ -25,7 +25,7 @@ isConsIndicator _ = False
 
 
 isInsertionWord :: [String] -> Bool
-isInsertionWord xs = Data.Set.member (concatWithSpaces xs) insertionIndicators
+isInsertionWord xs = Data.Set.member (unwords xs) insertionIndicators
 insertionIndicators = Data.Set.fromList [
 	"dwells in",
 	"characters",
@@ -164,7 +164,7 @@ insertionIndicators = Data.Set.fromList [
 	"taken in by"]
 
 isReverseInsertionWord :: [String] -> Bool
-isReverseInsertionWord xs = Data.Set.member (concatWithSpaces xs) reverseInsertionIndicators
+isReverseInsertionWord xs = Data.Set.member (unwords xs) reverseInsertionIndicators
 reverseInsertionIndicators = Data.Set.fromList [
 	"to include",
 	"on",

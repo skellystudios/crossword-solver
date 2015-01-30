@@ -24,58 +24,36 @@ import ClueBank
 import Guardian
 import Everyman
 
--- import GHC
 
--- import Control.Deepseq
---  \(Clue \("[\w\s]*",(\d[\d,]+)\), "\w*"\),
--- \(Clue \("[\w—\s]*",\d,[\d,]*\), "\w*"\),
+------------------ The key functions ------------------------
 
--- ghc -prof -auto-all solver.hs
--- ghc-pkg list base
+-- MS: This is pretty much what you want for naive solver
+solve_naive = choose .  evaluate  . parse . split
 
-{-
+choose = head' . checkSynonymns . constrainLengths
 
-SELECT CONCAT("\"",WORD,"\" = [", GROUP_CONCAT( CONCAT("\"",abbreviation,"\"")),"]") 
-FROM (SELECT DISTINCT word, abbreviation FROM abbreviations) ab
-GROUP BY word;
-
-:set +s
-
-[(Clue (x,n), Y) | (Clue (x,n), y) <- cluebank, length (words x) == 4]  
-
--}
+-- MS: as we get further down the pipeline 
+solve = head' . checkSynonymns . checkValidWords . constrainLengths .  evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . split
 
 
-{-  USE NULL INSTEAD OF LENGTH == 0  -}
-  
+-- MS: These are used to generate outputs for analysis
+solveNoSynSorted = head' . sortSolved  . take 100 . solveNoSyn
 
-  {-
+solveNoSynUnsorted = head'  . solveNoSyn
 
-  Removal of first and last letters
-  Removal of central letter(s)
-  Removal of alternate letters
-
-
-
-  \[\]\n
-
-  -}
+-- MS: In this version we don't check that the overall answer is a synonym of the def -
+-- this allows us to find words the system is capable of producing but that aren't linked 
+-- in our thesaurus 
+solveNoSyn = checkValidWords . constrainLengths  . evaluate . removeCheats . sortMostLikely . constrainParseLengths . parse . split
 
 
-main = do 
-       -- GHC.Profiling.stopProfTimer
-        print $  solve_clue 11
-      --  GHC.Profiling.startProfTimer
-        print $  is_wordlist_prefix "x"
-         -- print $ {-# SCC "second" #-} (map solve clues)
-
--- Timeout is in microseconds
+-- MS: This is useful if we want to see which clues can be solved in under x seconds, which is 
+-- crucial, as there are some clues which run indefinitely, and you can set the thing processing on the 
+-- benchmark and come back a week later and find that it's got three clues in and spent a week on clue 4 
 seconds = 1000000
+-- Timeout is in microseconds
 dosolve x = timeout (20*seconds) $ do
             print $ solve x
-
-
-
 
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
@@ -88,29 +66,28 @@ threeParts xs = [(x,y,z) | [x,y,z] <- partitions xs]
 partitions [] = [[]]
 partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
 
-lowercase :: Clue -> Clue
-lowercase (Clue (xs, n)) = Clue (map toLower xs, n)
+-- MS: I didn't include the isDefIndicator bit in the report - it's basically the words like "is" etc
+-- MS: Also I deel with things like putting things into lowercase here
+split :: Clue -> [Split]
+split (Clue (text, length)) =
+  let parts = partitions . words . map toLower $ text
+  in [Def (unwords d) w length | [d,w] <- parts, isInWordlist(unwords d)] 
+    ++ [Def (unwords d) w length | [w,d] <- parts, isInWordlist(unwords d)] 
+    ++ [Def (unwords d) w length | [d,i,w] <- parts, isDefIndicator(i), isInWordlist(unwords d)]
+    ++ [Def (unwords d) w length | [w,i,d] <- parts, isDefIndicator(i), isInWordlist(unwords d)]
 
+parse :: [Split] -> [Parse]
+parse = concatMap parseClue
 
-xxxxxxisInWordlist x = True
+parseClue :: Split -> [Parse]
+parseClue (Def d w n) = [DefNode d parse n | parse <- parseClue' w n] 
 
-parse :: Clue -> [Parse]
-parse (Clue (xs, n)) = parseWithIndicator (words xs, n) ++ parseWithoutIndicator (words xs, n)
-
-parseWithoutIndicator :: ([String], Int) -> [Parse]
-parseWithoutIndicator (xs, n) = let parts = twoParts xs
-        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), xxxxxxisInWordlist(concatWithSpaces (fst part)), y' <- (parseClue (snd part) n)]
-
-parseWithIndicator :: ([String], Int) -> [Parse]
-parseWithIndicator (xs, n) = let parts = threeParts xs
-        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), xxxxxxisInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
-        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), xxxxxxisInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
-
-parseClue :: [String] -> Int -> [ParseTree]
-parseClue ys n= (if length ys > 1 then parseConcatNodes ys n else [])
+-- MS: So in the report I kinda ignore the fact that we can't actually use parseClue in 
+-- the individual parse functions (e.g. parseAnagramNodes), as it takes a split, not a
+-- list of strings. 
+parseClue' :: [String] -> Int -> [ParseTree]
+parseClue' ys n= (if length ys > 1 then parseConcatNodes ys n else [])
 	++ (parseWithoutConcat ys n)
-
-
 
 parseWithoutConcat :: [String] -> Int -> [ParseTree]
 parseWithoutConcat ys n = parseSynonymNodes ys n
@@ -127,11 +104,16 @@ parseWithoutConcat ys n = parseSynonymNodes ys n
 parseSynonymNodes :: [String] -> Int -> [ParseTree]
 parseSynonymNodes xs n = if ((length . syn . unwords $ xs) > 0) then [SynonymNode (unwords xs)] else []
 
+-- MS: So the ConsNode was the most naive version, which was the binary tree. The ConcatNode was the later
+-- improvement that used a forest, to avoid massive duplicaiton of trees
 parseConsNodes :: [String] -> Int -> [ParseTree]
 parseConsNodes xs n = let parts = twoParts xs
-                   in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
+                   in concat [[ConsNode x' y' |x' <- (parseClue' (fst part) n), y' <- (parseClue' (snd part) n)] | part <- parts] 
+
+-- MS: Below is one of the more simple version. More complex versions include the following additional criteria in the list comprehension:
+-- , (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n , (sum . map minLength) xs >= n]                    
 parseConcatNodes :: [String] -> Int -> [ParseTree]
-parseConcatNodes xs n = [ConcatNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
+parseConcatNodes xs n = [ConcatNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] 
 
 parseConsIndicatorNodes :: [String] -> Int -> [ParseTree]
 parseConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorNode xs] else []
@@ -142,17 +124,17 @@ parseAnagramNodes xs n = let parts = twoParts xs
 
 parseInsertionNodes :: [String] -> Int -> [ParseTree]
 parseInsertionNodes xs n = let parts = threeParts xs
-                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
-                  ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (parseClue' x n), z' <- (parseClue' z n)] 
+                  ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (parseClue' x n), z' <- (parseClue' z n)] 
 
 parseSubtractionNodes :: [String] -> Int -> [ParseTree]
 parseSubtractionNodes xs n = let parts = threeParts xs
-                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
-                  ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (parseClue' x n), z' <- (parseClue' z n)] 
+                  ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (parseClue' x n), z' <- (parseClue' z n)] 
 
 parseReversalNodes :: [String] -> Int -> [ParseTree]
 parseReversalNodes xs n  = let parts = twoParts xs
-                  in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (parseClue y n)]  
+                  in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (parseClue' y n)]  
 
 parseHiddenWordNodes :: [String]  -> Int -> [ParseTree]
 parseHiddenWordNodes xs n = let parts = twoParts xs
@@ -168,12 +150,12 @@ parseLastLetterNodes xs n = let parts = twoParts xs
 
 parsePartialNodes :: [String]  -> Int -> [ParseTree]
 parsePartialNodes xs n = let parts = twoParts xs
-                  in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (parseClue y n)]
+                  in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (parseClue' y n)]
 
 -------------- COST EVALUATION -------------
 
-cost_parse (DefNode s tree n) = cost tree * (length_penalty s)
-length_penalty ws = 60 + (length (words ws))   -- Magic constant here ):
+costParse (DefNode s tree n) = cost tree * (lengthPenalty s)
+lengthPenalty ws = 60 + (length (words ws))   -- Magic constant here ):
 
 cost :: ParseTree -> Int
 cost (ConcatNode trees) = 20 * (length trees) + sum (map cost trees) 
@@ -190,19 +172,18 @@ cost (PartialNode ind tree) = 60 + cost tree
 cost (ConsIndicatorNode xs) = 0
 
 
-
 --------------------- KNOWN LETTER CONSTRAINS ---------------------
 
-known_letter_fits :: String -> String -> Bool
-known_letter_fits [] [] = True
-known_letter_fits [] (y:ys) = False
-known_letter_fits (x:xs) [] = False
-known_letter_fits (x:xs) (y:ys) = if x=='?' then (known_letter_fits xs ys) else 
-                        if x==y then (known_letter_fits xs ys) else
+knownLetterFits :: String -> String -> Bool
+knownLetterFits [] [] = True
+knownLetterFits [] (y:ys) = False
+knownLetterFits (x:xs) [] = False
+knownLetterFits (x:xs) (y:ys) = if x=='?' then (knownLetterFits xs ys) else 
+                        if x==y then (knownLetterFits xs ys) else
                           False
 
 answerFits ::  String -> Answer -> Bool
-answerFits fitstring (Answer x y)  = known_letter_fits fitstring x
+answerFits fitstring (Answer x y)  = knownLetterFits fitstring x
 
 stripFits :: String -> [Answer] -> [Answer]
 stripFits s = filter (answerFits s) 
@@ -210,77 +191,62 @@ stripFits s = filter (answerFits s)
 answerPart :: Answer -> String
 answerPart (Answer x y) = x
 
-check_answer_equals :: String -> [Answer] -> [Answer]
-check_answer_equals y z = filter (\x -> answerPart x == y) z
+checkAnswerEquals :: String -> [Answer] -> [Answer]
+checkAnswerEquals y z = filter (\x -> answerPart x == y) z
 
 --------------------------- EVALUATION ----------------------------
 
-is_not_a_cheat :: Parse -> Bool
-is_not_a_cheat (DefNode def (SynonymNode ys) n) = length (syn def) >= 1
-is_not_a_cheat _ = True
+-- MS: Sometimes we want to accept phrases as definitions, even if we can't match them
+-- to a thesaurus entry, as our dataset is incomplete. In these cases, this function
+-- stops us generating options like DEFINITION = "pause at these i" and wordplay = SYN_NODE(fancy)
+-- which we can't tell aren't right as our data isn't rich enough, but can always be generated
+-- and are wrong 99% of the time
+isNotACheat :: Parse -> Bool
+isNotACheat (DefNode def (SynonymNode ys) n) = length (syn def) >= 1
+isNotACheat _ = True
 
-remove_cheats = filter is_not_a_cheat
+removeCheats = filter isNotACheat
 
-check_valid_words ::  [Answer] -> [Answer]
-check_valid_words = filter check_valid_word
+checkValidWords ::  [Answer] -> [Answer]
+checkValidWords = filter checkValidWord
 
-check_valid_word :: Answer -> Bool
-check_valid_word (Answer x (DefNode y z n)) = isInWordlist x 
+checkValidWord :: Answer -> Bool
+checkValidWord (Answer x (DefNode y z n)) = isInWordlist x 
 
-constrain_parse_lengths :: [Parse] -> [Parse]
-constrain_parse_lengths = filter valid_parse_length
+constrainParseLengths :: [Parse] -> [Parse]
+constrainParseLengths = filter validParseLength
 
-valid_parse_length :: Parse -> Bool
-valid_parse_length (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
+validParseLength :: Parse -> Bool
+validParseLength (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
 
+constrainLengths :: [Answer] -> [Answer]
+constrainLengths = filter constrainLength
 
-constrain_lengths :: [Answer] -> [Answer]
-constrain_lengths = filter constrain_length
+constrainLength :: Answer -> Bool
+constrainLength (Answer string (DefNode def clue n))  = length (string) == n
 
-constrain_length :: Answer -> Bool
-constrain_length (Answer string (DefNode def clue n))  = length (string) == n
+checkSynonymns :: [Answer] -> [Answer]
+checkSynonymns = filter checkSynonymn
 
-check_synonyms :: [Answer] -> [Answer]
-check_synonyms = filter check_synonym
+checkSynonymn :: Answer -> Bool
+checkSynonymn (Answer string (DefNode def clue n)) = Data.Set.member string (Data.Set.fromList (syn def))  
 
-check_synonym :: Answer -> Bool
-check_synonym (Answer string (DefNode def clue n)) = Data.Set.member string (Data.Set.fromList (syn def))  
+costSolved x = if checkSynonymn x then 0 else costParse (getParse x)
 
-cost_solved x = if check_synonym x then 0 else cost_parse (get_parse x)
+sortSolved = map (snd) . sort . map (\x -> (costSolved x, x))
 
-sort_solved = map (snd) . sort . map (\x -> (cost_solved x, x))
+sortMostLikely = map (snd) . sort . map (\x -> (costParse x, x))
 
-sort_most_likely = map (snd) . sort . map (\x -> (cost_parse x, x))
+------ MISC -------
 
-possible_words = check_valid_words . constrain_lengths  . evaluate . parse
-
-
-
-
-
-solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . remove_cheats . sort_most_likely . constrain_parse_lengths . parse . lowercase
-
-
-
-
-solve' = solve_no_syn_sorted
-
-solve_no_syn_sorted = head' . sort_solved  . take 100 . solve_no_syn
-
-solve_no_syn_unsorted = head'  . solve_no_syn
-
-solve_no_syn = check_valid_words . constrain_lengths  . evaluate . remove_cheats . sort_most_likely . constrain_parse_lengths . parse . lowercase
-
-solve_clue = solve . clue
-
+-- MS: Use this so we don't throw an error when using map solve over a cluebank.
+-- Should probably be replaced with the Maybe monad.
 head' :: [a] -> [a]
 head' []     = []
 head' (x:xs) = [x]
 
-compare_clue (Clue (s,n)) (Clue (t,m)) = compare n m 
- 
-x :: Clue2 -> Clue
-x (Clue2 xs (n)) = Clue (xs, n) 
+compareClue (Clue (s,n)) (Clue (t,m)) = compare n m 
+
 
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT
