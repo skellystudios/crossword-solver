@@ -19,7 +19,7 @@ eval_tree (AnagramNode x y) c =
 								let y' = (concat y) in 	
 								if (is_less_than_min (minC c) (length y')) then [] else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
 
-eval_tree (SynonymNode x) c = filter (fits_constraints c) (syn x ++ [x])
+eval_tree (SynonymNode x) c = filter (fits_constraints c) (synonyms x ++ [x])
 eval_tree (ConcatNode xs) c = eval_trees xs c --map concat (sequence (map (eval_tree n) xs))
 -- eval_tree (ConsNode x y) c = [x' ++ y' | x' <- eval_tree x (noPrefix c), y' <- eval_tree y (Constraints NoPrefix (mx - length x') (mn - length x'))]
 eval_tree (InsertionNode ind x y) c = concat[insertInto x' y' | y' <- eval_tree y (noMin . noPrefix $ c), x' <- eval_tree x (decreaseMax (length y') . decreaseMin (length y') . noPrefix $ c)]
@@ -179,6 +179,6 @@ tail_substrings = (map reverse) . top_substrings . reverse
 
 {-
 check_eval :: Parse -> [Answer]
--- check_eval x = let DefNode y z n = x in Data.List.intersect (syn y) ((eval_tree n z))
+-- check_eval x = let DefNode y z n = x in Data.List.intersect (synonyms y) ((eval_tree n z))
 check_eval (DefNode y z n) = map (\x -> Answer x (DefNode y z n)) (Data.Set.toList (Data.Set.intersection wordlist_extended (Data.Set.fromList (eval_tree n z))))
 -} 

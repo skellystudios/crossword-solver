@@ -1,5 +1,6 @@
 module Main where 
 
+import Data.Functor
 import Data.List  
 import qualified Data.Set
 import qualified Data.Map as Map
@@ -12,7 +13,6 @@ import Wordlists
 import Anagram
 import HalfBenchmark
 import Types
-import Utils
 import Indicators
 import Evaluation
 import Dictionary
@@ -24,242 +24,383 @@ import ClueBank
 import Guardian
 import Everyman
 
-
-main = do 
+main
+  = do 
        -- GHC.Profiling.stopProfTimer
         print $  solve_clue 11
-      --  GHC.Profiling.startProfTimer
+       --  GHC.Profiling.startProfTimer
         print $  is_wordlist_prefix "x"
-         -- print $ {-# SCC "second" #-} (map solve clues)
+       -- print $ {-# SCC "second" #-} (map solve clues)
 
 -- Timeout is in microseconds
-seconds = 1000000
-dosolve x = timeout (20*seconds) $ do
+seconds
+  = 1000000
+dosolve x
+  = timeout (20*seconds) $ do
             print $ solve x
 
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
 
---call is mirror?
-includeReversals xs = xs ++ [(y, x) | (x, y) <- xs] 
+mirror2 :: [(a, a)] -> [(a, a)]
+mirror2 xs
+  = xs ++ [(y, x) | (x, y) <- xs] 
 
-twoParts xs = [(x,y) | [x,y] <- partitions xs]
-threeParts xs = [(x,y,z) | [x,y,z] <- partitions xs]
+mirror3 :: [(a, a, a)] -> [(a, a, a)]
+mirror3 xs
+  = xs ++ [(z, y, x) | (x, y, z) <- xs] 
 
-partitions [] = [[]]
-partitions (x:xs) = [[x]:p | p <- partitions xs] ++ [(x:ys):yss | (ys:yss) <- partitions xs]
+partitions :: [a] -> [[[a]]]
+partitions []
+  = [[]]
+partitions (x : xs)
+  = [[x] : p | p <- partitions xs] ++ [(x : ys) : yss | (ys : yss) <- partitions xs]
+
+split2 :: [a] -> [([a], [a])]
+split2 xs
+  = [(x, y) | [x, y] <- partitions xs]
+
+split3 :: [a] -> [([a], [a], [a])]
+split3 xs
+  = [(x, y, z) | [x, y, z] <- partitions xs]
+
+split2' :: [a] -> [([a], [a])]
+split2' 
+  = mirror2 . split2
+
+split3' :: [a] -> [([a], [a], [a])]
+split3' 
+  = mirror3 . split3
 
 lowercase :: Clue -> Clue
-lowercase (Clue (xs, n)) = Clue (map toLower xs, n)
+lowercase (Clue (xs, n))
+  = Clue (map toLower xs, n)
 
--- Replacing with isInWordList will limit outputs to only words in the wordlist
--- (wordlist.bin?)
-
-xxxxxxisInWordlist x = True
+isInWordlistTRUE :: a -> Bool
+isInWordlistTRUE x
+  = True
 
 parse :: Clue -> [Parse]
-parse (Clue (xs, n)) = parseWithIndicator (words xs, n) ++ parseWithoutIndicator (words xs, n)
+parse (Clue (c, n))
+  = parseWithIndicator ws n ++ parseWithoutIndicator ws n
+  where
+    ws = words c
 
-parseWithoutIndicator :: ([String], Int) -> [Parse]
-parseWithoutIndicator (xs, n) = let parts = twoParts xs
-        in [DefNode (concatWithSpaces (fst part)) y' n| part <- includeReversals (parts), xxxxxxisInWordlist(concatWithSpaces (fst part)), y' <- (parseClue (snd part) n)]
+parseWithoutIndicator :: [String] -> Int -> [Parse]
+parseWithoutIndicator ws n
+  = [DefNode (unwords ws') p n | (ws', ws'') <- split2' ws, 
+                                 isInWordlistTRUE (unwords ws'), 
+                                 p <- parseClue ws'' n]
 
-parseWithIndicator :: ([String], Int) -> [Parse]
-parseWithIndicator (xs, n) = let parts = threeParts xs
-        in [DefNode (concatWithSpaces x) z' n|  (x,y,z) <- (parts), xxxxxxisInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)] 
-        ++ [DefNode (concatWithSpaces x) z' n|  (z,y,x) <- (parts), xxxxxxisInWordlist(concatWithSpaces x), isDefIndicator(y), z' <- (parseClue z n)]
+parseWithIndicator :: [String] -> Int -> [Parse]
+parseWithIndicator ws n
+  = [DefNode (unwords ws') p n | (ws', ws'', ws''') <- split3' ws,
+                                 isInWordlistTRUE (unwords ws'), 
+                                 isDefIndicator ws'', 
+                                 p <- parseClue ws''' n] 
 
 parseClue :: [String] -> Int -> [ParseTree]
-parseClue ys n= (if length ys > 1 then parseConcatNodes ys n else [])
-	++ (parseWithoutConcat ys n)
+parseClue ws n
+  | length ws > 1 = parseWithConcat ws n ++ parseWithoutConcat ws n
+  | otherwise     = parseWithoutConcat ws n
 
-
-
---refactor with concats...
+-- parseCons needs fixing
 parseWithoutConcat :: [String] -> Int -> [ParseTree]
-parseWithoutConcat ys n = parseSynonymNodes ys n
-  ++ (if length ys == 1 then parseConsIndicatorNodes ys n else [])
-  ++ (if length ys > 1 then parseAnagramNodes ys n else [] )
-  ++ (if length ys > 1 then parseHiddenWordNodes ys n else [])
-  ++ (if length ys > 2 then parseInsertionNodes ys n else [])
-  ++ (if length ys > 2 then parseSubtractionNodes ys n else [])
-  ++ (if length ys > 1 then parseReversalNodes ys n else [])
-  ++ (if length ys > 1 then parseFirstLetterNodes ys n else [])
-  ++ (if length ys > 1 then parseLastLetterNodes ys n else [])
-  ++ (if length ys > 1 then parsePartialNodes ys n else [])
+parseWithoutConcat ws n
+  = parseSynonymNodes ws n ++
+    parseAnagramNodes ws n ++
+    parseHiddenWordNodes ws n ++
+    parseInsertionNodes ws n ++
+    parseSubtractionNodes ws n ++
+    parseReversalNodes ws n ++
+    parseFirstLetterNodes ws n ++
+    parseLastLetterNodes ws n ++
+    parsePartialNodes ws n ++
+    if length ws == 1 then parseConsIndicatorNodes ws n else []
 
---get rid of length
 parseSynonymNodes :: [String] -> Int -> [ParseTree]
-parseSynonymNodes xs n = if ((length . syn . unwords $ xs) > 0) then [SynonymNode (unwords xs)] else []
+parseSynonymNodes ws n
+  | null (synonyms s) = []
+  | otherwise         = [SynonymNode s] 
+  where
+    s = unwords ws
 
-parseConsNodes :: [String] -> Int -> [ParseTree]
-parseConsNodes xs n = let parts = twoParts xs
-                   in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
-parseConcatNodes :: [String] -> Int -> [ParseTree]
-parseConcatNodes xs n = [ConcatNode ys | ys <- (concat [sequence [parseWithoutConcat subpart n| subpart <- part] | part <- partitions xs, (length part) > 1])] --, (sum . (map minLength) $ ys) >= n, (sum . (map maxLength) $ ys) <= n ] --, (sum . map minLength) xs >= n]
+parseWithConcat :: [String] -> Int -> [ParseTree]
+parseWithConcat xs n
+  = map ConcatNode ps
+  where
+    ps = concatMap (sequence . parseSubpart) (filter ((>1) . length) (partitions xs))
+    parseSubpart part = [parseWithoutConcat subpart n | subpart <- part]
 
 parseConsIndicatorNodes :: [String] -> Int -> [ParseTree]
-parseConsIndicatorNodes xs n = if isConsIndicator xs then [ConsIndicatorNode xs] else []
+parseConsIndicatorNodes xs n
+  = if isConsIndicator xs then [ConsIndicatorNode xs] else []
 
+-- Swapped length test with hasAnagram - faster!
 parseAnagramNodes :: [String] -> Int -> [ParseTree]
-parseAnagramNodes xs n = let parts = twoParts xs
-                  in [AnagramNode (AIndicator x) y | (x,y) <- includeReversals(parts), isAnagramWord(x), (length . concat) y <= n] 
+parseAnagramNodes ws n
+  = [AnagramNode (AIndicator p) p' | 
+       (p, p') <- split2' ws, 
+       length (concat p') <= n,
+       hasAnagram p]
 
 parseInsertionNodes :: [String] -> Int -> [ParseTree]
-parseInsertionNodes xs n = let parts = threeParts xs
-                  in [InsertionNode (IIndicator y) x' z' | (x,y,z) <- parts, isInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
-                  ++ [InsertionNode (IIndicator y) z' x' | (x,y,z) <- parts, isReverseInsertionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+parseInsertionNodes ws n
+  = let parts = split3 ws
+    in [InsertionNode (IIndicator ws') p p'' | 
+         (ws, ws', ws'') <- parts, 
+         isInsertionIndicator ws', 
+         p <- parseClue ws n, 
+         p'' <- parseClue ws'' n] ++ 
+       [InsertionNode (IIndicator ws') p'' p | 
+         (ws, ws', ws'') <- parts,
+         isReverseInsertionIndicator ws', 
+         p <- parseClue ws n, 
+         p'' <- parseClue ws'' n] 
 
 parseSubtractionNodes :: [String] -> Int -> [ParseTree]
-parseSubtractionNodes xs n = let parts = threeParts xs
-                  in [SubtractionNode (SIndicator y) x' z' | (x,y,z) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
-                  ++ [SubtractionNode (SIndicator y) x' z' | (z,y,x) <- parts, isSubtractionWord(y), x' <- (parseClue x n), z' <- (parseClue z n)] 
+parseSubtractionNodes ws n
+  = let parts = split3 ws
+    in [SubtractionNode (SIndicator ws') p p'' | 
+         (ws, ws', ws'') <- parts,
+         isSubtractionIndicator ws', 
+         p <- parseClue ws n, 
+         p'' <- parseClue ws'' n] ++ 
+       [SubtractionNode (SIndicator ws') p p'' | 
+         (ws'', ws', ws) <- parts,
+         isSubtractionIndicator ws', 
+         p <- parseClue ws n, 
+         p'' <- parseClue ws'' n] 
 
 parseReversalNodes :: [String] -> Int -> [ParseTree]
-parseReversalNodes xs n  = let parts = twoParts xs
-                  in [ReversalNode (RIndicator x) y2 | (x,y) <- includeReversals(parts), isRIndicator(x), y2 <- (parseClue y n)]  
+parseReversalNodes ws n 
+  = [ReversalNode (RIndicator ws) p | 
+      (ws, ws') <- split2' ws, 
+      isRIndicator ws, 
+      p <- parseClue ws' n]  
 
 parseHiddenWordNodes :: [String]  -> Int -> [ParseTree]
-parseHiddenWordNodes xs n = let parts = twoParts xs
-                  in [HiddenWordNode (HWIndicator x) y | (x,y) <- parts, isHWIndicator(x)] --, (length (concat y)) > n 
+parseHiddenWordNodes ws n
+  = [HiddenWordNode (HWIndicator ws) ws' | 
+      (ws, ws') <- split2 ws, 
+      isHWIndicator ws] 
+      --, (length (concat y)) > n 
 
 parseFirstLetterNodes :: [String]  -> Int -> [ParseTree]
-parseFirstLetterNodes xs n = let parts = twoParts xs
-                  in [FirstLetterNode (FLIndicator x) y | (x,y) <- includeReversals(parts), isFLIndicator(x)] -- (length y) <= n
+parseFirstLetterNodes ws n
+  = [FirstLetterNode (FLIndicator ws) ws' | 
+      (ws, ws') <- split2' ws,
+      isFLIndicator ws] 
+      -- (length ws') <= n
 
 parseLastLetterNodes :: [String]  -> Int -> [ParseTree]
-parseLastLetterNodes xs n = let parts = twoParts xs
-                  in [LastLetterNode (LLIndicator x) y | (x,y) <- includeReversals(parts), isLLIndicator(x)] -- (length y) <= n
+parseLastLetterNodes ws n
+  = [LastLetterNode (LLIndicator ws) ws' | 
+      (ws, ws') <- split2' ws,
+      isLLIndicator ws] 
+      -- (length ws') <= n
 
 parsePartialNodes :: [String]  -> Int -> [ParseTree]
-parsePartialNodes xs n = let parts = twoParts xs
-                  in [PartialNode (PartialIndicator x) y' | (x,y) <- includeReversals(parts), isPartialIndicator(x), y' <- (parseClue y n)]
+parsePartialNodes ws n
+  = [PartialNode (PartialIndicator ws) p | 
+      (ws, ws') <- split2' ws,
+      isPartialIndicator ws, 
+      p <- parseClue ws' n]
+
 
 -------------- COST EVALUATION -------------
 
-cost_parse (DefNode s tree n) = cost tree * (length_penalty s)
-length_penalty ws = 60 + (length (words ws))   -- Magic constant here ):
+cost_parse (DefNode s t n)
+  = cost t * (length_penalty s)
+length_penalty ws
+  = 60 + (length (words ws))   -- Magic constant here ) : 
 
 cost :: ParseTree -> Int
-cost (ConcatNode trees) = 20 * (length trees) + sum (map cost trees) 
-cost (AnagramNode ind strings) = 10
-cost (HiddenWordNode ind strings) = 40
-cost (InsertionNode ind tree1 tree2) = 10 + cost tree1 + cost tree2  -- weight against complex insertions?
-cost (SubtractionNode ind tree1 tree2) = 30 + cost tree1 + cost tree2
-cost (ReversalNode ind tree) = 10 + cost tree
-cost (SynonymNode string) = 80 * length (words string)
-cost (FirstLetterNode ind strings) = 20
-cost (LastLetterNode ind strings) = 20
-cost (ConsNode one two) = 150
-cost (PartialNode ind tree) = 60 + cost tree
-cost (ConsIndicatorNode xs) = 0
+cost (ConcatNode ts)
+  = 20 * (length ts) + sum (map cost ts) 
+cost (AnagramNode ind strings)
+  = 10
+cost (HiddenWordNode ind strings)
+  = 40
+cost (InsertionNode ind t1 t2)
+  = 10 + cost t1 + cost t2  -- weight against complex insertions?
+cost (SubtractionNode ind t1 t2)
+  = 30 + cost t1 + cost t2
+cost (ReversalNode ind t)
+  = 10 + cost t
+cost (SynonymNode string)
+  = 80 * length (words string)
+cost (FirstLetterNode ind strings)
+  = 20
+cost (LastLetterNode ind strings)
+  = 20
+cost (ConsNode one two)
+  = 150
+cost (PartialNode ind t)
+  = 60 + cost t
+cost (ConsIndicatorNode p)
+  = 0
 
 
 
 --------------------- KNOWN LETTER CONSTRAINS ---------------------
 
 known_letter_fits :: String -> String -> Bool
-known_letter_fits [] [] = True
-known_letter_fits [] (y:ys) = False
-known_letter_fits (x:xs) [] = False
-known_letter_fits (x:xs) (y:ys) = if x=='?' then (known_letter_fits xs ys) else 
+known_letter_fits [] []
+  = True
+known_letter_fits [] (y : ys)
+  = False
+known_letter_fits (x : xs) []
+  = False
+known_letter_fits (x : xs) (y : ys)
+  = if x=='?' then (known_letter_fits xs ys) else 
                         if x==y then (known_letter_fits xs ys) else
                           False
 
 answerFits ::  String -> Answer -> Bool
-answerFits fitstring (Answer x y)  = known_letter_fits fitstring x
+answerFits fitstring (Answer x y) 
+  = known_letter_fits fitstring x
 
 stripFits :: String -> [Answer] -> [Answer]
-stripFits s = filter (answerFits s) 
+stripFits s
+  = filter (answerFits s) 
 
 answerPart :: Answer -> String
-answerPart (Answer x y) = x
+answerPart (Answer x y)
+  = x
 
 check_answer_equals :: String -> [Answer] -> [Answer]
-check_answer_equals y z = filter (\x -> answerPart x == y) z
+check_answer_equals y z
+  = filter (\x -> answerPart x == y) z
 
 --------------------------- EVALUATION ----------------------------
 
-is_not_a_cheat :: Parse -> Bool
-is_not_a_cheat (DefNode def (SynonymNode ys) n) = length (syn def) >= 1
-is_not_a_cheat _ = True
+isNotACheat :: Parse -> Bool
+isNotACheat (DefNode def (SynonymNode ys) n)
+  = length (synonyms def) >= 1
+isNotACheat _
+  = True
 
-remove_cheats = filter is_not_a_cheat
+removeCheats
+  = filter isNotACheat
 
-check_valid_words ::  [Answer] -> [Answer]
-check_valid_words = filter check_valid_word
+checkValidWords ::  [Answer] -> [Answer]
+checkValidWords
+  = filter checkValidWord
 
-check_valid_word :: Answer -> Bool
-check_valid_word (Answer x (DefNode y z n)) = isInWordlist x 
+checkValidWord :: Answer -> Bool
+checkValidWord (Answer x (DefNode y z n))
+  = isInWordlist x 
 
-constrain_parse_lengths :: [Parse] -> [Parse]
-constrain_parse_lengths = filter valid_parse_length
+constrainParseLengths :: [Parse] -> [Parse]
+constrainParseLengths
+  = filter valid_parse_length
 
 valid_parse_length :: Parse -> Bool
-valid_parse_length (DefNode def clue n) = (minLength clue <= n) && (maxLength clue >= n) 
+valid_parse_length (DefNode def clue n)
+  = (minLength clue <= n) && (maxLength clue >= n) 
 
 
-constrain_lengths :: [Answer] -> [Answer]
-constrain_lengths = filter constrain_length
+constrainLengths :: [Answer] -> [Answer]
+constrainLengths
+  = filter checkLength
 
-constrain_length :: Answer -> Bool
-constrain_length (Answer string (DefNode def clue n))  = length (string) == n
+checkLength :: Answer -> Bool
+checkLength (Answer string (DefNode def clue n)) 
+  = length string == n
 
-check_synonyms :: [Answer] -> [Answer]
-check_synonyms = filter check_synonym
+checkSynonyms :: [Answer] -> [Answer]
+checkSynonyms
+  = filter checkSynonym
 
-check_synonym :: Answer -> Bool
-check_synonym (Answer string (DefNode def clue n)) = Data.Set.member string (Data.Set.fromList (syn def))  
+checkSynonym :: Answer -> Bool
+checkSynonym (Answer string (DefNode def clue n))
+  = Data.Set.member string (Data.Set.fromList (synonyms def))  
 
-cost_solved x = if check_synonym x then 0 else cost_parse (get_parse x)
+cost_solved x
+  = if checkSynonym x then 0 else cost_parse (get_parse x)
 
-sort_solved = map (snd) . sort . map (\x -> (cost_solved x, x))
+sort_solved
+  = map snd . sort . map (\x -> (cost_solved x, x))
 
-sort_most_likely = map (snd) . sort . map (\x -> (cost_parse x, x))
+sortByCost
+  = map snd . sort . map (\x -> (cost_parse x, x))
 
-possible_words = check_valid_words . constrain_lengths  . evaluate . parse
-
-
-
-
--- choose (naive) is essentially head' . check_synonyms . check_valid_words
-
-solve = head' . check_synonyms . check_valid_words . constrain_lengths .  evaluate . remove_cheats . sort_most_likely . constrain_parse_lengths . parse . lowercase
-
-
+possible_words
+  = checkValidWords . constrainLengths  . evaluate . parse
 
 
-solve' = solve_no_syn_sorted
 
-solve_no_syn_sorted = head' . sort_solved  . take 100 . solve_no_syn
 
-solve_no_syn_unsorted = head'  . solve_no_syn
 
-solve_no_syn = check_valid_words . constrain_lengths  . evaluate . remove_cheats . sort_most_likely . constrain_parse_lengths . parse . lowercase
+solve
+  = head' . checkSynonyms . checkValidWords . constrainLengths .  evaluate . removeCheats . sortByCost . constrainParseLengths . parse . lowercase
 
-solve_clue = solve . clue
+
+
+
+solve'
+  = solve_no_syn_sorted
+
+solve_no_syn_sorted
+  = head' . sort_solved  . take 100 . solve_no_syn
+
+solve_no_syn_unsorted
+  = head'  . solve_no_syn
+
+solve_no_syn
+  = checkValidWords . constrainLengths  . evaluate . removeCheats . sortByCost . constrainParseLengths . parse . lowercase
+
+solve_clue
+  = solve . clue
 
 head' :: [a] -> [a]
-head' []     = []
-head' (x:xs) = [x]
+head' []    
+  = []
+head' (x : xs)
+  = [x]
 
-compare_clue (Clue (s,n)) (Clue (t,m)) = compare n m 
+compare_clue (Clue (s,n)) (Clue (t,m))
+  = compare n m 
  
+x :: Clue2 -> Clue
+x (Clue2 xs (n))
+  = Clue (xs, n) 
+
 clue :: Int -> Clue
-clue 1 = Clue ("companion shredded corset",6) -- ESCORT
-clue 2 = Clue ("notice in flying coat", 6) -- JACKET 
-clue 3 = Clue ("companion found in oklahoma terminal", 4)
-clue 4 = Clue ("a new member returned a woman", 6)
-clue 5 = Clue ("pause at these i fancy", 8) -- Everyman 3526, clue 1   ["athetise","hesitate"] 
-clue 6 = Clue ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
-clue 7 = Clue ("flyer needed by funfair manager", 6)
-clue 8 = Clue ("put food in this stuff on barge at sea", 9) 
-clue 9 = Clue ("notice supervisor is going nuts at first", 4)
-clue 10 = Clue ("animal is mistake crossing one river", 7)
-clue 11 = Clue ("maria not a fickle lover", 9)
-clue 12 = Clue ("hope for high praise", 6)  
+clue 1
+  = Clue ("companion shredded corset",6) -- ESCORT
+clue 2
+  = Clue ("notice in flying coat", 6) -- JACKET 
+clue 3
+  = Clue ("companion found in oklahoma terminal", 4)
+clue 4
+  = Clue ("a new member returned a woman", 6)
+clue 5
+  = Clue ("pause at these i fancy", 8) -- Everyman 3526, clue 1   ["athetise","hesitate"] 
+clue 6
+  = Clue ("ankle was twisted in ballet", 8) -- Everyman 3526, clue 3
+clue 7
+  = Clue ("flyer needed by funfair manager", 6)
+clue 8
+  = Clue ("put food in this stuff on barge at sea", 9) 
+clue 9
+  = Clue ("notice supervisor is going nuts at first", 4)
+clue 10
+  = Clue ("animal is mistake crossing one river", 7)
+clue 11
+  = Clue ("maria not a fickle lover", 9)
+clue 12
+  = Clue ("hope for high praise", 6)  
 
-grid = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
+grid
+  = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
 
+
+-- Naive concat?
+parseConsNodes :: [String] -> Int -> [ParseTree]
+parseConsNodes xs n
+  = let parts = split2 xs
+    in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
 
 -- REGEX ((\d*)\s(.+)\s\((\d*)\)\n(.*)\n(.*))\n

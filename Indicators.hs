@@ -24,8 +24,8 @@ isConsIndicator ["over"] = True
 isConsIndicator _ = False
 
 
-isInsertionWord :: [String] -> Bool
-isInsertionWord xs = Data.Set.member (concatWithSpaces xs) insertionIndicators
+isInsertionIndicator :: [String] -> Bool
+isInsertionIndicator xs = Data.Set.member (concatWithSpaces xs) insertionIndicators
 insertionIndicators = Data.Set.fromList [
 	"dwells in",
 	"characters",
@@ -163,8 +163,8 @@ insertionIndicators = Data.Set.fromList [
 	"admitted to",
 	"taken in by"]
 
-isReverseInsertionWord :: [String] -> Bool
-isReverseInsertionWord xs = Data.Set.member (concatWithSpaces xs) reverseInsertionIndicators
+isReverseInsertionIndicator :: [String] -> Bool
+isReverseInsertionIndicator xs = Data.Set.member (concatWithSpaces xs) reverseInsertionIndicators
 reverseInsertionIndicators = Data.Set.fromList [
 	"to include",
 	"on",
@@ -362,7 +362,7 @@ isPartialIndicator ["nearly"] = True
 isPartialIndicator ["tailless"] = True
 isPartialIndicator _ = False
 
-isSubtractionWord ["leaving"] = True
-isSubtractionWord ["without"] = True
-isSubtractionWord ["letting","slip"] = True
-isSubtractionWord _ = False
+isSubtractionIndicator ["leaving"] = True
+isSubtractionIndicator ["without"] = True
+isSubtractionIndicator ["letting","slip"] = True
+isSubtractionIndicator _ = False
