@@ -88,16 +88,18 @@ parse (Clue (c, n))
 
 parseWithoutIndicator :: [String] -> Int -> [Parse]
 parseWithoutIndicator ws n
-  = [DefNode (unwords ws') p n | (ws', ws'') <- split2' ws, 
-                                 isInWordlistTRUE (unwords ws'), 
-                                 p <- parseClue ws'' n]
+  = [(unwords ws', p, n) | 
+       (ws', ws'') <- split2' ws, 
+       isInWordlistTRUE (unwords ws'), 
+       p <- parseClue ws'' n]
 
 parseWithIndicator :: [String] -> Int -> [Parse]
 parseWithIndicator ws n
-  = [DefNode (unwords ws') p n | (ws', ws'', ws''') <- split3' ws,
-                                 isInWordlistTRUE (unwords ws'), 
-                                 isDefIndicator ws'', 
-                                 p <- parseClue ws''' n] 
+  = [(unwords ws', p, n) | 
+       (ws', ws'', ws''') <- split3' ws,
+       isInWordlistTRUE (unwords ws'), 
+       isDefIndicator ws'', 
+       p <- parseClue ws''' n] 
 
 parseClue :: [String] -> Int -> [ParseTree]
 parseClue ws n
@@ -139,7 +141,7 @@ parseConsIndicatorNodes xs n
 -- Swapped length test with hasAnagram - faster!
 parseAnagramNodes :: [String] -> Int -> [ParseTree]
 parseAnagramNodes ws n
-  = [AnagramNode (AIndicator p) p' | 
+  = [AnagramNode p p' | 
        (p, p') <- split2' ws, 
        length (concat p') <= n,
        hasAnagram p]
@@ -147,12 +149,12 @@ parseAnagramNodes ws n
 parseInsertionNodes :: [String] -> Int -> [ParseTree]
 parseInsertionNodes ws n
   = let parts = split3 ws
-    in [InsertionNode (IIndicator ws') p p'' | 
+    in [InsertionNode ws' p p'' | 
          (ws, ws', ws'') <- parts, 
          isInsertionIndicator ws', 
          p <- parseClue ws n, 
          p'' <- parseClue ws'' n] ++ 
-       [InsertionNode (IIndicator ws') p'' p | 
+       [InsertionNode ws' p'' p | 
          (ws, ws', ws'') <- parts,
          isReverseInsertionIndicator ws', 
          p <- parseClue ws n, 
@@ -161,12 +163,12 @@ parseInsertionNodes ws n
 parseSubtractionNodes :: [String] -> Int -> [ParseTree]
 parseSubtractionNodes ws n
   = let parts = split3 ws
-    in [SubtractionNode (SIndicator ws') p p'' | 
+    in [SubtractionNode ws' p p'' | 
          (ws, ws', ws'') <- parts,
          isSubtractionIndicator ws', 
          p <- parseClue ws n, 
          p'' <- parseClue ws'' n] ++ 
-       [SubtractionNode (SIndicator ws') p p'' | 
+       [SubtractionNode ws' p p'' | 
          (ws'', ws', ws) <- parts,
          isSubtractionIndicator ws', 
          p <- parseClue ws n, 
@@ -174,35 +176,35 @@ parseSubtractionNodes ws n
 
 parseReversalNodes :: [String] -> Int -> [ParseTree]
 parseReversalNodes ws n 
-  = [ReversalNode (RIndicator ws) p | 
+  = [ReversalNode ws p | 
       (ws, ws') <- split2' ws, 
       isRIndicator ws, 
       p <- parseClue ws' n]  
 
 parseHiddenWordNodes :: [String]  -> Int -> [ParseTree]
 parseHiddenWordNodes ws n
-  = [HiddenWordNode (HWIndicator ws) ws' | 
+  = [HiddenWordNode ws ws' | 
       (ws, ws') <- split2 ws, 
-      isHWIndicator ws] 
-      --, (length (concat y)) > n 
+      isHWIndicator ws,
+      length (concat ws') > n]
 
 parseFirstLetterNodes :: [String]  -> Int -> [ParseTree]
 parseFirstLetterNodes ws n
-  = [FirstLetterNode (FLIndicator ws) ws' | 
+  = [FirstLetterNode ws ws' | 
       (ws, ws') <- split2' ws,
-      isFLIndicator ws] 
-      -- (length ws') <= n
+      isFLIndicator ws, 
+      length ws' <= n]
 
 parseLastLetterNodes :: [String]  -> Int -> [ParseTree]
 parseLastLetterNodes ws n
-  = [LastLetterNode (LLIndicator ws) ws' | 
+  = [LastLetterNode ws ws' | 
       (ws, ws') <- split2' ws,
-      isLLIndicator ws] 
-      -- (length ws') <= n
+      isLLIndicator ws, 
+      length ws' <= n]
 
 parsePartialNodes :: [String]  -> Int -> [ParseTree]
 parsePartialNodes ws n
-  = [PartialNode (PartialIndicator ws) p | 
+  = [PartialNode ws p | 
       (ws, ws') <- split2' ws,
       isPartialIndicator ws, 
       p <- parseClue ws' n]
@@ -210,7 +212,7 @@ parsePartialNodes ws n
 
 -------------- COST EVALUATION -------------
 
-cost_parse (DefNode s t n)
+cost_parse (s, t, n)
   = cost t * (length_penalty s)
 length_penalty ws
   = 60 + (length (words ws))   -- Magic constant here ) : 
@@ -275,21 +277,12 @@ check_answer_equals y z
 
 --------------------------- EVALUATION ----------------------------
 
-isNotACheat :: Parse -> Bool
-isNotACheat (DefNode def (SynonymNode ys) n)
-  = length (synonyms def) >= 1
-isNotACheat _
-  = True
-
-removeCheats
-  = filter isNotACheat
-
 checkValidWords ::  [Answer] -> [Answer]
 checkValidWords
-  = filter checkValidWord
+  = filter isValidWord
 
-checkValidWord :: Answer -> Bool
-checkValidWord (Answer x (DefNode y z n))
+isValidWord :: Answer -> Bool
+isValidWord (Answer x (y, z, n))
   = isInWordlist x 
 
 constrainParseLengths :: [Parse] -> [Parse]
@@ -297,7 +290,7 @@ constrainParseLengths
   = filter valid_parse_length
 
 valid_parse_length :: Parse -> Bool
-valid_parse_length (DefNode def clue n)
+valid_parse_length (def, clue, n)
   = (minLength clue <= n) && (maxLength clue >= n) 
 
 
@@ -306,7 +299,7 @@ constrainLengths
   = filter checkLength
 
 checkLength :: Answer -> Bool
-checkLength (Answer string (DefNode def clue n)) 
+checkLength (Answer string (def, clue, n)) 
   = length string == n
 
 checkSynonyms :: [Answer] -> [Answer]
@@ -314,7 +307,7 @@ checkSynonyms
   = filter checkSynonym
 
 checkSynonym :: Answer -> Bool
-checkSynonym (Answer string (DefNode def clue n))
+checkSynonym (Answer string (def, clue, n))
   = Data.Set.member string (Data.Set.fromList (synonyms def))  
 
 cost_solved x
@@ -334,7 +327,7 @@ possible_words
 
 
 solve
-  = head' . checkSynonyms . checkValidWords . constrainLengths .  evaluate . removeCheats . sortByCost . constrainParseLengths . parse . lowercase
+  = head' . checkSynonyms . checkValidWords . constrainLengths .  evaluate . sortByCost . constrainParseLengths . parse . lowercase
 
 
 
@@ -349,7 +342,7 @@ solve_no_syn_unsorted
   = head'  . solve_no_syn
 
 solve_no_syn
-  = checkValidWords . constrainLengths  . evaluate . removeCheats . sortByCost . constrainParseLengths . parse . lowercase
+  = checkValidWords . constrainLengths  . evaluate . sortByCost . constrainParseLengths . parse . lowercase
 
 solve_clue
   = solve . clue

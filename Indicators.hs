@@ -17,11 +17,11 @@ isDefIndicator ["for", "a"] = True
 isDefIndicator _ = False
 
 
-isConsIndicator ["on"] = True
-isConsIndicator ["with"] = True
-isConsIndicator ["to"] = True
-isConsIndicator ["over"] = True
-isConsIndicator _ = False
+isJuxtapositionIndicator ["on"] = True
+isJuxtapositionIndicator ["with"] = True
+isJuxtapositionIndicator ["to"] = True
+isJuxtapositionIndicator ["over"] = True
+isJuxtapositionIndicator _ = False
 
 
 isInsertionIndicator :: [String] -> Bool
@@ -355,12 +355,12 @@ isLLIndicator ["in", "the ", "end"] = True
 isLLIndicator ["end", "of"] = True
 isLLIndicator _ = False
 
-isPartialIndicator ["bit", "of"] = True
-isPartialIndicator ["mostly"] = True
-isPartialIndicator ["almost"] = True
-isPartialIndicator ["nearly"] = True
-isPartialIndicator ["tailless"] = True
-isPartialIndicator _ = False
+isPartOfIndicator ["bit", "of"] = True
+isPartOfIndicator ["mostly"] = True
+isPartOfIndicator ["almost"] = True
+isPartOfIndicator ["nearly"] = True
+isPartOfIndicator ["tailless"] = True
+isPartOfIndicator _ = False
 
 isSubtractionIndicator ["leaving"] = True
 isSubtractionIndicator ["without"] = True
