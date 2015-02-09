@@ -12,8 +12,8 @@ import Wordlists
 
 -- Now we evaluate
 eval :: Parse -> [Answer]
-eval (y, z, n) 
-  = [Answer x (y, z, n) | x <- evalTree z]  
+eval (def, parseTree, n) 
+  = [Answer sol (def, parseTree, n) | sol <- evalTree parseTree]  
 
 evalTree :: ParseTree -> [String]
 evalTree (Anagram ind ws) 

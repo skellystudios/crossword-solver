@@ -18,7 +18,7 @@ data ParseTree = JuxtapositionIndicator [String] |
                  Reversal ReversalIndicator ParseTree |
                  FirstLetter FLIndicator [String] |
                  LastLetter LLIndicator [String] |
-                 PartOf PartOfIndicator ParseTree
+                 PartOf PartOfIndicator ParseTree 
                 deriving (Show, Eq, Ord)
 
 data Answer = Answer String Parse deriving (Show, Eq, Ord)
@@ -31,17 +31,6 @@ type HWIndicator = [String]
 type FLIndicator = [String] 
 type LLIndicator = [String] 
 type PartOfIndicator = [String] 
-
-{-
-data Anagrind = AIndicator [String] deriving (Show, Eq, Ord)
-data InsertionIndicator = IIndicator [String] deriving (Show, Eq, Ord)
-data SubtractionIndicator = SIndicator [String] deriving (Show, Eq, Ord)
-data ReversalIndicator = RIndicator [String] deriving (Show, Eq, Ord)
-data HWIndicator = HWIndicator [String] deriving (Show, Eq, Ord)
-data FLIndicator = FLIndicator [String] deriving (Show, Eq, Ord)
-data LLIndicator = LLIndicator [String] deriving (Show, Eq, Ord)
-data PartOfIndicator = PartOfIndicator [String] deriving (Show, Eq, Ord)
--}
 
 data MaxLength = Max Int | NoMax
 data MinLength = Min Int | NoMin

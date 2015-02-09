@@ -263,4 +263,6 @@ clue 12
   = Clue ("hope for high praise", 6)  
 clue 13
   = Clue ("one alone", 4)
+clue 14
+  = Clue ("1 2 3 4 5 6 7 8 9 10 11 12 13 14 15", 6)
 
