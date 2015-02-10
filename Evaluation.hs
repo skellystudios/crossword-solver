@@ -1,5 +1,6 @@
 module Evaluation where
 
+import Data.List
 import Data.Char
 import Data.Binary
 import Data.List 
@@ -13,27 +14,26 @@ import Wordlists
 -- Now we evaluate
 eval :: Parse -> [Answer]
 eval (def, tree, n) 
-  = let constraints = (n, n) 
-    in [Answer x (def, tree, n) | 
-          x <- evalTree tree (Constraints (Prefix []) (Max n) (Min n))] 
+  = [Answer x (def, tree, n) | 
+       x <- evalTree tree (Constraints (Prefix []) (Max n) (Min n))] 
 
 evalTree :: ParseTree  -> EvalConstraints -> [String]
-evalTree (Anagram x y) c 
-  = let y' = (concat y) 
-    in 	if (is_less_than_min (minC c) (length y')) 
+evalTree (Anagram ind ws) c 
+  = let s = concat ws 
+    in 	if (is_less_than_min (minC c) (length s)) 
         then [] 
-        else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
+        else  filter (is_prefix_with (prefC c)) . (delete s) . anagrams  $ s
 
 evalTree (Synonym x) c 
   = filter (fits_constraints c) (synonyms x ++ [x])
 evalTree (Concatenate xs) c 
-  = evalTrees xs c --map concat (sequence (map (evalTree n) xs))
+  = evalTrees xs c 
 evalTree (Insertion ind x y) c 
   = concat[insertInto x' y' | y' <- evalTree y (noMin . noPrefix $ c), x' <- evalTree x (decreaseMax (length y') . decreaseMin (length y') . noPrefix $ c)]
 evalTree (Subtraction ind x y) c 
   = concat[subtractFrom x' y' | x' <- evalTree x no_constraints, y' <- evalTree y no_constraints, fits_min c (length y' - length x'), fits_min c (length y' - length x')]
 evalTree (HiddenWord ind ys) c 
-  = [x | x <- substr (concat ys), (length x) > 0, fits_constraints c x]
+  = [x | x <- substrings (concat ys), (length x) > 0, fits_constraints c x]
 evalTree (Reversal ind ys) c 
   = map reverse (evalTree ys c)
 evalTree (FirstLetter ind ys) c 
@@ -186,30 +186,33 @@ insertInto xs (y:ys)
 
 subtractFrom :: String -> String -> [String] 
 subtractFrom xs ys 
-  = let n = (find_in xs ys 0 0) in if n == -1 then [] else [remove_from ys n (length xs)]
+  = let n = (findIn xs ys 0 0) in if n == -1 then [] else [removeFrom ys n (length xs)]
 
-remove_from ys 0 0 
+removeFrom ys 0 0 
   = ys
-remove_from (y:ys) 0 m 
-  = remove_from ys 0 (m-1)
-remove_from (y:ys) n m 
-  = y:(remove_from ys (n-1) m)
+removeFrom (y:ys) 0 m 
+  = removeFrom ys 0 (m-1)
+removeFrom (y:ys) n m 
+  = y:(removeFrom ys (n-1) m)
 
-find_in [] ys n f 
+findIn [] ys n f 
   = n
-find_in xs [] n f 
+findIn xs [] n f 
   = -1
-find_in (x:xs) (y:ys) n 0 
+findIn (x:xs) (y:ys) n 0 
   = if x==y 
-              then find_in xs ys n 1 
-              else find_in (x:xs) (ys) (n+1) 0
-find_in (x:xs) (y:ys) n 1 
+              then findIn xs ys n 1 
+              else findIn (x:xs) (ys) (n+1) 0
+findIn (x:xs) (y:ys) n 1 
   = if x==y 
-              then find_in xs ys n 1
+              then findIn xs ys n 1
               else -1
 
+firstLetter 
+  = map head
 
-
+lastLetter 
+  = map last
 
 substr [] 
   = [[]]
@@ -221,33 +224,51 @@ contiguoussubstr  []
 contiguoussubstr (x:xs) 
   = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
-firstLetter 
-  = map head
+substrings []     
+  = []
+substrings (x:xs) 
+  = substrings' (x:xs) ++ substrings xs 
+  where
+    substrings' []     = []
+    substrings' (y:ys) = [y] : [y : s | s <- substrings' ys]
 
-lastLetter 
-  = map last
+partials s
+  = nub (substrings s ++ map (s\\) subs)
+  where
+    subs = substrings s
+{-
+substrings []
+  = [[]]
+substrings (c : cs)
+  = [c : cs' | cs' <- subs] ++ subs
+  where
+    subs = substrings cs
 
 missing_center xs 
   = concat . nub . map (\x -> subtractFrom x xs) . substr . strip_toptail $ xs
 strip_toptail 
   = reverse . drop 1 . reverse . drop 1
 
+  = []
+parts s
+  = prefixes s'' ++ suffixes (tail s) ++ parts s' ++ parts s'' ++ parts (tail s)
+  where
+    s' = reverse . drop 1 . reverse . drop 1 $ s
+    s'' = take (length s - 1) s
+
 partials :: String -> [String]
 partials x 
-  =  top_substrings x ++ tail_substrings x ++ missing_center x
+  =  prefixes x ++ suffixes x ++ missing_center x
 
-top_substrings :: String -> [String]
-top_substrings [] 
-  = []
-top_substrings (x:[]) 
-  = []  
-top_substrings (x:xs) 
-  = [[x]] ++ (map  (\y -> [x] ++ y) (top_substrings xs))
+prefixes :: String -> [String]
+prefixes s
+  = map (flip take s) [1..length s]
 
-
-tail_substrings :: String -> [String]
-tail_substrings 
-  = (map reverse) . top_substrings . reverse
+suffixes :: String -> [String]
+suffixes s
+  = take (length s) (iterate tail s)
+--map reverse . prefixes . reverse
+-}
 
 {-
 check_eval :: Parse -> [Answer]

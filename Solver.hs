@@ -118,7 +118,7 @@ parseWithoutConcat ws n
     parseFirstLetters ws n ++
     parseLastLetters ws n ++
     parsePartOf ws n ++
-    if length ws == 1 then parseJuxtapositionIndicators ws n else []
+    parseJuxtapositionIndicators ws n 
 
 parseSynonyms :: [String] -> Int -> [ParseTree]
 parseSynonyms ws n
@@ -144,7 +144,7 @@ parseAnagrams ws n
   = [Anagram p p' | 
        (p, p') <- split2' ws, 
        length (concat p') <= n,
-       hasAnagram p]
+       isAnagramIndicator p]
 
 parseInsertions :: [String] -> Int -> [ParseTree]
 parseInsertions ws n
@@ -329,7 +329,8 @@ possible_words
 solve
   = head' . checkSynonyms . checkValidWords . constrainLengths .  evaluate . sortByCost . constrainParseLengths . parse . lowercase
 
-
+evalOnly 
+  = head' . checkSynonyms . checkValidWords . constrainLengths .  evaluate
 
 
 solve'
@@ -385,6 +386,10 @@ clue 11
   = Clue ("maria not a fickle lover", 9)
 clue 12
   = Clue ("hope for high praise", 6)  
+clue 13
+  = Clue ("Not fed partly twigged", 5)
+clue 14 
+  = Clue ("Messy bit of lung next to part of kempton", 7)
 
 grid
   = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]

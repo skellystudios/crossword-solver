@@ -18,6 +18,7 @@ isDefIndicator _ = False
 
 
 isJuxtapositionIndicator ["on"] = True
+isJuxtapositionIndicator ["next", "to"] = True
 isJuxtapositionIndicator ["with"] = True
 isJuxtapositionIndicator ["to"] = True
 isJuxtapositionIndicator ["over"] = True
@@ -356,7 +357,9 @@ isLLIndicator ["end", "of"] = True
 isLLIndicator _ = False
 
 isPartOfIndicator ["bit", "of"] = True
+isPartOfIndicator ["part", "of"] = True
 isPartOfIndicator ["mostly"] = True
+isPartOfIndicator ["partly"] = True
 isPartOfIndicator ["almost"] = True
 isPartOfIndicator ["nearly"] = True
 isPartOfIndicator ["tailless"] = True
