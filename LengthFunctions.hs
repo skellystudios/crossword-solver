@@ -18,8 +18,8 @@ minLength (Synonym string) = let x = minimum ( map length (string : synonyms str
 minLength (FirstLetter ind strings) = length strings
 minLength (LastLetter ind strings) = length strings
 minLength (Juxtapose one two) = minLength one + minLength two
-minLength (Partial ind tree) = 1
-minLength (ConsIndicator xs) = 0
+minLength (PartOf ind tree) = 1
+minLength (JuxtapositionIndicator xs) = 0
 
 maxLength (Concatenate trees) = (sum . map maxLength) trees
 maxLength (Anagram ind strings) = (length . concat) strings
@@ -31,5 +31,5 @@ maxLength (Synonym string) = let x = maximum ( map length (string : synonyms str
 maxLength (FirstLetter ind strings) = length strings
 maxLength (LastLetter ind strings) = length strings
 maxLength (Juxtapose one two) = maxLength one + maxLength two
-maxLength (Partial ind tree) = (maxLength tree) - 1
-maxLength (ConsIndicator xs) = 0
+maxLength (PartOf ind tree) = (maxLength tree) - 1
+maxLength (JuxtapositionIndicator xs) = 0

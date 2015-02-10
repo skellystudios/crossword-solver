@@ -12,34 +12,37 @@ import Wordlists
 
 -- Now we evaluate
 eval :: Parse -> [Answer]
-eval (DefNode y z n) 
-  = let constraints = (n, n) in [Answer x (DefNode y z n) | x <- evalTree z (Constraints (Prefix []) (Max n) (Min n))] 
+eval (def, tree, n) 
+  = let constraints = (n, n) 
+    in [Answer x (def, tree, n) | 
+          x <- evalTree tree (Constraints (Prefix []) (Max n) (Min n))] 
 
 evalTree :: ParseTree  -> EvalConstraints -> [String]
-evalTree (AnagramNode x y) c 
-  = let y' = (concat y) in 	
-								if (is_less_than_min (minC c) (length y')) then [] else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
+evalTree (Anagram x y) c 
+  = let y' = (concat y) 
+    in 	if (is_less_than_min (minC c) (length y')) 
+        then [] 
+        else  filter (is_prefix_with (prefC c)) . (delete y') . anagrams  $ y'
 
-evalTree (SynonymNode x) c 
+evalTree (Synonym x) c 
   = filter (fits_constraints c) (synonyms x ++ [x])
-evalTree (ConcatNode xs) c 
+evalTree (Concatenate xs) c 
   = evalTrees xs c --map concat (sequence (map (evalTree n) xs))
--- evalTree (ConsNode x y) c = [x' ++ y' | x' <- evalTree x (noPrefix c), y' <- evalTree y (Constraints NoPrefix (mx - length x') (mn - length x'))]
-evalTree (InsertionNode ind x y) c 
+evalTree (Insertion ind x y) c 
   = concat[insertInto x' y' | y' <- evalTree y (noMin . noPrefix $ c), x' <- evalTree x (decreaseMax (length y') . decreaseMin (length y') . noPrefix $ c)]
-evalTree (SubtractionNode ind x y) c 
+evalTree (Subtraction ind x y) c 
   = concat[subtractFrom x' y' | x' <- evalTree x no_constraints, y' <- evalTree y no_constraints, fits_min c (length y' - length x'), fits_min c (length y' - length x')]
-evalTree (HiddenWordNode ind ys) c 
+evalTree (HiddenWord ind ys) c 
   = [x | x <- substr (concat ys), (length x) > 0, fits_constraints c x]
-evalTree (ReversalNode ind ys) c 
+evalTree (Reversal ind ys) c 
   = map reverse (evalTree ys c)
-evalTree (FirstLetterNode ind ys) c 
+evalTree (FirstLetter ind ys) c 
   = [firstLetter ys]
-evalTree (LastLetterNode ind ys) c 
+evalTree (LastLetter ind ys) c 
   = [lastLetter ys]
-evalTree (PartialNode ind y) c 
+evalTree (PartOf ind y) c 
   = filter (fits_constraints c) . concatMap partials $ evalTree y no_constraints
-evalTree (ConsIndicatorNode x) c 
+evalTree (JuxtapositionIndicator x) c 
   = [""]
 
 
@@ -248,6 +251,6 @@ tail_substrings
 
 {-
 check_eval :: Parse -> [Answer]
--- check_eval x = let DefNode y z n = x in Data.List.intersect (synonyms y) ((evalTree n z))
-check_eval (DefNode y z n) = map (\x -> Answer x (DefNode y z n)) (Data.Set.toList (Data.Set.intersection wordlist_extended (Data.Set.fromList (evalTree n z))))
+-- check_eval x = let (y, z, n) = x in Data.List.intersect (synonyms y) ((evalTree n z))
+check_eval (y, z, n) = map (\x -> Answer x (y, z, n)) (Data.Set.toList (Data.Set.intersection wordlist_extended (Data.Set.fromList (evalTree n z))))
 -} 

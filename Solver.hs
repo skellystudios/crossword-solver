@@ -109,104 +109,104 @@ parseClue ws n
 -- parseCons needs fixing
 parseWithoutConcat :: [String] -> Int -> [ParseTree]
 parseWithoutConcat ws n
-  = parseSynonymNodes ws n ++
-    parseAnagramNodes ws n ++
-    parseHiddenWordNodes ws n ++
-    parseInsertionNodes ws n ++
-    parseSubtractionNodes ws n ++
-    parseReversalNodes ws n ++
-    parseFirstLetterNodes ws n ++
-    parseLastLetterNodes ws n ++
-    parsePartialNodes ws n ++
-    if length ws == 1 then parseConsIndicatorNodes ws n else []
+  = parseSynonyms ws n ++
+    parseAnagrams ws n ++
+    parseHiddenWords ws n ++
+    parseInsertions ws n ++
+    parseSubtractions ws n ++
+    parseReversals ws n ++
+    parseFirstLetters ws n ++
+    parseLastLetters ws n ++
+    parsePartOf ws n ++
+    if length ws == 1 then parseJuxtapositionIndicators ws n else []
 
-parseSynonymNodes :: [String] -> Int -> [ParseTree]
-parseSynonymNodes ws n
+parseSynonyms :: [String] -> Int -> [ParseTree]
+parseSynonyms ws n
   | null (synonyms s) = []
-  | otherwise         = [SynonymNode s] 
+  | otherwise         = [Synonym s] 
   where
     s = unwords ws
 
 parseWithConcat :: [String] -> Int -> [ParseTree]
 parseWithConcat xs n
-  = map ConcatNode ps
+  = map Concatenate ps
   where
     ps = concatMap (sequence . parseSubpart) (filter ((>1) . length) (partitions xs))
     parseSubpart part = [parseWithoutConcat subpart n | subpart <- part]
 
-parseConsIndicatorNodes :: [String] -> Int -> [ParseTree]
-parseConsIndicatorNodes xs n
-  = if isConsIndicator xs then [ConsIndicatorNode xs] else []
+parseJuxtapositionIndicators :: [String] -> Int -> [ParseTree]
+parseJuxtapositionIndicators xs n
+  = if isJuxtapositionIndicator xs then [JuxtapositionIndicator xs] else []
 
 -- Swapped length test with hasAnagram - faster!
-parseAnagramNodes :: [String] -> Int -> [ParseTree]
-parseAnagramNodes ws n
-  = [AnagramNode p p' | 
+parseAnagrams :: [String] -> Int -> [ParseTree]
+parseAnagrams ws n
+  = [Anagram p p' | 
        (p, p') <- split2' ws, 
        length (concat p') <= n,
        hasAnagram p]
 
-parseInsertionNodes :: [String] -> Int -> [ParseTree]
-parseInsertionNodes ws n
+parseInsertions :: [String] -> Int -> [ParseTree]
+parseInsertions ws n
   = let parts = split3 ws
-    in [InsertionNode ws' p p'' | 
+    in [Insertion ws' p p'' | 
          (ws, ws', ws'') <- parts, 
          isInsertionIndicator ws', 
          p <- parseClue ws n, 
          p'' <- parseClue ws'' n] ++ 
-       [InsertionNode ws' p'' p | 
+       [Insertion ws' p'' p | 
          (ws, ws', ws'') <- parts,
          isReverseInsertionIndicator ws', 
          p <- parseClue ws n, 
          p'' <- parseClue ws'' n] 
 
-parseSubtractionNodes :: [String] -> Int -> [ParseTree]
-parseSubtractionNodes ws n
+parseSubtractions :: [String] -> Int -> [ParseTree]
+parseSubtractions ws n
   = let parts = split3 ws
-    in [SubtractionNode ws' p p'' | 
+    in [Subtraction ws' p p'' | 
          (ws, ws', ws'') <- parts,
          isSubtractionIndicator ws', 
          p <- parseClue ws n, 
          p'' <- parseClue ws'' n] ++ 
-       [SubtractionNode ws' p p'' | 
+       [Subtraction ws' p p'' | 
          (ws'', ws', ws) <- parts,
          isSubtractionIndicator ws', 
          p <- parseClue ws n, 
          p'' <- parseClue ws'' n] 
 
-parseReversalNodes :: [String] -> Int -> [ParseTree]
-parseReversalNodes ws n 
-  = [ReversalNode ws p | 
+parseReversals :: [String] -> Int -> [ParseTree]
+parseReversals ws n 
+  = [Reversal ws p | 
       (ws, ws') <- split2' ws, 
       isRIndicator ws, 
       p <- parseClue ws' n]  
 
-parseHiddenWordNodes :: [String]  -> Int -> [ParseTree]
-parseHiddenWordNodes ws n
-  = [HiddenWordNode ws ws' | 
+parseHiddenWords :: [String]  -> Int -> [ParseTree]
+parseHiddenWords ws n
+  = [HiddenWord ws ws' | 
       (ws, ws') <- split2 ws, 
       isHWIndicator ws,
       length (concat ws') > n]
 
-parseFirstLetterNodes :: [String]  -> Int -> [ParseTree]
-parseFirstLetterNodes ws n
-  = [FirstLetterNode ws ws' | 
+parseFirstLetters :: [String]  -> Int -> [ParseTree]
+parseFirstLetters ws n
+  = [FirstLetter ws ws' | 
       (ws, ws') <- split2' ws,
       isFLIndicator ws, 
       length ws' <= n]
 
-parseLastLetterNodes :: [String]  -> Int -> [ParseTree]
-parseLastLetterNodes ws n
-  = [LastLetterNode ws ws' | 
+parseLastLetters :: [String]  -> Int -> [ParseTree]
+parseLastLetters ws n
+  = [LastLetter ws ws' | 
       (ws, ws') <- split2' ws,
       isLLIndicator ws, 
       length ws' <= n]
 
-parsePartialNodes :: [String]  -> Int -> [ParseTree]
-parsePartialNodes ws n
-  = [PartialNode ws p | 
+parsePartOf :: [String]  -> Int -> [ParseTree]
+parsePartOf ws n
+  = [PartOf ws p | 
       (ws, ws') <- split2' ws,
-      isPartialIndicator ws, 
+      isPartOfIndicator ws, 
       p <- parseClue ws' n]
 
 
@@ -218,29 +218,29 @@ length_penalty ws
   = 60 + (length (words ws))   -- Magic constant here ) : 
 
 cost :: ParseTree -> Int
-cost (ConcatNode ts)
+cost (Concatenate ts)
   = 20 * (length ts) + sum (map cost ts) 
-cost (AnagramNode ind strings)
+cost (Anagram ind strings)
   = 10
-cost (HiddenWordNode ind strings)
+cost (HiddenWord ind strings)
   = 40
-cost (InsertionNode ind t1 t2)
+cost (Insertion ind t1 t2)
   = 10 + cost t1 + cost t2  -- weight against complex insertions?
-cost (SubtractionNode ind t1 t2)
+cost (Subtraction ind t1 t2)
   = 30 + cost t1 + cost t2
-cost (ReversalNode ind t)
+cost (Reversal ind t)
   = 10 + cost t
-cost (SynonymNode string)
+cost (Synonym string)
   = 80 * length (words string)
-cost (FirstLetterNode ind strings)
+cost (FirstLetter ind strings)
   = 20
-cost (LastLetterNode ind strings)
+cost (LastLetter ind strings)
   = 20
-cost (ConsNode one two)
+cost (Juxtapose one two)
   = 150
-cost (PartialNode ind t)
+cost (PartOf ind t)
   = 60 + cost t
-cost (ConsIndicatorNode p)
+cost (JuxtapositionIndicator p)
   = 0
 
 
@@ -390,10 +390,3 @@ grid
   = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
 
 
--- Naive concat?
-parseConsNodes :: [String] -> Int -> [ParseTree]
-parseConsNodes xs n
-  = let parts = split2 xs
-    in concat [[ConsNode x' y' |x' <- (parseClue (fst part) n), y' <- (parseClue (snd part) n)] | part <- parts]  
-
--- REGEX ((\d*)\s(.+)\s\((\d*)\)\n(.*)\n(.*))\n
