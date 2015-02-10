@@ -177,6 +177,7 @@ reverseInsertionIndicators = Data.Set.fromList [
 	"envelops",
 	"holds",
 	"houses",
+  "keeps",
 	"surrounds",
 	"including",
 	"housing",

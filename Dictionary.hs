@@ -54,6 +54,8 @@ manual_syn "earnest request" = ["prayer"]
 manual_syn "paper in the street" = ["litter"]
 manual_syn "article" = ["a", "an"]
 manual_syn "girlfriend" = ["gf"]
+manual_syn "tonight" = ["this evening"]
+manual_syn "this evening" = ["tonight"]
 manual_syn _ = []
 
 

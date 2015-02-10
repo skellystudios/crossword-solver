@@ -217,16 +217,6 @@ firstLetter
 lastLetter 
   = map last
 
-substr [] 
-  = [[]]
-substr (x:xs) 
-  = (map ((:) x) (contiguoussubstr xs)) ++ substr xs 
-
-contiguoussubstr  [] 
-  = [[]]
-contiguoussubstr (x:xs) 
-  = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
-
 substrings []     
   = []
 substrings (x:xs) 
@@ -239,19 +229,22 @@ partials s
   = nub (substrings s ++ map (s\\) subs)
   where
     subs = substrings s
+
 {-
-substrings []
+substr [] 
   = [[]]
-substrings (c : cs)
-  = [c : cs' | cs' <- subs] ++ subs
-  where
-    subs = substrings cs
+substr (x:xs) 
+  = (map ((:) x) (contiguoussubstr xs)) ++ substr xs 
+
+contiguoussubstr  [] 
+  = [[]]
+contiguoussubstr (x:xs) 
+  = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
 
 missing_center xs 
   = concat . nub . map (\x -> subtractFrom x xs) . substr . strip_toptail $ xs
 strip_toptail 
   = reverse . drop 1 . reverse . drop 1
-
   = []
 parts s
   = prefixes s'' ++ suffixes (tail s) ++ parts s' ++ parts s'' ++ parts (tail s)
