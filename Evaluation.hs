@@ -18,12 +18,15 @@ eval (def, tree, n)
        x <- evalTree tree (Constraints (Prefix []) (Max n) (Min n))] 
 
 evalTree :: ParseTree  -> EvalConstraints -> [String]
+evalTree Null c
+  = []
+evalTree (Ident s) c
+  = filter (fits_constraints c) [s]
 evalTree (Anagram ind ws) c 
   = let s = concat ws 
     in 	if (is_less_than_min (minC c) (length s)) 
         then [] 
         else  filter (is_prefix_with (prefC c)) . (delete s) . anagrams  $ s
-
 evalTree (Synonym x) c 
   = filter (fits_constraints c) (synonyms x ++ [x])
 evalTree (Concatenate xs) c 

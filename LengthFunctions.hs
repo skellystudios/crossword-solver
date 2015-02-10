@@ -8,6 +8,8 @@ import Anagram
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
 
+minLength Null = 0
+minLength (Ident s) = length s
 minLength (Concatenate trees) = (sum . map minLength) trees
 minLength (Anagram ind strings) = (length . concat) strings
 minLength (HiddenWord ind strings) = 2
@@ -21,6 +23,8 @@ minLength (Juxtapose one two) = minLength one + minLength two
 minLength (PartOf ind tree) = 1
 minLength (JuxtapositionIndicator xs) = 0
 
+maxLength Null = 0
+maxLength (Ident s) = length s
 maxLength (Concatenate trees) = (sum . map maxLength) trees
 maxLength (Anagram ind strings) = (length . concat) strings
 maxLength (HiddenWord ind strings) = (length . concat $ strings) - 2

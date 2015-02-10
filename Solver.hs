@@ -207,8 +207,18 @@ parsePartOf ws n
   = [PartOf ws p | 
       (ws, ws') <- split2' ws,
       isPartOfIndicator ws, 
-      p <- parseClue ws' n]
+      p <- map simplify (parseClue ws' n)]
 
+simplify (Concatenate ts)
+  = simpleConcat (map simplify ts)
+simplify (Synonym ws)
+  = Ident ws
+simplify t
+  = Null
+
+simpleConcat ts
+  | any (==Null) ts = Null
+  | otherwise = Concatenate ts
 
 -------------- COST EVALUATION -------------
 
@@ -218,6 +228,10 @@ length_penalty ws
   = 60 + (length (words ws))   -- Magic constant here ) : 
 
 cost :: ParseTree -> Int
+cost Null
+  = 0
+cost (Ident s)
+  = 5
 cost (Concatenate ts)
   = 20 * (length ts) + sum (map cost ts) 
 cost (Anagram ind strings)
