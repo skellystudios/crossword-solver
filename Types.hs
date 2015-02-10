@@ -7,7 +7,9 @@ data Clue2 = Clue2 String (Int)
 
 type Parse = (String, ParseTree, Int)
 
-data ParseTree = JuxtapositionIndicator [String] |
+data ParseTree = Null |
+                 Ident String |
+                 JuxtapositionIndicator [String] |
                  Concatenate [ParseTree] |
                  Juxtapose ParseTree ParseTree |
                  Synonym String |
