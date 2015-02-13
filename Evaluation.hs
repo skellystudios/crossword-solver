@@ -51,14 +51,14 @@ evalTree t c
     evalTree' (Concatenate xs)
       = evalTrees xs c 
     evalTree' (Insertion ind t t')
-      = concat[insertInto s' s | 
-                 s <- evalTree t' (resetMin . resetPrefix $ c), 
-                 s' <- evalTree t (decreaseMax (length s) . decreaseMin (length s) . resetPrefix $ c)]
+      = concat [insertInto s' s | 
+                  s <- evalTree t' (resetMin . resetPrefix $ c), 
+                  s' <- evalTree t (decreaseMax (length s) . decreaseMin (length s) . resetPrefix $ c)]
     evalTree' (Subtraction ind t t')
-      = concat[subtractFrom s s' | 
-                 s <- evalTree t noConstraints, 
-                 s' <- evalTree t' noConstraints, 
-                 geqMin (length s' - length s) c]
+      = concat [subtractFrom s s' | 
+                  s <- evalTree t noConstraints, 
+                  s' <- evalTree t' noConstraints, 
+                  geqMin (length s' - length s) c]
     evalTree' (HiddenWord ind ws)
       = [subs | subs <- substrings (concat ws), 
                 length subs > 0]
@@ -98,7 +98,6 @@ geqMin n
 leqMax n 
   = maybe True (n<=) . maxConstraint
 
-
 noConstraints 
   = (Constraints Nothing Nothing Nothing)
 
@@ -108,32 +107,36 @@ satisfies c s
     n = length s
 
 extendPrefix :: String -> Constraints -> Constraints
-extendPrefix s (Constraints p mx mn) 
-  = decreaseMax (length s) (Constraints (append p s) mx mn)
+extendPrefix s 
+  = decreaseMax (length s) . addToPrefix s
+
+addToPrefix :: String -> Constraints -> Constraints
+addToPrefix s (Constraints p mn mx)
+  = Constraints (append p s) mn mx
 
 decreaseMax :: Int -> Constraints -> Constraints
-decreaseMax n (Constraints p mx mn) 
-  = Constraints p (add mx (-n)) mn
+decreaseMax n (Constraints p mn mx) 
+  = Constraints p mn (add mx (-n)) 
 
 increaseMin :: Int -> Constraints -> Constraints
-increaseMin n (Constraints p mx mn) 
-  = Constraints p mx (add mn n)
+increaseMin n (Constraints p mn mx) 
+  = Constraints p (add mn n) mx
 
 decreaseMin :: Int -> Constraints -> Constraints
-decreaseMin n (Constraints p mx mn) 
-  = Constraints p mx (add mn (-n))
+decreaseMin n (Constraints p mn mx) 
+  = Constraints p (add mn (-n)) mx
 
 resetPrefix :: Constraints -> Constraints
-resetPrefix c
-  = Constraints Nothing (minConstraint c) (maxConstraint c)
+resetPrefix (Constraints p mn mx)
+  = Constraints Nothing mn mx
 
 resetMin :: Constraints -> Constraints
-resetMin c
-  = Constraints (prefixConstraint c) Nothing (maxConstraint c)
+resetMin (Constraints p mn mx)
+  = Constraints p Nothing mx 
 
 resetMax :: Constraints -> Constraints
-resetMax c
-  = Constraints (prefixConstraint c) (minConstraint c) Nothing
+resetMax (Constraints p mn mx)
+  = Constraints p mn Nothing
 
 ------------ UTILITIES ----------
 
@@ -144,14 +147,20 @@ anagrams s
   = [c : s' | c <- nub s, s' <- anagrams (s \\ [c])]
 
 insertInto :: String -> String -> [String] 
-insertInto xs [] 
-  = [xs]
-insertInto xs (y:ys) 
-  = [y:(xs ++ ys)] ++ (map ((:) y) (insertInto xs ys)) 
+insertInto s [] 
+  = [s]
+insertInto s (c : cs) 
+  = [c : (s ++ cs)] ++ (map (c :) (insertInto s cs)) 
 
-subtractFrom :: String -> String -> [String] 
-subtractFrom xs ys 
-  = let n = (findIn xs ys 0 0) in if n == -1 then [] else [removeFrom ys n (length xs)]
+subtractFrom' :: String -> String -> [String] 
+subtractFrom' s s'
+  = [s1 ++ s3 | (s1, s2, s3) <- split3 s', s2 == s]
+
+subtractFrom s s' 
+  | n == -1 = [] 
+  | otherwise = [removeFrom s' n (length s)]
+  where
+     n = (findIn s s' 0 0)
 
 removeFrom ys 0 0 
   = ys
