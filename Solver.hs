@@ -73,8 +73,8 @@ split3' :: [a] -> [([a], [a], [a])]
 split3' 
   = mirror3 . split3
 
-lowercase :: Clue -> Clue
-lowercase (Clue (xs, n))
+lowerCase :: Clue -> Clue
+lowerCase (Clue (xs, n))
   = Clue (map toLower xs, n)
 
 isInWordlistTRUE :: a -> Bool
@@ -107,7 +107,6 @@ parseClue ws n
   | length ws > 1 = parseWithConcat ws n ++ parseWithoutConcat ws n
   | otherwise     = parseWithoutConcat ws n
 
--- parseCons needs fixing
 parseWithoutConcat :: [String] -> Int -> [ParseTree]
 parseWithoutConcat ws n
   = parseSynonyms ws n ++
@@ -139,7 +138,6 @@ parseJuxtapositionIndicators :: [String] -> Int -> [ParseTree]
 parseJuxtapositionIndicators xs n
   = if isJuxtapositionIndicator xs then [JuxtapositionIndicator xs] else []
 
--- Swapped length test with hasAnagram - faster!
 parseAnagrams :: [String] -> Int -> [ParseTree]
 parseAnagrams ws n
   = [Anagram p p' | 
@@ -229,10 +227,10 @@ simpleConcat ts
 
 -------------- COST EVALUATION -------------
 
-cost_parse (s, t, n)
+parseCost (s, t, n)
   = cost t * (length_penalty s)
 length_penalty ws
-  = 60 + (length (words ws))   -- Magic constant here ) : 
+  = 60 + (length (words ws))
 
 cost :: ParseTree -> Int
 cost Null
@@ -246,7 +244,7 @@ cost (Anagram ind strings)
 cost (HiddenWord ind strings)
   = 40
 cost (Insertion ind t1 t2)
-  = 10 + cost t1 + cost t2  -- weight against complex insertions?
+  = 10 + cost t1 + cost t2 
 cost (Subtraction ind t1 t2)
   = 30 + cost t1 + cost t2
 cost (Reversal ind t)
@@ -264,56 +262,15 @@ cost (PartOf ind t)
 cost (JuxtapositionIndicator p)
   = 0
 
-
-
---------------------- KNOWN LETTER CONSTRAINS ---------------------
-
-known_letter_fits :: String -> String -> Bool
-known_letter_fits [] []
-  = True
-known_letter_fits [] (y : ys)
-  = False
-known_letter_fits (x : xs) []
-  = False
-known_letter_fits (x : xs) (y : ys)
-  = if x=='?' then (known_letter_fits xs ys) else 
-                        if x==y then (known_letter_fits xs ys) else
-                          False
-
-answerFits ::  String -> Answer -> Bool
-answerFits fitstring (Answer x y) 
-  = known_letter_fits fitstring x
-
-stripFits :: String -> [Answer] -> [Answer]
-stripFits s
-  = filter (answerFits s) 
-
-answerPart :: Answer -> String
-answerPart (Answer x y)
-  = x
-
-check_answer_equals :: String -> [Answer] -> [Answer]
-check_answer_equals y z
-  = filter (\x -> answerPart x == y) z
-
 --------------------------- EVALUATION ----------------------------
+
+checkSynonyms :: [Answer] -> [Answer]
+checkSynonyms
+  = filter checkSynonym
 
 checkValidWords ::  [Answer] -> [Answer]
 checkValidWords
   = filter isValidWord
-
-isValidWord :: Answer -> Bool
-isValidWord (Answer x (y, z, n))
-  = isInWordlist x 
-
-constrainParseLengths :: [Parse] -> [Parse]
-constrainParseLengths
-  = filter valid_parse_length
-
-valid_parse_length :: Parse -> Bool
-valid_parse_length (def, clue, n)
-  = (minLength clue <= n) && (maxLength clue >= n) 
-
 
 constrainLengths :: [Answer] -> [Answer]
 constrainLengths
@@ -323,64 +280,29 @@ checkLength :: Answer -> Bool
 checkLength (Answer string (def, clue, n)) 
   = length string == n
 
-checkSynonyms :: [Answer] -> [Answer]
-checkSynonyms
-  = filter checkSynonym
+isValidWord :: Answer -> Bool
+isValidWord (Answer x (y, z, n))
+  = isInWordlist x 
+
+sortByParseCost
+  = map snd . sort . map (\x -> (parseCost x, x))
+
+constrainParseLengths :: [Parse] -> [Parse]
+constrainParseLengths
+  = filter hasValidLength
+
+hasValidLength :: Parse -> Bool
+hasValidLength (def, clue, n)
+  = (minLength clue <= n) && (maxLength clue >= n) 
 
 checkSynonym :: Answer -> Bool
 checkSynonym (Answer string (def, clue, n))
   = Data.Set.member string (Data.Set.fromList (synonyms def))  
 
-cost_solved x
-  = if checkSynonym x then 0 else cost_parse (getParse x)
-
-sort_solved
-  = map snd . sort . map (\x -> (cost_solved x, x))
-
-sortByCost
-  = map snd . sort . map (\x -> (cost_parse x, x))
-
-possible_words
-  = checkValidWords . constrainLengths  . evaluate . parse
-
-
-
-
-
 solve
-  = head' . checkSynonyms . checkValidWords . constrainLengths .  evaluate . sortByCost . constrainParseLengths . parse . lowercase
+  = head . checkSynonyms . checkValidWords . constrainLengths .  evaluate . sortByParseCost . constrainParseLengths . parse . lowerCase
 
-evalOnly 
-  = head' . checkSynonyms . checkValidWords . constrainLengths .  evaluate
-
-
-solve'
-  = solve_no_syn_sorted
-
-solve_no_syn_sorted
-  = head' . sort_solved  . take 100 . solve_no_syn
-
-solve_no_syn_unsorted
-  = head'  . solve_no_syn
-
-solve_no_syn
-  = checkValidWords . constrainLengths  . evaluate . sortByCost . constrainParseLengths . parse . lowercase
-
-solve_clue
-  = solve . clue
-
-head' :: [a] -> [a]
-head' []    
-  = []
-head' (x : xs)
-  = [x]
-
-compare_clue (Clue (s,n)) (Clue (t,m))
-  = compare n m 
- 
-x :: Clue2 -> Clue
-x (Clue2 xs (n))
-  = Clue (xs, n) 
+------------- SAMPLE CLUES ------------
 
 clue :: Int -> Clue
 clue 1
@@ -389,6 +311,7 @@ clue 2
   = Clue ("notice in flying coat", 6) -- JACKET 
 clue 3
   = Clue ("companion found in oklahoma terminal", 4)
+-- SLOW - number 27 in the parse list...
 clue 4
   = Clue ("a new member returned a woman", 6)
 clue 5

@@ -10,7 +10,11 @@ import Types
 isInWordlist x = Data.Set.member x wordlist_extended'
 
 wordlist_extended' = Data.Set.union (Data.Set.fromList (Map.keys thesaurus)) wordlist_extended 
-wordlist_extended = Data.Set.union (Data.Set.fromList ["swanlake", "angela", "tuckerbag", "put food in this", "earnest request"]) wordlist
+wordlist_extended = Data.Set.union (Data.Set.fromList addedWords) wordlist
+
+addedWords
+  = ["swanlake", "angela", "tuckerbag", "put food in this", "earnest request",
+     "kempton"]
 
 isPrefix s 
   = Data.Set.member s wl_pref
@@ -24,6 +28,7 @@ rprefixes (x:xs) = [reverse xs++[x]] ++ rprefixes xs
 rprefixes [] = []
  
 
+manual_syn "kempton" = ["kempton"] 
 manual_syn "working" = ["on"] 
 manual_syn "notice" = ["ack", "acknowledge", "sign"] 
 manual_syn "coat" = ["jacket"]
