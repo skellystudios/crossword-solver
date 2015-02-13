@@ -6,6 +6,7 @@ import Data.Binary
 import Data.List 
 import qualified Data.Set
 
+import Utilities
 import Utils
 import Types
 import Dictionary
