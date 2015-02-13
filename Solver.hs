@@ -24,6 +24,7 @@ import ClueBank
 import Guardian
 import Everyman
 
+{-
 main
   = do 
        -- GHC.Profiling.stopProfTimer
@@ -38,7 +39,7 @@ seconds
 dosolve x
   = timeout (20*seconds) $ do
             print $ solve x
-
+-}
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
 
@@ -207,7 +208,13 @@ parsePartOf ws n
   = [PartOf ws p | 
       (ws, ws') <- split2' ws,
       isPartOfIndicator ws, 
-      p <- map simplify (parseClue ws' n)]
+      p <- map simplify (parseClue ws' n),
+      notNull p]
+
+notNull Null
+  = False
+notNull t
+  = True
 
 simplify (Concatenate ts)
   = simpleConcat (map simplify ts)
@@ -325,7 +332,7 @@ checkSynonym (Answer string (def, clue, n))
   = Data.Set.member string (Data.Set.fromList (synonyms def))  
 
 cost_solved x
-  = if checkSynonym x then 0 else cost_parse (get_parse x)
+  = if checkSynonym x then 0 else cost_parse (getParse x)
 
 sort_solved
   = map snd . sort . map (\x -> (cost_solved x, x))

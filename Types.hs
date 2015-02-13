@@ -23,7 +23,13 @@ data ParseTree = Null |
                  PartOf PartOfIndicator ParseTree 
                 deriving (Show, Eq, Ord)
 
-data Answer = Answer String Parse deriving (Show, Eq, Ord)
+data Answer = Answer String Parse 
+            deriving (Eq, Ord, Show)
+
+getParse (Answer s p)
+  = p
+getAnswer (Answer s p)
+  = s
 
 type Anagrind = [String]
 type InsertionIndicator = [String] 
@@ -34,13 +40,3 @@ type FLIndicator = [String]
 type LLIndicator = [String] 
 type PartOfIndicator = [String] 
 
-data MaxLength = Max Int | NoMax
-data MinLength = Min Int | NoMin
-
-data EvalConstraints = Constraints PrefixConstraint MaxLength MinLength
-
-data PrefixConstraint = Prefix String | Unconstrained | NoPrefix
-
-
-get_parse (Answer s p) = p
-get_solution (Answer s p) = s

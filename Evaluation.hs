@@ -15,171 +15,133 @@ import Wordlists
 eval :: Parse -> [Answer]
 eval (def, tree, n) 
   = [Answer x (def, tree, n) | 
-       x <- evalTree tree (Constraints (Prefix []) (Max n) (Min n))] 
+       x <- evalTree tree (Constraints Nothing (Just n) (Just n))]
 
-evalTree :: ParseTree  -> EvalConstraints -> [String]
-evalTree Null c
-  = []
-evalTree (Ident s) c
-  = filter (fits_constraints c) [s]
-evalTree (Anagram ind ws) c 
-  = let s = concat ws 
-    in 	if (is_less_than_min (minC c) (length s)) 
-        then [] 
-        else  filter (is_prefix_with (prefC c)) . (delete s) . anagrams  $ s
-evalTree (Synonym x) c 
-  = filter (fits_constraints c) (synonyms x ++ [x])
-evalTree (Concatenate xs) c 
-  = evalTrees xs c 
-evalTree (Insertion ind x y) c 
-  = concat[insertInto x' y' | y' <- evalTree y (noMin . noPrefix $ c), x' <- evalTree x (decreaseMax (length y') . decreaseMin (length y') . noPrefix $ c)]
-evalTree (Subtraction ind x y) c 
-  = concat[subtractFrom x' y' | x' <- evalTree x no_constraints, y' <- evalTree y no_constraints, fits_min c (length y' - length x'), fits_min c (length y' - length x')]
-evalTree (HiddenWord ind ys) c 
-  = [x | x <- substrings (concat ys), (length x) > 0, fits_constraints c x]
-evalTree (Reversal ind ys) c 
-  = map reverse (evalTree ys c)
-evalTree (FirstLetter ind ys) c 
-  = [firstLetter ys]
-evalTree (LastLetter ind ys) c 
-  = [lastLetter ys]
-evalTree (PartOf ind y) c 
-  = filter (fits_constraints c) . concatMap partials $ evalTree y no_constraints
-evalTree (JuxtapositionIndicator x) c 
-  = [""]
+data Constraints 
+  = Constraints {prefixConstraint :: Maybe String, 
+                 minConstraint :: Maybe Int, 
+                 maxConstraint :: Maybe Int}
 
+add :: Maybe Int -> Int -> Maybe Int
+add (Just x) y
+  = Just (x + y)
+add Nothing y
+  = Nothing
 
+append :: Maybe String -> String -> Maybe String
+append (Just s) s'
+  = Just (s ++ s')
+append Nothing s'
+  = Nothing
 
-evalTrees :: [ParseTree] -> EvalConstraints -> [String]
-evalTrees (x:[]) c 
-  = evalTree x (noPrefix c)
-evalTrees (x:xs) (Constraints p mx mn) 
-  =
-  let starts = [start | start <- evalTree x (Constraints NoPrefix mx NoMin), fits p start]
-  in  concatMap f $ starts 
-  where f start =  map (\x -> start ++ x) (evalTrees xs (noMin . add_partial start $ (Constraints p mx mn)))
+evalTree :: ParseTree -> Constraints -> [String]
+evalTree t c
+  = filter (satisfies c) (evalTree' t)
+  where
+    evalTree' Null
+      = []
+    evalTree' (Ident s)
+      = filter (satisfies c) [s]
+    evalTree' (Anagram ind ws)
+      = delete s (anagrams s)
+      where
+        s = concat ws
+    evalTree' (Synonym x)
+      = synonyms x ++ [x]
+    evalTree' (Concatenate xs)
+      = evalTrees xs c 
+    evalTree' (Insertion ind t t')
+      = concat[insertInto s' s | 
+                 s <- evalTree t' (resetMin . resetPrefix $ c), 
+                 s' <- evalTree t (decreaseMax (length s) . decreaseMin (length s) . resetPrefix $ c)]
+    evalTree' (Subtraction ind t t')
+      = concat[subtractFrom s s' | 
+                 s <- evalTree t noConstraints, 
+                 s' <- evalTree t' noConstraints, 
+                 geqMin (length s' - length s) c]
+    evalTree' (HiddenWord ind ws)
+      = [subs | subs <- substrings (concat ws), 
+                length subs > 0]
+    evalTree' (Reversal ind t)
+      = map reverse (evalTree t c)
+    evalTree' (FirstLetter ind ys)
+      = [map head ys]
+    evalTree' (LastLetter ind ys)
+      = [map last ys]
+    evalTree' (PartOf ind t)
+      = concatMap partials (evalTree t noConstraints)
+    evalTree' (JuxtapositionIndicator ind)
+      = [""]
 
---no_constraints
---------- CONSTRAINTS
-
-class Constraint c where
-    fits :: c -> String -> Bool
-instance Constraint MaxLength where
-    fits mx s = is_lte_max mx (length s)
-instance Constraint MinLength where
-    fits mn s = is_gte_min mn (length s)
-instance Constraint PrefixConstraint where
-	fits p s = is_prefix_with p s
-
-no_constraints 
-  = (Constraints NoPrefix NoMax NoMin)
-
-new_constraint n 
-  = Constraints (Prefix []) (Max n) (Min n)
-
-is_prefix_with (Prefix p) x 
-  = is_prefix (p ++ x)
-is_prefix_with NoPrefix x 
-  = True
-
-is_lte_max (Max mx) n 
-  = n <= mx 
-is_lte_max NoMax n 
-  = True
-
-is_gte_min (Min mn) n 
-  = n >= mn 
-is_gte_min NoMin n 
-  = True
-
-is_less_than_min (Min mn) n 
-  = n < mn 
-is_less_than_min NoMin n 
-  = False
-
-extend_prefix (Prefix p) x 
-  = Prefix (p ++ x)
-extend_prefix NoPrefix x 
-  = NoPrefix
-
-fits_max (Constraints p mx mn) x 
-  = is_lte_max mx x
-fits_min (Constraints p mx mn) x 
-  = is_gte_min mn x
-fits_constraints (Constraints p mx mn) x 
-  = (fits p x) && (fits mx x) && (fits mn x)
-
-add_partial :: String -> EvalConstraints -> EvalConstraints
-add_partial x (Constraints p mx mn) 
-  = decreaseMax (length x) $ (Constraints (extend_prefix p x) mx mn) 
-
-decreaseMax :: Int -> EvalConstraints -> EvalConstraints
-decreaseMax n (Constraints p (Max mx) mn) 
-  = Constraints p (Max (mx - n)) mn
-decreaseMax n (Constraints p NoMax mn) 
-  = Constraints p NoMax mn
-
-increaseMin :: Int -> EvalConstraints -> EvalConstraints
-increaseMin n (Constraints p mx (Min mn)) 
-  = Constraints p mx (Min (mn + n))
-increaseMin n (Constraints p mx NoMin) 
-  = Constraints p mx NoMin
-
-decreaseMin :: Int -> EvalConstraints -> EvalConstraints
-decreaseMin n (Constraints p mx (Min mn)) 
-  = Constraints p mx (Min (mn - n))
-decreaseMin n (Constraints p mx NoMin) 
-  = Constraints p mx NoMin
-
-maxC :: EvalConstraints -> MaxLength
-maxC (Constraints p mx mn) 
-  = mx
-
-minC :: EvalConstraints -> MinLength
-minC (Constraints p mx mn) 
-  = mn
-
-prefC :: EvalConstraints -> PrefixConstraint
-prefC (Constraints p mx mn) 
-  = p
-
-noPrefix :: EvalConstraints -> EvalConstraints
-noPrefix (Constraints p mx mn) 
-  = (Constraints NoPrefix mx mn)
-
-noMin :: EvalConstraints -> EvalConstraints
-noMin (Constraints p mx mn) 
-  = (Constraints p mx NoMin)
-
-noMax :: EvalConstraints -> EvalConstraints
-noMax (Constraints p mx mn) 
-  = (Constraints p NoMax mn)
-
-{-fits :: a -> String -> Bool
-fits (Max n) s 
-  = True
-fits (Prefix p) s 
-  = True
--}
-
-{- instance Ord MinLength where
-	(<) (Min n) = (<) n
-	(<) NoMin = True
-	(>) NoMin = True
-	(>) (Min n) = (>) n
-	-}
-
-
+evalTrees :: [ParseTree] -> Constraints -> [String]
+evalTrees [t] c 
+  = evalTree t (resetPrefix c)
+evalTrees (t : ts) c
+  = concatMap evalRest s
+  where 
+    evalRest s = map (s++) (evalTrees ts (resetMin . extendPrefix s $ c))
+    s = [s' | s' <- evalTree t (resetMin . resetPrefix $ c), checkPrefix s' c]
 
 evaluate :: [Parse] -> [Answer]
 evaluate 
   = concatMap eval 
 
+
+--------- CONSTRAINTS
+
+checkPrefix s 
+  = maybe True (\s' -> isPrefix (s' ++ s)) . prefixConstraint
+
+geqMin n 
+  = maybe True (n>=) . minConstraint
+
+leqMax n 
+  = maybe True (n<=) . maxConstraint
+
+
+noConstraints 
+  = (Constraints Nothing Nothing Nothing)
+
+satisfies c s
+  = checkPrefix s c && geqMin n c && leqMax n c
+  where
+    n = length s
+
+extendPrefix :: String -> Constraints -> Constraints
+extendPrefix s (Constraints p mx mn) 
+  = decreaseMax (length s) (Constraints (append p s) mx mn)
+
+decreaseMax :: Int -> Constraints -> Constraints
+decreaseMax n (Constraints p mx mn) 
+  = Constraints p (add mx (-n)) mn
+
+increaseMin :: Int -> Constraints -> Constraints
+increaseMin n (Constraints p mx mn) 
+  = Constraints p mx (add mn n)
+
+decreaseMin :: Int -> Constraints -> Constraints
+decreaseMin n (Constraints p mx mn) 
+  = Constraints p mx (add mn (-n))
+
+resetPrefix :: Constraints -> Constraints
+resetPrefix c
+  = Constraints Nothing (minConstraint c) (maxConstraint c)
+
+resetMin :: Constraints -> Constraints
+resetMin c
+  = Constraints (prefixConstraint c) Nothing (maxConstraint c)
+
+resetMax :: Constraints -> Constraints
+resetMax c
+  = Constraints (prefixConstraint c) (minConstraint c) Nothing
+
+------------ UTILITIES ----------
+
 anagrams :: String -> [String]
 anagrams [] 
   = [[]]
-anagrams xs 
-  = [x:ys | x<- nub xs, ys <- anagrams $ delete x xs]
+anagrams s 
+  = [c : s' | c <- nub s, s' <- anagrams (s \\ [c])]
 
 insertInto :: String -> String -> [String] 
 insertInto xs [] 
@@ -210,13 +172,6 @@ findIn (x:xs) (y:ys) n 1
   = if x==y 
               then findIn xs ys n 1
               else -1
-
-firstLetter 
-  = map head
-
-lastLetter 
-  = map last
-
 substrings []     
   = []
 substrings (x:xs) 
@@ -230,44 +185,3 @@ partials s
   where
     subs = substrings s
 
-{-
-substr [] 
-  = [[]]
-substr (x:xs) 
-  = (map ((:) x) (contiguoussubstr xs)) ++ substr xs 
-
-contiguoussubstr  [] 
-  = [[]]
-contiguoussubstr (x:xs) 
-  = [[x]] ++ (map ((:) x) (contiguoussubstr xs))
-
-missing_center xs 
-  = concat . nub . map (\x -> subtractFrom x xs) . substr . strip_toptail $ xs
-strip_toptail 
-  = reverse . drop 1 . reverse . drop 1
-  = []
-parts s
-  = prefixes s'' ++ suffixes (tail s) ++ parts s' ++ parts s'' ++ parts (tail s)
-  where
-    s' = reverse . drop 1 . reverse . drop 1 $ s
-    s'' = take (length s - 1) s
-
-partials :: String -> [String]
-partials x 
-  =  prefixes x ++ suffixes x ++ missing_center x
-
-prefixes :: String -> [String]
-prefixes s
-  = map (flip take s) [1..length s]
-
-suffixes :: String -> [String]
-suffixes s
-  = take (length s) (iterate tail s)
---map reverse . prefixes . reverse
--}
-
-{-
-check_eval :: Parse -> [Answer]
--- check_eval x = let (y, z, n) = x in Data.List.intersect (synonyms y) ((evalTree n z))
-check_eval (y, z, n) = map (\x -> Answer x (y, z, n)) (Data.Set.toList (Data.Set.intersection wordlist_extended (Data.Set.fromList (evalTree n z))))
--} 
