@@ -1,6 +1,7 @@
 
-module Wordlists (wordlist, output_wordlist, thesaurus, output_thesaurus, decode_thes) where 
+module Wordlists (malenames, femalenames, wordlist, output_wordlist, thesaurus, output_thesaurus, decode_thes) where 
 
+import Data.Text
 import Data.Set (Set,fromList) 
 import qualified Data.Text    as Text
 import qualified Data.Text.IO as Text
@@ -23,6 +24,32 @@ lookfor ::  String -> Maybe [Int]
 lookfor x = Map.lookup x thesaurus
 
 -- WORDLIST
+
+read_malenames = do
+    ls <- fmap Text.lines (Text.readFile "data/malenames")
+    (return . Data.Set.fromList . string_read . toString . toLower . Prelude.head) ls
+    
+temp_malenames = unsafePerformIO $ do read_malenames
+output_malenames = encodeFile "malenames.bin" temp_malenames
+
+read_bytes_malenames :: IO (Data.Set.Set String)
+read_bytes_malenames = do
+    return . decode =<< BS.readFile "malenames.bin"
+    
+malenames = unsafePerformIO $ do read_bytes_malenames
+
+read_femalenames = do
+    ls <- fmap Text.lines (Text.readFile "data/femalenames")
+    (return . Data.Set.fromList . string_read . toString . toLower . Prelude.head) ls
+    
+temp_femalenames = unsafePerformIO $ do read_femalenames
+output_femalenames = encodeFile "femalenames.bin" temp_femalenames
+
+read_bytes_femalenames :: IO (Data.Set.Set String)
+read_bytes_femalenames = do
+    return . decode =<< BS.readFile "femalenames.bin"
+    
+femalenames = unsafePerformIO $ do read_bytes_femalenames
 
 read_wordlist = do
     ls <- fmap Text.lines (Text.readFile "data/straight-wordlist")
@@ -87,3 +114,5 @@ map_read = read
 
 string_read :: String -> [String]
 string_read = read
+
+

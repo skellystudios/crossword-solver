@@ -44,10 +44,9 @@ dosolve x
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
 
-lowercase :: Clue -> Clue
-lowercase (Clue (xs, n))
+lowerCase :: Clue -> Clue
+lowerCase (Clue (xs, n))
   = Clue (map toLower xs, n)
-
 
 parse :: Clue -> [Parse]
 parse (Clue (c, n))
@@ -240,14 +239,6 @@ checkValidWords ::  [Answer] -> [Answer]
 checkValidWords
   = filter isValidWord
 
-constrainLengths :: [Answer] -> [Answer]
-constrainLengths
-  = filter checkLength
-
-checkLength :: Answer -> Bool
-checkLength (Answer string (def, clue, n)) 
-  = length string == n
-
 isValidWord :: Answer -> Bool
 isValidWord (Answer x (y, z, n))
   = isInWordlist x 
@@ -268,8 +259,15 @@ checkSynonym (Answer string (def, clue, n))
   = Data.Set.member string (Data.Set.fromList (synonyms def))  
 
 solve
-  = head . checkSynonyms . checkValidWords . constrainLengths .  evaluate . sortByParseCost . constrainParseLengths . parse . lowerCase
+  = head' . checkSynonyms . checkValidWords . evaluate . sortByParseCost . constrainParseLengths . parse . lowerCase
 
+parses
+  = sortByParseCost . constrainParseLengths . parse . lowerCase
+
+head' []
+  = []
+head' xs
+  = [head xs]
 ------------- SAMPLE CLUES ------------
 
 clue :: Int -> Clue
@@ -302,6 +300,14 @@ clue 13
   = Clue ("Not fed partly twigged", 5)
 clue 14 
   = Clue ("Messy bit of lung next to part of kempton", 7)
+clue 15 
+  = Clue ("berate without rodent insect", 3)
+clue 16
+  = Clue ("Man changing line around Gates head", 5)
+clue 17 
+  = Clue ("Animal returns to grass", 4)
+clue 18 
+  = Clue ("bums for deals without energy", 9)
 
 grid
   = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]

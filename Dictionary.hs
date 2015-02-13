@@ -14,7 +14,7 @@ wordlist_extended = Data.Set.union (Data.Set.fromList addedWords) wordlist
 
 addedWords
   = ["swanlake", "angela", "tuckerbag", "put food in this", "earnest request",
-     "kempton"]
+     "kempton", "gateshead", "nigel"]
 
 isPrefix s 
   = Data.Set.member s wl_pref
@@ -27,7 +27,7 @@ prefixes' = rprefixes . reverse
 rprefixes (x:xs) = [reverse xs++[x]] ++ rprefixes xs
 rprefixes [] = []
  
-
+manual_syn "gateshead" = ["gateshead"] 
 manual_syn "kempton" = ["kempton"] 
 manual_syn "working" = ["on"] 
 manual_syn "notice" = ["ack", "acknowledge", "sign"] 
@@ -71,6 +71,23 @@ is_syn x y = elem x (synonyms y)
 synonyms :: String -> [String]
 synonyms ('t':'o':' ':xs) = synonyms xs
 synonyms x = Prelude.filter (not . Prelude.null) $ thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
+ ++ lookUp x nameSynonyms
+
+lookUp x t
+  = maybe [] id (Prelude.lookup x t)
+
+associate syns names
+  = Prelude.map (\s -> (s,names)) syns
+
+nameSynonyms 
+  = associate malesynonyms (Data.Set.elems malenames) ++
+    associate femalesynonyms (Data.Set.elems femalenames)
+
+malesynonyms
+  = ["man", "him", "his name", "name", "boy"]
+
+femalesynonyms
+  = ["woman", "her", "her name", "name", "girl"]
 
 
 

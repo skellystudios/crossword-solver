@@ -4,6 +4,7 @@ import qualified Data.Set
 import Utils
 
 isDefIndicator ["and"] = True
+isDefIndicator ["to"] = True
 isDefIndicator ["in"] = True
 isDefIndicator ["to", "get"] = True
 isDefIndicator ["brings", "out"] = True
@@ -299,7 +300,6 @@ reverseInsertionIndicators = Data.Set.fromList [
 	"taking in",
 	"traps",
 	"without",
-	"without",
 	"wrap",
 	"wrapping",
 	"wraps",
@@ -338,6 +338,7 @@ reverseInsertionIndicators = Data.Set.fromList [
 
 
 isRIndicator ["returned"] = True
+isRIndicator ["returns"] = True
 isRIndicator ["springs", "back"] = True
 isRIndicator ["about"] = True
 isRIndicator _ = False

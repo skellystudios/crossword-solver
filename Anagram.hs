@@ -111,6 +111,7 @@ anagramIndicators = Data.Set.fromList [
   "cavorting",
   "changed",
   "changes shape",
+  "changing",
   "chaotic",
   "choppy",
   "chopped up",

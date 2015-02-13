@@ -12,28 +12,10 @@ import Types
 import Dictionary
 import Wordlists
 
--- Now we evaluate
 eval :: Parse -> [Answer]
 eval (def, tree, n) 
   = [Answer x (def, tree, n) | 
        x <- evalTree tree (Constraints Nothing (Just n) (Just n))]
-
-data Constraints 
-  = Constraints {prefixConstraint :: Maybe String, 
-                 minConstraint :: Maybe Int, 
-                 maxConstraint :: Maybe Int}
-
-add :: Maybe Int -> Int -> Maybe Int
-add (Just x) y
-  = Just (x + y)
-add Nothing y
-  = Nothing
-
-append :: Maybe String -> String -> Maybe String
-append (Just s) s'
-  = Just (s ++ s')
-append Nothing s'
-  = Nothing
 
 evalTree :: ParseTree -> Constraints -> [String]
 evalTree t c
@@ -53,16 +35,16 @@ evalTree t c
       = evalTrees xs c 
     evalTree' (Insertion ind t t')
       = concat [insertInto s' s | 
-                  s <- evalTree t' (resetMin . resetPrefix $ c), 
-                  s' <- evalTree t (decreaseMax (length s) . decreaseMin (length s) . resetPrefix $ c)]
+                  s <- evalTree t' (resetMin (resetPrefix c)), 
+                  let n = length s,
+                  s' <- evalTree t (decreaseMax n (decreaseMin n (resetPrefix c)))]
     evalTree' (Subtraction ind t t')
       = concat [subtractFrom s s' | 
                   s <- evalTree t noConstraints, 
-                  s' <- evalTree t' noConstraints, 
-                  geqMin (length s' - length s) c]
+                  let n = length s,
+                  s' <- evalTree t' (increaseMin n (increaseMax n c))]
     evalTree' (HiddenWord ind ws)
-      = [subs | subs <- substrings (concat ws), 
-                length subs > 0]
+      = [subs | subs <- substrings (concat ws)]
     evalTree' (Reversal ind t)
       = map reverse (evalTree t c)
     evalTree' (FirstLetter ind ys)
@@ -80,15 +62,32 @@ evalTrees [t] c
 evalTrees (t : ts) c
   = concatMap evalRest s
   where 
-    evalRest s = map (s++) (evalTrees ts (resetMin . extendPrefix s $ c))
-    s = [s' | s' <- evalTree t (resetMin . resetPrefix $ c), checkPrefix s' c]
+    evalRest s = map (s++) (evalTrees ts (resetMin (extendPrefix s c)))
+    s = [s' | s' <- evalTree t (resetMin (resetPrefix c)), checkPrefix s' c]
 
 evaluate :: [Parse] -> [Answer]
 evaluate 
   = concatMap eval 
 
 
---------- CONSTRAINTS
+--------- CONSTRAINTS ----------
+
+data Constraints 
+  = Constraints {prefixConstraint :: Maybe String, 
+                 minConstraint :: Maybe Int, 
+                 maxConstraint :: Maybe Int}
+
+add :: Maybe Int -> Int -> Maybe Int
+add (Just x) y
+  = Just (x + y)
+add Nothing y
+  = Nothing
+
+append :: Maybe String -> String -> Maybe String
+append (Just s) s'
+  = Just (s ++ s')
+append Nothing s'
+  = Nothing
 
 checkPrefix s 
   = maybe True (\s' -> isPrefix (s' ++ s)) . prefixConstraint
@@ -115,6 +114,10 @@ addToPrefix :: String -> Constraints -> Constraints
 addToPrefix s (Constraints p mn mx)
   = Constraints (append p s) mn mx
 
+increaseMax :: Int -> Constraints -> Constraints
+increaseMax n (Constraints p mn mx) 
+  = Constraints p mn (add mx n) 
+
 decreaseMax :: Int -> Constraints -> Constraints
 decreaseMax n (Constraints p mn mx) 
   = Constraints p mn (add mx (-n)) 
@@ -138,60 +141,4 @@ resetMin (Constraints p mn mx)
 resetMax :: Constraints -> Constraints
 resetMax (Constraints p mn mx)
   = Constraints p mn Nothing
-
------------- UTILITIES ----------
-
-anagrams :: String -> [String]
-anagrams [] 
-  = [[]]
-anagrams s 
-  = [c : s' | c <- nub s, s' <- anagrams (s \\ [c])]
-
-insertInto :: String -> String -> [String] 
-insertInto s [] 
-  = [s]
-insertInto s (c : cs) 
-  = [c : (s ++ cs)] ++ (map (c :) (insertInto s cs)) 
-
-subtractFrom' :: String -> String -> [String] 
-subtractFrom' s s'
-  = [s1 ++ s3 | (s1, s2, s3) <- split3 s', s2 == s]
-
-subtractFrom s s' 
-  | n == -1 = [] 
-  | otherwise = [removeFrom s' n (length s)]
-  where
-     n = (findIn s s' 0 0)
-
-removeFrom ys 0 0 
-  = ys
-removeFrom (y:ys) 0 m 
-  = removeFrom ys 0 (m-1)
-removeFrom (y:ys) n m 
-  = y:(removeFrom ys (n-1) m)
-
-findIn [] ys n f 
-  = n
-findIn xs [] n f 
-  = -1
-findIn (x:xs) (y:ys) n 0 
-  = if x==y 
-              then findIn xs ys n 1 
-              else findIn (x:xs) (ys) (n+1) 0
-findIn (x:xs) (y:ys) n 1 
-  = if x==y 
-              then findIn xs ys n 1
-              else -1
-substrings []     
-  = []
-substrings (x:xs) 
-  = substrings' (x:xs) ++ substrings xs 
-  where
-    substrings' []     = []
-    substrings' (y:ys) = [y] : [y : s | s <- substrings' ys]
-
-partials s
-  = nub (substrings s ++ map (s\\) subs)
-  where
-    subs = substrings s
 
