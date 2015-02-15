@@ -45,7 +45,7 @@ evalTree t c
     evalTree' (HiddenWord ind ws)
       = [subs | subs <- substrings (concat ws)]
     evalTree' (Reversal ind t)
-      = map reverse (evalTree t c)
+      = map reverse (evalTree t (resetPrefix c))
     evalTree' (FirstLetter ind ys)
       = [map head ys]
     evalTree' (LastLetter ind ys)
@@ -54,6 +54,7 @@ evalTree t c
       = concatMap partials (evalTree t noConstraints)
     evalTree' (JuxtapositionIndicator ind)
       = [""]
+
 
 evalTrees :: [ParseTree] -> Constraints -> [String]
 evalTrees [t] c 
@@ -65,7 +66,7 @@ evalTrees (t : ts) c
       | trace msg $ checkPrefix s c = map (s++) (evalTrees ts c')
       | otherwise       = []
                         where
-                          msg = fromJust (prefixConstraint c) ++ " " ++ s ++ " " ++ show (checkPrefix s c)
+                          msg = show c ++ " " ++ s ++ " " ++ show (checkPrefix s c)
                           n = length s
                           c' = shiftBounds (-n) (extendPrefix s c)
     sols = [s' | s' <- evalTree t (resetMin c)]
