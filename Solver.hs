@@ -87,13 +87,6 @@ parseWithoutConcat ws n
     parsePartOf ws n ++
     parseJuxtapositionIndicators ws n 
 
-parseSynonyms :: [String] -> Int -> [ParseTree]
-parseSynonyms ws n
-  | null (synonyms s) = []
-  | otherwise         = [Synonym s] 
-  where
-    s = unwords ws
-
 parseWithConcat :: [String] -> Int -> [ParseTree]
 parseWithConcat xs n
   = map Concatenate ps
@@ -104,6 +97,13 @@ parseWithConcat xs n
 parseJuxtapositionIndicators :: [String] -> Int -> [ParseTree]
 parseJuxtapositionIndicators xs n
   = if isJuxtapositionIndicator xs then [JuxtapositionIndicator xs] else []
+
+parseSynonyms :: [String] -> Int -> [ParseTree]
+parseSynonyms ws n
+  | null (synonyms s) = []
+  | otherwise         = [Synonym s] 
+  where
+    s = unwords ws
 
 parseAnagrams :: [String] -> Int -> [ParseTree]
 parseAnagrams ws n
@@ -244,7 +244,7 @@ isValidWord (Answer x (y, z, n))
   = isInWordlist x 
 
 sortByParseCost ts
-  = zip [0..] (map snd . sort . map (\x -> (parseCost x, x)) $ ts)
+  = zip [(0::Int)..] (map snd . sort . map (\x -> (parseCost x, x)) $ ts)
 
 constrainParseLengths :: [Parse] -> [Parse]
 constrainParseLengths

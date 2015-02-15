@@ -63,10 +63,9 @@ evalTrees (t : ts) c
   = concatMap evalRest sols
   where 
     evalRest s 
-      | trace msg $ checkPrefix s c = map (s++) (evalTrees ts c')
+      | checkPrefix s c = map (s++) (evalTrees ts c')
       | otherwise       = []
                         where
-                          msg = show c ++ " " ++ s ++ " " ++ show (checkPrefix s c)
                           n = length s
                           c' = shiftBounds (-n) (extendPrefix s c)
     sols = [s' | s' <- evalTree t (resetMin c)]
