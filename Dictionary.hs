@@ -27,6 +27,7 @@ prefixes' = rprefixes . reverse
 rprefixes (x:xs) = [reverse xs++[x]] ++ rprefixes xs
 rprefixes [] = []
  
+manual_syn "liberal" = ["l"] 
 manual_syn "gateshead" = ["gateshead"] 
 manual_syn "kempton" = ["kempton"] 
 manual_syn "working" = ["on"] 

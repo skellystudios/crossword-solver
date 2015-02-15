@@ -1,5 +1,6 @@
 module Evaluation where
 
+import Debug.Trace
 import Data.List
 import Data.Char
 import Data.Binary
@@ -12,10 +13,10 @@ import Types
 import Dictionary
 import Wordlists
 
-eval :: Parse -> [Answer]
-eval (def, tree, n) 
-  = [Answer x (def, tree, n) | 
-       x <- evalTree tree (Constraints Nothing (Just n) (Just n))]
+eval :: (Int, Parse) -> [Answer]
+eval (i, (def, tree, n))
+  = trace (show i) ([Answer x (def, tree, n) | 
+       x <- evalTree tree (Constraints Nothing (Just n) (Just n))])
 
 evalTree :: ParseTree -> Constraints -> [String]
 evalTree t c
@@ -42,7 +43,7 @@ evalTree t c
       = concat [subtractFrom s s' | 
                   s <- evalTree t noConstraints, 
                   let n = length s,
-                  s' <- evalTree t' (increaseMin n (increaseMax n c))]
+                  s' <- evalTree t' (increaseMax n (increaseMin n c))]
     evalTree' (HiddenWord ind ws)
       = [subs | subs <- substrings (concat ws)]
     evalTree' (Reversal ind t)
@@ -58,14 +59,16 @@ evalTree t c
 
 evalTrees :: [ParseTree] -> Constraints -> [String]
 evalTrees [t] c 
-  = evalTree t (resetPrefix c)
+  = evalTree t c
 evalTrees (t : ts) c
-  = concatMap evalRest s
+  = concatMap evalRest sols
   where 
-    evalRest s = map (s++) (evalTrees ts (resetMin (extendPrefix s c)))
-    s = [s' | s' <- evalTree t (resetMin (resetPrefix c)), checkPrefix s' c]
+    evalRest s = trace s (map (s++) (evalTrees ts (decreaseMax n (decreaseMin n (extendPrefix s c)))))
+               where
+                 n = length s
+    sols = [s' | s' <- evalTree t (resetMin c)]
 
-evaluate :: [Parse] -> [Answer]
+--evaluate :: [Parse] -> [Answer]
 evaluate 
   = concatMap eval 
 
@@ -79,7 +82,7 @@ data Constraints
 
 add :: Maybe Int -> Int -> Maybe Int
 add (Just x) y
-  = Just (x + y)
+  = Just (max (x + y) 0)
 add Nothing y
   = Nothing
 
@@ -107,11 +110,7 @@ satisfies c s
     n = length s
 
 extendPrefix :: String -> Constraints -> Constraints
-extendPrefix s 
-  = decreaseMax (length s) . addToPrefix s
-
-addToPrefix :: String -> Constraints -> Constraints
-addToPrefix s (Constraints p mn mx)
+extendPrefix s (Constraints p mn mx)
   = Constraints (append p s) mn mx
 
 increaseMax :: Int -> Constraints -> Constraints

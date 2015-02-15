@@ -243,8 +243,8 @@ isValidWord :: Answer -> Bool
 isValidWord (Answer x (y, z, n))
   = isInWordlist x 
 
-sortByParseCost
-  = map snd . sort . map (\x -> (parseCost x, x))
+sortByParseCost ts
+  = zip [0..] (map snd . sort . map (\x -> (parseCost x, x)) $ ts)
 
 constrainParseLengths :: [Parse] -> [Parse]
 constrainParseLengths
@@ -308,6 +308,8 @@ clue 17
   = Clue ("Animal returns to grass", 4)
 clue 18 
   = Clue ("bums for deals without energy", 9)
+clue 19 
+  = Clue ("Liberal posh wearing platinum with fancy cars to give rich people", 10)
 
 grid
   = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]

@@ -3,10 +3,12 @@ module Indicators where
 import qualified Data.Set 
 import Utils
 
+isDefIndicator ["give"] = True
 isDefIndicator ["and"] = True
 isDefIndicator ["to"] = True
 isDefIndicator ["in"] = True
 isDefIndicator ["to", "get"] = True
+isDefIndicator ["to", "give"] = True
 isDefIndicator ["brings", "out"] = True
 isDefIndicator ["to", "make", "a"] = True
 isDefIndicator ["for"] = True
@@ -163,6 +165,7 @@ insertionIndicators = Data.Set.fromList [
 	"some",
 	"somewhat",
 	"within",
+  "wearing",
 	"involved in",
 	"admitted to",
 	"taken in by"]
@@ -326,6 +329,7 @@ reverseInsertionIndicators = Data.Set.fromList [
 	"veiled",
 	"veiling",
 	"veils",
+  "wearing",
 	"withholds",
 	"wrapped",
 	"crossing",
