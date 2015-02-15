@@ -174,12 +174,7 @@ parsePartOf ws n
       (ws, ws') <- split2' ws,
       isPartOfIndicator ws, 
       p <- map simplify (parseClue ws' n),
-      notNull p]
-
-notNull Null
-  = False
-notNull t
-  = True
+      p /= Null]
 
 simplify (Concatenate ts)
   = simpleConcat (map simplify ts)
