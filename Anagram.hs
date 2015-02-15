@@ -2,7 +2,7 @@ module Anagram where
 
 import qualified Data.Set as Set
 
-import Utils
+import Utilities
 
 isAnagramIndicator :: [String] -> Bool
 isAnagramIndicator xs = Set.member (concatWithSpaces xs) anagramIndicators

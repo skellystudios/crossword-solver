@@ -7,7 +7,6 @@ import Data.Binary
 import Data.List 
 
 import Utilities
-import Utils
 import Types
 import Dictionary
 import Wordlists
@@ -15,7 +14,7 @@ import Wordlists
 eval :: (Int, Parse) -> [Answer]
 eval (i, (def, tree, n))
   = trace (show i) ([Answer x (def, tree, n) | 
-       x <- evalTree tree (Constraints Nothing (Just n) (Just n))])
+       x <- evalTree tree (Constraints (Just "") (Just n) (Just n))])
 
 evalTree :: ParseTree -> Constraints -> [String]
 evalTree t c
@@ -30,19 +29,19 @@ evalTree t c
       where
         s = concat ws
     evalTree' (Synonym x)
-      = synonyms x ++ [x]
+      = synonyms x 
     evalTree' (Concatenate xs)
       = evalTrees xs c 
     evalTree' (Insertion ind t t')
       = concat [insertInto s' s | 
                   s <- evalTree t' (resetMin (resetPrefix c)), 
                   let n = length s,
-                  s' <- evalTree t (decreaseMax n (decreaseMin n (resetPrefix c)))]
+                  s' <- evalTree t (shiftBounds (-n) (resetPrefix c))]
     evalTree' (Subtraction ind t t')
       = concat [subtractFrom s s' | 
                   s <- evalTree t noConstraints, 
                   let n = length s,
-                  s' <- evalTree t' (increaseMax n (increaseMin n c))]
+                  s' <- evalTree t' (shiftBounds n c)]
     evalTree' (HiddenWord ind ws)
       = [subs | subs <- substrings (concat ws)]
     evalTree' (Reversal ind t)
@@ -62,15 +61,21 @@ evalTrees [t] c
 evalTrees (t : ts) c
   = concatMap evalRest sols
   where 
-    evalRest s = trace s (map (s++) (evalTrees ts (decreaseMax n (decreaseMin n (extendPrefix s c)))))
-               where
-                 n = length s
+    evalRest s 
+      | trace msg $ checkPrefix s c = map (s++) (evalTrees ts c')
+      | otherwise       = []
+                        where
+                          msg = fromJust (prefixConstraint c) ++ " " ++ s ++ " " ++ show (checkPrefix s c)
+                          n = length s
+                          c' = shiftBounds (-n) (extendPrefix s c)
     sols = [s' | s' <- evalTree t (resetMin c)]
 
 --evaluate :: [Parse] -> [Answer]
 evaluate 
   = concatMap eval 
 
+fromJust (Just x) = x
+fromJust _ = "NULL"
 
 --------- CONSTRAINTS ----------
 
@@ -78,31 +83,29 @@ data Constraints
   = Constraints {prefixConstraint :: Maybe String, 
                  minConstraint :: Maybe Int, 
                  maxConstraint :: Maybe Int}
+  deriving (Show)
 
-add :: Maybe Int -> Int -> Maybe Int
-add (Just x) y
-  = Just (max (x + y) 0)
-add Nothing y
-  = Nothing
+add :: Int -> Maybe Int -> Maybe Int
+add x
+  = fmap ((max 0) . (+ x))
 
-append :: Maybe String -> String -> Maybe String
-append (Just s) s'
-  = Just (s ++ s')
-append Nothing s'
-  = Nothing
+addString :: String -> Maybe String -> Maybe String
+addString s 
+  = fmap (++s)
 
+checkPrefix :: [Char] -> Constraints -> Bool
 checkPrefix s 
   = maybe True (\s' -> isPrefix (s' ++ s)) . prefixConstraint
 
+geqMin :: Int -> Constraints -> Bool
 geqMin n 
   = maybe True (n>=) . minConstraint
 
+leqMax :: Int -> Constraints -> Bool
 leqMax n 
   = maybe True (n<=) . maxConstraint
 
-noConstraints 
-  = (Constraints Nothing Nothing Nothing)
-
+satisfies :: Constraints -> String -> Bool
 satisfies c s
   = checkPrefix s c && geqMin n c && leqMax n c
   where
@@ -110,23 +113,14 @@ satisfies c s
 
 extendPrefix :: String -> Constraints -> Constraints
 extendPrefix s (Constraints p mn mx)
-  = Constraints (append p s) mn mx
+  = Constraints (addString s p) mn mx
 
-increaseMax :: Int -> Constraints -> Constraints
-increaseMax n (Constraints p mn mx) 
-  = Constraints p mn (add mx n) 
+shiftBounds :: Int -> Constraints -> Constraints
+shiftBounds n (Constraints p mn mx)
+  = Constraints p (add n mn) (add n mx)
 
-decreaseMax :: Int -> Constraints -> Constraints
-decreaseMax n (Constraints p mn mx) 
-  = Constraints p mn (add mx (-n)) 
-
-increaseMin :: Int -> Constraints -> Constraints
-increaseMin n (Constraints p mn mx) 
-  = Constraints p (add mn n) mx
-
-decreaseMin :: Int -> Constraints -> Constraints
-decreaseMin n (Constraints p mn mx) 
-  = Constraints p (add mn (-n)) mx
+noConstraints 
+  = (Constraints Nothing Nothing Nothing)
 
 resetPrefix :: Constraints -> Constraints
 resetPrefix (Constraints p mn mx)

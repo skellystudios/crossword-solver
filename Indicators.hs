@@ -1,7 +1,7 @@
 module Indicators where
 
 import qualified Data.Set as Set
-import Utils
+import Utilities
 
 isDefIndicator ["give"] = True
 isDefIndicator ["and"] = True

@@ -3,7 +3,6 @@ module LengthFunctions where
 import Types
 import Wordlists
 import Dictionary
-import Utils
 import Anagram
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------

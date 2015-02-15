@@ -17,16 +17,17 @@ addedWords
      "kempton", "gateshead", "nigel"]
 
 isPrefix s 
-  = Set.member s wl_pref
+  = Set.member s allPrefixes
 
-wl_pref = Set.fold add_prefixes Set.empty wordlist_extended'	
+allPrefixes = Set.fold addPrefixes Set.empty wordlist_extended'	
 
-add_prefixes word set = Set.union (Set.fromList (prefixes' word)) set
+addPrefixes word set = Set.union (Set.fromList (prefixes word)) set
 
-prefixes' = rprefixes . reverse 
-rprefixes (x:xs) = [reverse xs++[x]] ++ rprefixes xs
-rprefixes [] = []
- 
+prefixes []
+  = []
+prefixes (c : cs)
+  = [c] : Prelude.map (c :) (prefixes cs)
+
 manual_syn "liberal" = ["l"] 
 manual_syn "gateshead" = ["gateshead"] 
 manual_syn "kempton" = ["kempton"] 
@@ -71,8 +72,8 @@ is_syn x y = elem x (synonyms y)
 
 synonyms :: String -> [String]
 synonyms ('t':'o':' ':xs) = synonyms xs
-synonyms x = Prelude.filter (not . Prelude.null) $ thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
- ++ lookUp x nameSynonyms
+synonyms x = x : (Prelude.filter (not . Prelude.null) $ thes x ++ abbreviation x ++ manual_syn x ++ abbreviation' x
+ ++ lookUp x nameSynonyms)
 
 lookUp x t
   = maybe [] id (Prelude.lookup x t)

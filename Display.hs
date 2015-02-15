@@ -1,7 +1,7 @@
 module Display where
 
 import Types
-import Utils
+import Utilities
 
 showDef :: Parse -> String
 showDef (d, tree, n) 
