@@ -1,27 +1,27 @@
 module Dictionary where
 
-import Data.Set
+import qualified Data.Set as Set
 import Data.Map as Map
 
 import Wordlists
 import Abbreviation
 import Types
 
-isInWordlist x = Data.Set.member x wordlist_extended'
+isInWordlist x = Set.member x wordlist_extended'
 
-wordlist_extended' = Data.Set.union (Data.Set.fromList (Map.keys thesaurus)) wordlist_extended 
-wordlist_extended = Data.Set.union (Data.Set.fromList addedWords) wordlist
+wordlist_extended' = Set.union (Set.fromList (Map.keys thesaurus)) wordlist_extended 
+wordlist_extended = Set.union (Set.fromList addedWords) wordlist
 
 addedWords
   = ["swanlake", "angela", "tuckerbag", "put food in this", "earnest request",
      "kempton", "gateshead", "nigel"]
 
 isPrefix s 
-  = Data.Set.member s wl_pref
+  = Set.member s wl_pref
 
-wl_pref = Data.Set.fold add_prefixes Data.Set.empty wordlist_extended'	
+wl_pref = Set.fold add_prefixes Set.empty wordlist_extended'	
 
-add_prefixes word set = Data.Set.union (Data.Set.fromList (prefixes' word)) set
+add_prefixes word set = Set.union (Set.fromList (prefixes' word)) set
 
 prefixes' = rprefixes . reverse 
 rprefixes (x:xs) = [reverse xs++[x]] ++ rprefixes xs
@@ -81,8 +81,8 @@ associate syns names
   = Prelude.map (\s -> (s,names)) syns
 
 nameSynonyms 
-  = associate malesynonyms (Data.Set.elems malenames) ++
-    associate femalesynonyms (Data.Set.elems femalenames)
+  = associate malesynonyms (Set.elems malenames) ++
+    associate femalesynonyms (Set.elems femalenames)
 
 malesynonyms
   = ["man", "him", "his name", "name", "boy"]

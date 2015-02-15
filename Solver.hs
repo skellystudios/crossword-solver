@@ -2,7 +2,7 @@ module Main where
 
 import Data.Functor
 import Data.List  
-import qualified Data.Set
+import qualified Data.Set as Set
 import qualified Data.Map as Map
 import System.Environment   
 import System.Timeout
@@ -256,7 +256,7 @@ hasValidLength (def, clue, n)
 
 checkSynonym :: Answer -> Bool
 checkSynonym (Answer string (def, clue, n))
-  = Data.Set.member string (Data.Set.fromList (synonyms def))  
+  = Set.member string (Set.fromList (synonyms def))  
 
 solve
   = head' . checkSynonyms . checkValidWords . evaluate . sortByParseCost . constrainParseLengths . parse . lowerCase

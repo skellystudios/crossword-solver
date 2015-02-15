@@ -2,7 +2,7 @@
 module Wordlists (malenames, femalenames, wordlist, output_wordlist, thesaurus, output_thesaurus, decode_thes) where 
 
 import Data.Text
-import Data.Set (Set,fromList) 
+import qualified Data.Set as Set
 import qualified Data.Text    as Text
 import qualified Data.Text.IO as Text
 import qualified Data.Map as Map 
@@ -27,12 +27,12 @@ lookfor x = Map.lookup x thesaurus
 
 read_malenames = do
     ls <- fmap Text.lines (Text.readFile "data/malenames")
-    (return . Data.Set.fromList . string_read . toString . toLower . Prelude.head) ls
+    (return . Set.fromList . string_read . toString . toLower . Prelude.head) ls
     
 temp_malenames = unsafePerformIO $ do read_malenames
 output_malenames = encodeFile "malenames.bin" temp_malenames
 
-read_bytes_malenames :: IO (Data.Set.Set String)
+read_bytes_malenames :: IO (Set.Set String)
 read_bytes_malenames = do
     return . decode =<< BS.readFile "malenames.bin"
     
@@ -40,12 +40,12 @@ malenames = unsafePerformIO $ do read_bytes_malenames
 
 read_femalenames = do
     ls <- fmap Text.lines (Text.readFile "data/femalenames")
-    (return . Data.Set.fromList . string_read . toString . toLower . Prelude.head) ls
+    (return . Set.fromList . string_read . toString . toLower . Prelude.head) ls
     
 temp_femalenames = unsafePerformIO $ do read_femalenames
 output_femalenames = encodeFile "femalenames.bin" temp_femalenames
 
-read_bytes_femalenames :: IO (Data.Set.Set String)
+read_bytes_femalenames :: IO (Set.Set String)
 read_bytes_femalenames = do
     return . decode =<< BS.readFile "femalenames.bin"
     
@@ -53,12 +53,12 @@ femalenames = unsafePerformIO $ do read_bytes_femalenames
 
 read_wordlist = do
     ls <- fmap Text.lines (Text.readFile "data/straight-wordlist")
-    (return . Data.Set.fromList . string_read . toString . Prelude.head) ls
+    (return . Set.fromList . string_read . toString . Prelude.head) ls
     
 temp_wordlist = unsafePerformIO $ do read_wordlist
 output_wordlist = encodeFile "wordlist.bin" temp_wordlist
 
-read_bytes_wordlist :: IO (Data.Set.Set String)
+read_bytes_wordlist :: IO (Set.Set String)
 read_bytes_wordlist = do
     return . decode =<< BS.readFile "wordlist.bin"
     

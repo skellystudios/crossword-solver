@@ -1,6 +1,6 @@
 module Indicators where
 
-import qualified Data.Set 
+import qualified Data.Set as Set
 import Utils
 
 isDefIndicator ["give"] = True
@@ -31,8 +31,8 @@ isJuxtapositionIndicator _ = False
 
 
 isInsertionIndicator :: [String] -> Bool
-isInsertionIndicator xs = Data.Set.member (concatWithSpaces xs) insertionIndicators
-insertionIndicators = Data.Set.fromList [
+isInsertionIndicator xs = Set.member (concatWithSpaces xs) insertionIndicators
+insertionIndicators = Set.fromList [
 	"dwells in",
 	"characters",
 	"buried in",
@@ -171,8 +171,8 @@ insertionIndicators = Data.Set.fromList [
 	"taken in by"]
 
 isReverseInsertionIndicator :: [String] -> Bool
-isReverseInsertionIndicator xs = Data.Set.member (concatWithSpaces xs) reverseInsertionIndicators
-reverseInsertionIndicators = Data.Set.fromList [
+isReverseInsertionIndicator xs = Set.member (concatWithSpaces xs) reverseInsertionIndicators
+reverseInsertionIndicators = Set.fromList [
 	"to include",
 	"on",
 	"to pen",

@@ -5,7 +5,6 @@ import Data.List
 import Data.Char
 import Data.Binary
 import Data.List 
-import qualified Data.Set
 
 import Utilities
 import Utils

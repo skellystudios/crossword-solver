@@ -1,14 +1,14 @@
 module Anagram where
 
-import qualified Data.Set 
+import qualified Data.Set as Set
 
 import Utils
 
 isAnagramIndicator :: [String] -> Bool
-isAnagramIndicator xs = Data.Set.member (concatWithSpaces xs) anagramIndicators
+isAnagramIndicator xs = Set.member (concatWithSpaces xs) anagramIndicators
 
 
-anagramIndicators = Data.Set.fromList [
+anagramIndicators = Set.fromList [
   "amended",
   "advantage",
   "abandoned",
