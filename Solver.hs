@@ -1,5 +1,6 @@
 module Main where 
 
+import Debug.Trace
 import Data.Functor
 import Data.List  
 import qualified Data.Set as Set

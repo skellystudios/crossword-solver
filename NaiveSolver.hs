@@ -109,7 +109,7 @@ parse (Clue (c, n))
 
 parseClue :: [String] -> Int -> [ParseTree]
 parseClue ws n
-  = parseJuxtapositions ws n ++
+  = trace (unwords ws) (parseJuxtapositions ws n ++
     parseSynonyms ws n ++
     parseAnagrams ws n ++
     parseHiddenWords ws n ++
@@ -120,6 +120,7 @@ parseClue ws n
     parseLastLetters ws n ++
     parsePartOfs ws n ++
     parseJuxtapositionIndicators ws n
+    )
 
 parseSynonyms :: [String] -> Int -> [ParseTree]
 parseSynonyms ws n
