@@ -1,5 +1,6 @@
 module LengthFunctions where
 
+import Data.Maybe
 import Types
 import Wordlists
 import Dictionary
@@ -7,60 +8,60 @@ import Anagram
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
 
-minLength Null 
+minLength table Null 
   = 0
-minLength (Ident s) 
+minLength table (Ident s) 
   = length s
-minLength (Concatenate trees) 
-  = (sum . map minLength) trees
-minLength (Anagram ind strings) 
+minLength table (Concatenate trees) 
+  = (sum . map (minLength table)) trees
+minLength table (Anagram ind strings) 
   = (length . concat) strings
-minLength (HiddenWord ind strings) 
+minLength table (HiddenWord ind strings) 
   = 2
-minLength (Insertion ind tree1 tree2) 
-  = (minLength tree1) + (minLength tree2)
-minLength (Subtraction ind tree1 tree2) 
-  = min (minLength tree2 - maxLength tree1) 3
-minLength (Reversal ind tree) 
-  = minLength tree
-minLength (Synonym string) 
-  = minimum (map length (synonyms string))
-minLength (FirstLetter ind strings) 
+minLength table (Insertion ind tree1 tree2) 
+  = (minLength table tree1) + (minLength table tree2)
+minLength table (Subtraction ind tree1 tree2) 
+  = min (minLength table tree2 - maxLength table tree1) 3
+minLength table (Reversal ind tree) 
+  = minLength table tree
+minLength table (Synonym string) 
+  = fst (maybe (error string) id (lookup string table)) -- minimum (map length (synonyms string))
+minLength table (FirstLetter ind strings) 
   = length strings
-minLength (LastLetter ind strings) 
+minLength table (LastLetter ind strings) 
   = length strings
-minLength (Juxtapose one two) 
-  = minLength one + minLength two
-minLength (PartOf ind tree) 
+minLength table (Juxtapose one two) 
+  = minLength table one + minLength table two
+minLength table (PartOf ind tree) 
   = 1
-minLength (JuxtapositionIndicator xs) 
+minLength table (JuxtapositionIndicator xs) 
   = 0
 
-maxLength Null 
+maxLength table Null 
   = 0
-maxLength (Ident s) 
+maxLength table (Ident s) 
   = length s
-maxLength (Concatenate trees) 
-  = (sum . map maxLength) trees
-maxLength (Anagram ind strings) 
+maxLength table (Concatenate trees) 
+  = (sum . map (maxLength table)) trees
+maxLength table (Anagram ind strings) 
   = (length . concat) strings
-maxLength (HiddenWord ind strings) 
+maxLength table (HiddenWord ind strings) 
   = (length . concat $ strings) - 2
-maxLength (Insertion ind tree1 tree2) 
-  = (maxLength tree1) + (maxLength tree2)
-maxLength (Subtraction ind tree1 tree2) 
-  = max (maxLength tree2 - minLength tree1) 3
-maxLength (Reversal ind tree) 
-  = maxLength tree
-maxLength (Synonym string) 
-  = maximum (map length (synonyms string))
-maxLength (FirstLetter ind strings) 
+maxLength table (Insertion ind tree1 tree2) 
+  = (maxLength table tree1) + (maxLength table tree2)
+maxLength table (Subtraction ind tree1 tree2) 
+  = max (maxLength table tree2 - minLength table tree1) 3
+maxLength table (Reversal ind tree) 
+  = maxLength table tree
+maxLength table (Synonym string) 
+  = snd (maybe (error string) id (lookup string table)) -- maximum (map length (synonyms string))
+maxLength table (FirstLetter ind strings) 
   = length strings
-maxLength (LastLetter ind strings) 
+maxLength table (LastLetter ind strings) 
   = length strings
-maxLength (Juxtapose one two) 
-  = maxLength one + maxLength two
-maxLength (PartOf ind tree) 
-  = (maxLength tree) - 1
-maxLength (JuxtapositionIndicator xs) 
+maxLength table (Juxtapose one two) 
+  = maxLength table one + maxLength table two
+maxLength table (PartOf ind tree) 
+  = (maxLength table tree) - 1
+maxLength table (JuxtapositionIndicator xs) 
   = 0

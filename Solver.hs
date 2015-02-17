@@ -57,6 +57,7 @@ parse (Clue (c, n))
     ws = words c
     parseClueMem ws = Data.Maybe.fromJust (lookup ws parseTable)
     parseTable = [(ws', parseClue ws') | ws' <- substrings ws]
+    synTable = [(w, (minimum ns, maximum ns)) | w <- substrings c, let ns = map length (synonyms w)]
     
     parseWithoutIndicator :: [String] -> Int -> [Parse]
     parseWithoutIndicator ws n
@@ -75,7 +76,7 @@ parse (Clue (c, n))
     
     parseClue :: [String] -> [ParseTree]
     parseClue ws
-      = filter (flip hasValidLength n) (parseClue' ws)
+      = filter (hasValidLength synTable n) (parseClue' ws)
       where
         parseClue' ws
           | length ws > 1 = parseWithConcat ws ++ parseWithoutConcat ws
@@ -240,9 +241,9 @@ isValidWord (Answer x (y, z, n))
 sortByParseCost ts
   = zip [(0::Int)..] (map snd . sort . map (\x -> (parseCost x, x)) $ ts)
 
-hasValidLength :: ParseTree -> Int -> Bool
-hasValidLength clue n
-  = True -- (minLength clue <= n) && (maxLength clue >= n) 
+--hasValidLength :: ParseTree -> Int -> Bool
+hasValidLength table n clue
+  = (minLength table clue <= n) && (maxLength table clue >= n) 
 
 checkSynonym :: Answer -> Bool
 checkSynonym (Answer string (def, clue, n))
@@ -299,7 +300,7 @@ clue 17
 clue 18 
   = Clue ("bums for deals without energy", 9)
 clue 19 
-  = Clue ("Liberal posh wearing platinum with fancy cars to give rich people", 10)
+  = Clue ("liberal posh wearing platinum with fancy cars to give rich people", 10)
 
 grid
   = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
