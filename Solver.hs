@@ -107,9 +107,7 @@ parse (Clue (c, n))
     
     parseSynonyms :: [String] -> [ParseTree]
     parseSynonyms ws
-      = [Synonym s]
-      where
-        s = unwords ws
+      = [Synonym (unwords ws)]
     
     parseAnagrams :: [String] -> [ParseTree]
     parseAnagrams ws
