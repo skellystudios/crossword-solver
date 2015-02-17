@@ -93,7 +93,7 @@ parse (Clue (c, n))
     
     parseWithConcat :: [String] -> [ParseTree]
     parseWithConcat xs
-      = map Concatenate ps
+      = filter (flip hasValidLength n) (map Concatenate ps)
       where
         ps = concatMap (sequence . parseSubpart) (filter ((>1) . length) (partitions xs))
         parseSubpart part = [parseWithoutConcat subpart | subpart <- part]
