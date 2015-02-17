@@ -112,7 +112,7 @@ parse (Clue (c, n))
     
     parseAnagrams :: [String] -> [ParseTree]
     parseAnagrams ws
-      = [Anagram p p' | 
+      = [pt | 
            (p, p') <- split2' ws, 
            isAnagramIndicator p,
            let pt = Anagram p p',
@@ -120,14 +120,14 @@ parse (Clue (c, n))
     parseInsertions :: [String] -> [ParseTree]
     parseInsertions ws
       = let parts = split3 ws
-        in [Insertion ws' p p'' | 
+        in [pt | 
              (ws, ws', ws'') <- parts, 
              isInsertionIndicator ws', 
              p <- parseClueMem ws, 
              p'' <- parseClueMem ws'',
              let pt = Insertion ws' p p'',
              hasValidLength pt n] ++ 
-           [Insertion ws' p'' p | 
+           [pt | 
              (ws, ws', ws'') <- parts,
              isReverseInsertionIndicator ws', 
              p <- parseClueMem ws, 
@@ -138,14 +138,14 @@ parse (Clue (c, n))
     parseSubtractions :: [String] -> [ParseTree]
     parseSubtractions ws
       = let parts = split3 ws
-        in [Subtraction ws' p p'' | 
+        in [pt | 
              (ws, ws', ws'') <- parts,
              isSubtractionIndicator ws', 
              p <- parseClueMem ws, 
              p'' <- parseClueMem ws'',
              let pt = Subtraction ws' p p'',
              hasValidLength pt n] ++ 
-           [Subtraction ws' p p'' | 
+           [pt | 
              (ws'', ws', ws) <- parts,
              isSubtractionIndicator ws', 
              p <- parseClueMem ws, 
@@ -155,7 +155,7 @@ parse (Clue (c, n))
     
     parseReversals :: [String] -> [ParseTree]
     parseReversals ws 
-      = [Reversal ws p | 
+      = [pt | 
           (ws, ws') <- split2' ws, 
           isRIndicator ws, 
           p <- parseClueMem ws',
@@ -164,7 +164,7 @@ parse (Clue (c, n))
     
     parseHiddenWords :: [String] -> [ParseTree]
     parseHiddenWords ws
-      = [HiddenWord ws ws' | 
+      = [pt | 
           (ws, ws') <- split2 ws, 
           isHWIndicator ws,
           let pt = HiddenWord ws ws',
@@ -172,7 +172,7 @@ parse (Clue (c, n))
     
     parseFirstLetters :: [String] -> [ParseTree]
     parseFirstLetters ws
-      = [FirstLetter ws ws' | 
+      = [pt | 
           (ws, ws') <- split2' ws,
           isFLIndicator ws,
           let pt = FirstLetter ws ws',
@@ -180,7 +180,7 @@ parse (Clue (c, n))
     
     parseLastLetters :: [String] -> [ParseTree]
     parseLastLetters ws
-      = [LastLetter ws ws' | 
+      = [pt | 
           (ws, ws') <- split2' ws,
           isLLIndicator ws,
           let pt = LastLetter ws ws',
@@ -188,7 +188,7 @@ parse (Clue (c, n))
     
     parsePartOf :: [String] -> [ParseTree]
     parsePartOf ws
-      = [PartOf ws p | 
+      = [pt | 
           (ws, ws') <- split2' ws,
           isPartOfIndicator ws, 
           p <- map simplify (parseClueMem ws'),
