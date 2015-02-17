@@ -75,8 +75,11 @@ parse (Clue (c, n))
     
     parseClue :: [String] -> [ParseTree]
     parseClue ws
-      | length ws > 1 = parseWithConcat ws ++ parseWithoutConcat ws
-      | otherwise     = parseWithoutConcat ws
+      = filter (flip hasValidLength n) (parseClue' ws)
+      where
+        parseClue' ws
+          | length ws > 1 = parseWithConcat ws ++ parseWithoutConcat ws
+          | otherwise     = parseWithoutConcat ws
     
     parseWithoutConcat :: [String] -> [ParseTree]
     parseWithoutConcat ws
@@ -93,7 +96,7 @@ parse (Clue (c, n))
     
     parseWithConcat :: [String] -> [ParseTree]
     parseWithConcat xs
-      = filter (flip hasValidLength n) (map Concatenate ps)
+      = map Concatenate ps
       where
         ps = concatMap (sequence . parseSubpart) (filter ((>1) . length) (partitions xs))
         parseSubpart part = [parseWithoutConcat subpart | subpart <- part]
@@ -104,97 +107,75 @@ parse (Clue (c, n))
     
     parseSynonyms :: [String] -> [ParseTree]
     parseSynonyms ws
-      | hasValidLength pt n = [Synonym s]
-      | otherwise           = [] 
+      = [Synonym s]
       where
         s = unwords ws
-        pt = Synonym s
     
     parseAnagrams :: [String] -> [ParseTree]
     parseAnagrams ws
-      = [pt | 
+      = [Anagram p p' | 
            (p, p') <- split2' ws, 
-           isAnagramIndicator p,
-           let pt = Anagram p p',
-           hasValidLength pt n]
+           isAnagramIndicator p]
     parseInsertions :: [String] -> [ParseTree]
     parseInsertions ws
       = let parts = split3 ws
-        in [pt | 
+        in [Insertion ws' p p'' | 
              (ws, ws', ws'') <- parts, 
              isInsertionIndicator ws', 
              p <- parseClueMem ws, 
-             p'' <- parseClueMem ws'',
-             let pt = Insertion ws' p p'',
-             hasValidLength pt n] ++ 
-           [pt | 
+             p'' <- parseClueMem ws''] ++
+           [Insertion ws' p'' p | 
              (ws, ws', ws'') <- parts,
              isReverseInsertionIndicator ws', 
              p <- parseClueMem ws, 
-             p'' <- parseClueMem ws'',
-             let pt = Insertion ws' p'' p,
-             hasValidLength pt n] 
+             p'' <- parseClueMem ws'']
     
     parseSubtractions :: [String] -> [ParseTree]
     parseSubtractions ws
       = let parts = split3 ws
-        in [pt | 
+        in [Subtraction ws' p p'' | 
              (ws, ws', ws'') <- parts,
              isSubtractionIndicator ws', 
              p <- parseClueMem ws, 
-             p'' <- parseClueMem ws'',
-             let pt = Subtraction ws' p p'',
-             hasValidLength pt n] ++ 
-           [pt | 
+             p'' <- parseClueMem ws''] ++
+           [Subtraction ws' p p'' | 
              (ws'', ws', ws) <- parts,
              isSubtractionIndicator ws', 
              p <- parseClueMem ws, 
-             p'' <- parseClueMem ws'',
-             let pt = Subtraction ws' p p'',
-             hasValidLength pt n] 
+             p'' <- parseClueMem ws'']
     
     parseReversals :: [String] -> [ParseTree]
     parseReversals ws 
-      = [pt | 
+      = [Reversal ws p | 
           (ws, ws') <- split2' ws, 
           isRIndicator ws, 
-          p <- parseClueMem ws',
-          let pt = Reversal ws p,
-          hasValidLength pt n]  
+          p <- parseClueMem ws']
     
     parseHiddenWords :: [String] -> [ParseTree]
     parseHiddenWords ws
-      = [pt | 
+      = [HiddenWord ws ws' | 
           (ws, ws') <- split2 ws, 
-          isHWIndicator ws,
-          let pt = HiddenWord ws ws',
-          hasValidLength pt n]
+          isHWIndicator ws]
     
     parseFirstLetters :: [String] -> [ParseTree]
     parseFirstLetters ws
-      = [pt | 
+      = [FirstLetter ws ws' | 
           (ws, ws') <- split2' ws,
-          isFLIndicator ws,
-          let pt = FirstLetter ws ws',
-          hasValidLength pt n]
+          isFLIndicator ws]
     
     parseLastLetters :: [String] -> [ParseTree]
     parseLastLetters ws
-      = [pt | 
+      = [LastLetter ws ws' | 
           (ws, ws') <- split2' ws,
-          isLLIndicator ws,
-          let pt = LastLetter ws ws',
-          hasValidLength pt n]
+          isLLIndicator ws]
     
     parsePartOf :: [String] -> [ParseTree]
     parsePartOf ws
-      = [pt | 
+      = [PartOf ws p | 
           (ws, ws') <- split2' ws,
           isPartOfIndicator ws, 
           p <- map simplify (parseClueMem ws'),
-          p /= Null,
-          let pt = PartOf ws p,
-          hasValidLength pt n]
+          p /= Null]
     
 simplify (Concatenate ts)
   = simpleConcat (map simplify ts)
@@ -263,7 +244,7 @@ sortByParseCost ts
 
 hasValidLength :: ParseTree -> Int -> Bool
 hasValidLength clue n
-  = (minLength clue <= n) && (maxLength clue >= n) 
+  = True -- (minLength clue <= n) && (maxLength clue >= n) 
 
 checkSynonym :: Answer -> Bool
 checkSynonym (Answer string (def, clue, n))
