@@ -86,10 +86,10 @@ nameSynonyms
     associate femalesynonyms (Set.elems femalenames)
 
 malesynonyms
-  = ["man", "him", "his name", "name", "boy"]
+  = ["man", "him", "his name", "name", "boy", "he"]
 
 femalesynonyms
-  = ["woman", "her", "her name", "name", "girl"]
+  = ["woman", "her", "her name", "name", "girl", "she"]
 
 
 

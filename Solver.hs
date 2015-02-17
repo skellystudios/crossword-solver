@@ -60,7 +60,7 @@ parseWithoutIndicator ws n
   = [(unwords ws', p, n) | 
        (ws', ws'') <- split2' ws, 
        isInWordlist (unwords ws'), 
-       p <- parseClue ws'' n]
+       p <- parseClue ws'']
 
 parseWithIndicator :: [String] -> Int -> [Parse]
 parseWithIndicator ws n
@@ -68,113 +68,109 @@ parseWithIndicator ws n
        (ws', ws'', ws''') <- split3' ws,
        isInWordlist (unwords ws'), 
        isDefIndicator ws'', 
-       p <- parseClue ws''' n] 
+       p <- parseClue ws'''] 
 
-parseClue :: [String] -> Int -> [ParseTree]
-parseClue ws n
-  | length ws > 1 = parseWithConcat ws n ++ parseWithoutConcat ws n
-  | otherwise     = parseWithoutConcat ws n
+parseClue :: [String] -> [ParseTree]
+parseClue ws
+  | length ws > 1 = parseWithConcat ws ++ parseWithoutConcat ws
+  | otherwise     = parseWithoutConcat ws
 
-parseWithoutConcat :: [String] -> Int -> [ParseTree]
-parseWithoutConcat ws n
-  = parseSynonyms ws n ++
-    parseAnagrams ws n ++
-    parseHiddenWords ws n ++
-    parseInsertions ws n ++
-    parseSubtractions ws n ++
-    parseReversals ws n ++
-    parseFirstLetters ws n ++
-    parseLastLetters ws n ++
-    parsePartOf ws n ++
-    parseJuxtapositionIndicators ws n 
+parseWithoutConcat :: [String] -> [ParseTree]
+parseWithoutConcat ws
+  = parseSynonyms ws ++
+    parseAnagrams ws ++
+    parseHiddenWords ws ++
+    parseInsertions ws ++
+    parseSubtractions ws ++
+    parseReversals ws ++
+    parseFirstLetters ws ++
+    parseLastLetters ws ++
+    parsePartOf ws ++
+    parseJuxtapositionIndicators ws 
 
-parseWithConcat :: [String] -> Int -> [ParseTree]
-parseWithConcat xs n
+parseWithConcat :: [String] -> [ParseTree]
+parseWithConcat xs
   = map Concatenate ps
   where
     ps = concatMap (sequence . parseSubpart) (filter ((>1) . length) (partitions xs))
-    parseSubpart part = [parseWithoutConcat subpart n | subpart <- part]
+    parseSubpart part = [parseWithoutConcat subpart | subpart <- part]
 
-parseJuxtapositionIndicators :: [String] -> Int -> [ParseTree]
-parseJuxtapositionIndicators xs n
+parseJuxtapositionIndicators :: [String] -> [ParseTree]
+parseJuxtapositionIndicators xs
   = if isJuxtapositionIndicator xs then [JuxtapositionIndicator xs] else []
 
-parseSynonyms :: [String] -> Int -> [ParseTree]
-parseSynonyms ws n
+parseSynonyms :: [String] -> [ParseTree]
+parseSynonyms ws
   | null (synonyms s) = []
   | otherwise         = [Synonym s] 
   where
     s = unwords ws
 
-parseAnagrams :: [String] -> Int -> [ParseTree]
-parseAnagrams ws n
+parseAnagrams :: [String] -> [ParseTree]
+parseAnagrams ws
   = [Anagram p p' | 
        (p, p') <- split2' ws, 
-       length (concat p') <= n,
        isAnagramIndicator p]
 
-parseInsertions :: [String] -> Int -> [ParseTree]
-parseInsertions ws n
+parseInsertions :: [String] -> [ParseTree]
+parseInsertions ws
   = let parts = split3 ws
     in [Insertion ws' p p'' | 
          (ws, ws', ws'') <- parts, 
          isInsertionIndicator ws', 
-         p <- parseClue ws n, 
-         p'' <- parseClue ws'' n] ++ 
+         p <- parseClue ws, 
+         p'' <- parseClue ws''] ++ 
        [Insertion ws' p'' p | 
          (ws, ws', ws'') <- parts,
          isReverseInsertionIndicator ws', 
-         p <- parseClue ws n, 
-         p'' <- parseClue ws'' n] 
+         p <- parseClue ws, 
+         p'' <- parseClue ws''] 
 
-parseSubtractions :: [String] -> Int -> [ParseTree]
-parseSubtractions ws n
+parseSubtractions :: [String] -> [ParseTree]
+parseSubtractions ws
   = let parts = split3 ws
     in [Subtraction ws' p p'' | 
          (ws, ws', ws'') <- parts,
          isSubtractionIndicator ws', 
-         p <- parseClue ws n, 
-         p'' <- parseClue ws'' n] ++ 
+         p <- parseClue ws, 
+         p'' <- parseClue ws''] ++ 
        [Subtraction ws' p p'' | 
          (ws'', ws', ws) <- parts,
          isSubtractionIndicator ws', 
-         p <- parseClue ws n, 
-         p'' <- parseClue ws'' n] 
+         p <- parseClue ws, 
+         p'' <- parseClue ws''] 
 
-parseReversals :: [String] -> Int -> [ParseTree]
-parseReversals ws n 
+parseReversals :: [String] -> [ParseTree]
+parseReversals ws 
   = [Reversal ws p | 
       (ws, ws') <- split2' ws, 
       isRIndicator ws, 
-      p <- parseClue ws' n]  
+      p <- parseClue ws']  
 
-parseHiddenWords :: [String]  -> Int -> [ParseTree]
-parseHiddenWords ws n
+parseHiddenWords :: [String] -> [ParseTree]
+parseHiddenWords ws
   = [HiddenWord ws ws' | 
       (ws, ws') <- split2 ws, 
-      isHWIndicator ws,
-      length (concat ws') > n]
+      isHWIndicator ws]
 
-parseFirstLetters :: [String]  -> Int -> [ParseTree]
-parseFirstLetters ws n
+parseFirstLetters :: [String] -> [ParseTree]
+parseFirstLetters ws
   = [FirstLetter ws ws' | 
       (ws, ws') <- split2' ws,
-      isFLIndicator ws, 
-      length ws' <= n]
+      isFLIndicator ws]
 
-parseLastLetters :: [String]  -> Int -> [ParseTree]
-parseLastLetters ws n
+parseLastLetters :: [String] -> [ParseTree]
+parseLastLetters ws
   = [LastLetter ws ws' | 
       (ws, ws') <- split2' ws,
-      isLLIndicator ws, 
-      length ws' <= n]
+      isLLIndicator ws]
 
-parsePartOf :: [String]  -> Int -> [ParseTree]
-parsePartOf ws n
+parsePartOf :: [String] -> [ParseTree]
+parsePartOf ws
   = [PartOf ws p | 
       (ws, ws') <- split2' ws,
       isPartOfIndicator ws, 
-      p <- map simplify (parseClue ws' n),
+      p <- map simplify (parseClue ws'),
       p /= Null]
 
 simplify (Concatenate ts)
