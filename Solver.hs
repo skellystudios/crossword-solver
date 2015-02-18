@@ -10,38 +10,16 @@ import System.Timeout
 import Data.Char
 import Data.Binary
   
-import Utilities
-import Wordlists
-import Anagram
-import HalfBenchmark
 import Types
+import Databases
+import Utilities
 import Indicators
 import Evaluation
-import Dictionary
-import Display
 import LengthFunctions
-import Abbreviation
 
 import ClueBank
 import Guardian
 import Everyman
-
-{-
-main
-  = do 
-       -- GHC.Profiling.stopProfTimer
-        print $  solve_clue 11
-       --  GHC.Profiling.startProfTimer
-        print $  is_wordlist_prefix "x"
-       -- print $ {-# SCC "second" #-} (map solve clues)
-
--- Timeout is in microseconds
-seconds
-  = 1000000
-dosolve x
-  = timeout (20*seconds) $ do
-            print $ solve x
--}
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
 

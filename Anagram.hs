@@ -7,7 +7,6 @@ import Utilities
 isAnagramIndicator :: [String] -> Bool
 isAnagramIndicator xs = Set.member (concatWithSpaces xs) anagramIndicators
 
-
 anagramIndicators = Set.fromList [
   "amended",
   "advantage",

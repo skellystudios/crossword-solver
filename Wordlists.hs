@@ -17,14 +17,14 @@ import System.IO.Unsafe
 -- HEADLINE FUNCTIONS 
 
 
-decode_thes x = case (lookfor x) of 
+decode_thes s = case (lookfor s) of 
   Nothing -> []
-  Just x -> Prelude.map (\y -> keys!y) x
+  Just s -> Prelude.map (\n -> keys!n) s
 
 lookfor ::  String -> Maybe [Int]
-lookfor x = Map.lookup x thesaurus
+lookfor s = Map.lookup s thesaurus
 
--- WORDLIST
+-- WORDLISTS
 
 read_malenames = do
     ls <- fmap Text.lines (Text.readFile "data/malenames")
@@ -78,7 +78,6 @@ read_bytes_thesaurus :: IO (Map.Map String [Int])
 read_bytes_thesaurus = do
     return . decode =<< BS.readFile "thesaurus.bin"
 
-
 thesaurus :: Map.Map String [Int]    
 thesaurus = trace "Thesaurus..." (unsafePerformIO $ do read_bytes_thesaurus)
 
@@ -99,17 +98,13 @@ read_bytes_keys = do
 keys = trace "Keys..." (unsafePerformIO $ do read_bytes_keys)
 
 
+-- Stuff...
 
 makeArray :: [String] -> Array Int String
-makeArray xs = listArray (0, (Prelude.length xs) - 1) xs
-
-
+makeArray ss = listArray (0, (Prelude.length ss) - 1) ss
 
 toString = Text.unpack
 
--- do n <- readFile "data.dat" ; print n
-
--- 
 map_read :: String -> [(String, [Int])]
 map_read = read
 

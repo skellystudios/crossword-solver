@@ -2,9 +2,8 @@ module LengthFunctions where
 
 import Data.Maybe
 import Types
-import Wordlists
-import Dictionary
-import Anagram
+import Databases
+import Indicators
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
 

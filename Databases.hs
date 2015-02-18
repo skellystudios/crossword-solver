@@ -1,4 +1,4 @@
-module Databases (malenames, femalenames, wordlist, thesaurus, decode_thes, synonyms) where 
+module Databases (isInWordlist, isPrefix, malenames, femalenames, wordlist, thesaurus, synonyms) where 
 
 import Debug.Trace
 import Data.Text
@@ -17,7 +17,7 @@ import Types
 -- HEADLINE FUNCTIONS 
 
 
-decode_thes s = case (lookfor s) of 
+thesaurusLookup s = case (lookfor s) of 
   Nothing -> []
   Just s -> Prelude.map (\n -> keys!n) s
 
@@ -121,9 +121,7 @@ wordlist_extended = Set.union (Set.fromList manualWords) wordlist
 isPrefix s 
   = Set.member s allPrefixes
 
-allPrefixes = trace "Prefixes..." (Set.fold addPrefixes Set.empty wordlist_extended'	)
-
-addPrefixes word set = Set.union (Set.fromList (prefixes word)) set
+allPrefixes = trace "Prefixes..." (Set.fromList (Prelude.concatMap prefixes (Set.elems wordlist_extended')))
 
 prefixes []
   = []
@@ -132,13 +130,13 @@ prefixes (c : cs)
 
 ------ SYNONYMS ------
 
-isSynonym w w' = elem w (synonyms w')
+isSynonym w w' = Prelude.elem w (synonyms w')
 
 synonyms :: String -> [String]
 synonyms ('t' : 'o' : ' ' : s) 
   = synonyms s
 synonyms s 
-  = s : (Prelude.filter (not . Prelude.null) $ thes s ++
+  = s : (Prelude.filter (not . Prelude.null) $ thesaurusLookup s ++
     maybe [] id (Map.lookup s abbreviations) ++ 
     manualSynonym s ++ 
     manualAbbreviation s ++ 
@@ -159,8 +157,6 @@ malesynonyms
 
 femalesynonyms
   = ["woman", "her", "her name", "name", "girl", "she"]
-
-thes x = decode_thes x
 
 ------ MANUAL ADDITIONS ------
 

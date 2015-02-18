@@ -8,8 +8,7 @@ import Data.List
 
 import Utilities
 import Types
-import Dictionary
-import Wordlists
+import Databases
 
 eval :: (Int, Parse) -> [Answer]
 eval (i, (def, tree, n))
