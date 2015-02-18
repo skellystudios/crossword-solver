@@ -301,7 +301,7 @@ clue 16
 clue 17 
   = Clue ("Animal returns to grass", 4)
 clue 18 
-  = Clue ("bums for deals without energy", 9)
+  = Clue ("bums mix for deals without energy", 9)
 clue 19 
   = Clue ("liberal posh wearing platinum with fancy cars to give rich people", 10)
 

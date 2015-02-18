@@ -23,15 +23,13 @@ evalTree t c
     evalTree' Null
       = []
     evalTree' (Ident s)
-      = filter (satisfies c) [s]
+      = [s]
     evalTree' (Anagram ind ws)
-      = delete s (anagrams s)
-      where
-        s = concat ws
+      = anagrams (concat ws)
     evalTree' (Synonym x)
       = synonyms x 
-    evalTree' (Concatenate xs)
-      = evalTrees xs c 
+    evalTree' (Concatenate ts)
+      = evalTrees ts c 
     evalTree' (Insertion ind t t')
       = concat [insertInto s s' | 
                   s' <- evalTree t' (resetMin (resetPrefix c)), 
