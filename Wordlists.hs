@@ -1,6 +1,7 @@
 
 module Wordlists (malenames, femalenames, wordlist, output_wordlist, thesaurus, output_thesaurus, decode_thes) where 
 
+import Debug.Trace
 import Data.Text
 import qualified Data.Set as Set
 import qualified Data.Text    as Text
@@ -36,7 +37,7 @@ read_bytes_malenames :: IO (Set.Set String)
 read_bytes_malenames = do
     return . decode =<< BS.readFile "malenames.bin"
     
-malenames = unsafePerformIO $ do read_bytes_malenames
+malenames = trace "Male names..." (unsafePerformIO $ do read_bytes_malenames)
 
 read_femalenames = do
     ls <- fmap Text.lines (Text.readFile "data/femalenames")
@@ -49,7 +50,7 @@ read_bytes_femalenames :: IO (Set.Set String)
 read_bytes_femalenames = do
     return . decode =<< BS.readFile "femalenames.bin"
     
-femalenames = unsafePerformIO $ do read_bytes_femalenames
+femalenames = trace "Female names" (unsafePerformIO $ do read_bytes_femalenames)
 
 read_wordlist = do
     ls <- fmap Text.lines (Text.readFile "data/straight-wordlist")
@@ -62,7 +63,7 @@ read_bytes_wordlist :: IO (Set.Set String)
 read_bytes_wordlist = do
     return . decode =<< BS.readFile "wordlist.bin"
     
-wordlist = unsafePerformIO $ do read_bytes_wordlist
+wordlist = trace "Word list..." (unsafePerformIO $ do read_bytes_wordlist)
 
 -- THESAURUS
 
@@ -79,7 +80,7 @@ read_bytes_thesaurus = do
 
 
 thesaurus :: Map.Map String [Int]    
-thesaurus = unsafePerformIO $ do read_bytes_thesaurus
+thesaurus = trace "Thesaurus..." (unsafePerformIO $ do read_bytes_thesaurus)
 
 
 -- KEYS
@@ -95,7 +96,7 @@ read_bytes_keys :: IO (Array Int String)
 read_bytes_keys = do
     return . decode =<< BS.readFile "keys.bin"
     
-keys = unsafePerformIO $ do read_bytes_keys
+keys = trace "Keys..." (unsafePerformIO $ do read_bytes_keys)
 
 
 

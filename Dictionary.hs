@@ -1,5 +1,6 @@
 module Dictionary where
 
+import Debug.Trace
 import qualified Data.Set as Set
 import Data.Map as Map
 
@@ -19,7 +20,7 @@ addedWords
 isPrefix s 
   = Set.member s allPrefixes
 
-allPrefixes = Set.fold addPrefixes Set.empty wordlist_extended'	
+allPrefixes = trace "Prefixes..." (Set.fold addPrefixes Set.empty wordlist_extended'	)
 
 addPrefixes word set = Set.union (Set.fromList (prefixes word)) set
 
