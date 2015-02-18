@@ -25,7 +25,7 @@ minLength table (Subtraction ind tree1 tree2)
 minLength table (Reversal ind tree) 
   = minLength table tree
 minLength table (Synonym string) 
-  = fst (maybe (error string) id (lookup string table)) -- minimum (map length (synonyms string))
+  = fst (maybe (error string) id (lookup (words string)  table)) -- minimum (map length (synonyms string))
 minLength table (FirstLetter ind strings) 
   = length strings
 minLength table (LastLetter ind strings) 
@@ -54,7 +54,7 @@ maxLength table (Subtraction ind tree1 tree2)
 maxLength table (Reversal ind tree) 
   = maxLength table tree
 maxLength table (Synonym string) 
-  = snd (maybe (error string) id (lookup string table)) -- maximum (map length (synonyms string))
+  = snd (maybe (error string) id (lookup (words string) table)) -- maximum (map length (synonyms string))
 maxLength table (FirstLetter ind strings) 
   = length strings
 maxLength table (LastLetter ind strings) 

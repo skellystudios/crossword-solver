@@ -33,10 +33,10 @@ evalTree t c
     evalTree' (Concatenate xs)
       = evalTrees xs c 
     evalTree' (Insertion ind t t')
-      = concat [insertInto s' s | 
-                  s <- evalTree t' (resetMin (resetPrefix c)), 
-                  let n = length s,
-                  s' <- evalTree t (shiftBounds (-n) (resetPrefix c))]
+      = concat [insertInto s s' | 
+                  s' <- evalTree t' (resetMin (resetPrefix c)), 
+                  let n = length s',
+                  s <- evalTree t (shiftBounds (-n) (resetPrefix c))]
     evalTree' (Subtraction ind t t')
       = concat [subtractFrom s s' | 
                   s <- evalTree t noConstraints, 
