@@ -5,6 +5,7 @@ import Data.List
 import qualified Data.Set as Set
 import qualified Data.Map as Map
 import Data.Char
+import Data.Either
   
 import Types
 import Databases
@@ -20,9 +21,10 @@ lowerCase (Clue (xs, n))
   = Clue (filter (not . isPunctuation) (map toLower xs), n)
 
 parse :: Clue -> [Parse]
-parse (Clue (c, n))
+parse clue
   = parseWithIndicator ws n ++ parseWithoutIndicator ws n
   where
+    Clue (c, n) = lowerCase clue
     ws = words c
 
 parseWithoutIndicator :: [String] -> Int -> [Parse]
@@ -189,9 +191,16 @@ cost (JuxtapositionIndicator p)
 
 --------------------------- EVALUATION ----------------------------
 
-checkSynonyms :: [Answer] -> [Answer]
-checkSynonyms
-  = filter checkSynonym
+checkSynonyms :: [Answer] -> Either [Answer] [Answer]
+checkSynonyms answers
+  | null sols = Left answers
+  | otherwise = Right sols
+  where
+    sols = filter checkSynonym answers
+
+checkSynonym :: Answer -> Bool
+checkSynonym (Answer string (def, clue, n))
+  = Set.member string (Set.fromList (synonyms def))  
 
 checkValidWords ::  [Answer] -> [Answer]
 checkValidWords
@@ -211,27 +220,27 @@ constrainParseLengths (Clue (c, n)) synTable ts
     hasValidLength (_, clue, _)
       = (minLength synTable clue <= n) && (maxLength synTable clue >= n) 
 
-checkSynonym :: Answer -> Bool
-checkSynonym (Answer string (def, clue, n))
-  = Set.member string (Set.fromList (synonyms def))  
-
-solve c@(Clue (s, n)) 
+solve c
   = (head' . checkSynonyms . evaluate synTable . sortByParseCost .
-     constrainParseLengths c' synTable . parse) c'
+     constrainParseLengths c synTable . parse) c
   where
-    c' = lowerCase c
+    Clue (s, _) = lowerCase c
     synTable = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
 
-parses c@(Clue (s, n))
-  = (sortByParseCost . constrainParseLengths c' synTable . parse) c'
+parses c
+  = (sortByParseCost . constrainParseLengths c synTable . parse) c
   where
-    c' = lowerCase c
+    Clue (s, _) = lowerCase c
     synTable = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
 
-head' []
-  = []
-head' xs
-  = [head xs]
+table c@(Clue (s, n))
+  = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
+
+head' (Left as)
+  = ("UNSOLVED", as)
+head' (Right sols)
+  = ("SOLVED", [head sols])
+
 ------------- SAMPLE CLUES ------------
 
 clue :: Int -> Clue
@@ -274,7 +283,10 @@ clue 18
   = Clue ("bums mix for deals without energy", 9)
 clue 19 
   = Clue ("liberal posh wearing platinum with fancy cars to give rich people", 10)
-
+clue 20
+  = Clue ("indications show surprising gains for example after recovery",7)
+clue 21 
+  = Clue ("Scholarly head of languages brought in", 7)
 grid
   = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
 

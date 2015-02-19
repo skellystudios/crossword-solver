@@ -9,6 +9,7 @@ import Data.List
 import Utilities
 import Types
 import Databases
+import LengthFunctions
 
 --evaluate :: SynonymTable -> [Parse] -> [Answer]
 evaluate synTable ts 
@@ -29,8 +30,8 @@ evaluate synTable ts
           = anagrams (concat ws)
         evalTree' (Synonym x)
           = synonyms x 
-        evalTree' (Concatenate ts)
-          = evalTrees ts c 
+        evalTree' t@(Concatenate ts)
+          = evalTrees ts c (minLength synTable t)  
         evalTree' (Insertion ind t t')
           = concat [insertInto s s' | 
                       s' <- evalTree t' (resetMin (resetPrefix c)), 
@@ -54,20 +55,26 @@ evaluate synTable ts
         evalTree' (JuxtapositionIndicator ind)
           = [""]
     
-    
-    evalTrees :: [ParseTree] -> Constraints -> [String]
-    evalTrees [t] c 
-      = evalTree t c
-    evalTrees (t : ts) c
+    -- m is the number of 'reserved' places and this gets reduced by the 
+    -- minimum length the current tree in each call to evalTrees (n).
+    -- The max constraint is initially that of the clue as a whole, but
+    -- gets reduced by the length of the current prefix (k) each time.
+    evalTrees :: [ParseTree] -> Constraints -> Int -> [String]
+    evalTrees [t] c m
+      = evalTree t (addToMax (n - m) (resetMin c))
+      where
+        n = minLength synTable t
+    evalTrees (t : ts) c m
       = concatMap evalRest sols
       where 
+        n = minLength synTable t
         evalRest s 
-          | checkPrefix s c = map (s++) (evalTrees ts c')
+          | checkPrefix s c = map (s++) (evalTrees ts c' (m - n))
           | otherwise       = []
                             where
-                              n = length s
-                              c' = shiftBounds (-n) (extendPrefix s c)
-        sols = [s' | s' <- evalTree t (resetMin c)]
+                              k = length s
+                              c' = addToMax (-k) (extendPrefix s c)
+        sols = [s' | s' <- evalTree t (addToMax (n - m) (resetMin c))]
     
 fromJust (Just x) = x
 fromJust _ = "NULL"
@@ -129,3 +136,6 @@ resetMax :: Constraints -> Constraints
 resetMax (Constraints p mn mx)
   = Constraints p mn Nothing
 
+addToMax :: Int -> Constraints -> Constraints
+addToMax n (Constraints p mn mx)
+  = Constraints p mn (add n mx)

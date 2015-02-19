@@ -13,6 +13,7 @@ import Data.ByteString.Lazy as BS
 import System.IO.Unsafe
 
 import Types
+import ManualData
 
 -- HEADLINE FUNCTIONS 
 
@@ -158,58 +159,6 @@ malesynonyms
 femalesynonyms
   = ["woman", "her", "her name", "name", "girl", "she"]
 
------- MANUAL ADDITIONS ------
-
-manualWords
-  = ["swanlake", "angela", "tuckerbag", "put food in this", "earnest request",
-     "kempton", "gateshead", "nigel"]
-
-manualSynonym "liberal" = ["l"] 
-manualSynonym "gateshead" = ["gateshead"] 
-manualSynonym "kempton" = ["kempton"] 
-manualSynonym "working" = ["on"] 
-manualSynonym "notice" = ["ack", "acknowledge", "sign"] 
-manualSynonym "coat" = ["jacket"]
-manualSynonym "companion" = ["friend", "escort", "mate"]
-manualSynonym "shredded" = ["changed", "stripped"]
-manualSynonym "corset" = ["basque"]
-manualSynonym "flying" = ["jet"] 
-manualSynonym "new" = ["n"] 
-manualSynonym "member" = ["leg"] 
-manualSynonym "woman" = ["angela"] 
-manualSynonym "pause" = ["hesitate"] 
-manualSynonym "ballet" = ["swanlake"] 
-manualSynonym "flyer" = ["airman"] 
-manualSynonym "stuff" = ["tuck"]
-manualSynonym "put food in this" = ["tuckerbag"]
-manualSynonym "home counties" = ["se"]
-manualSynonym "school" = ["groom"]
-manualSynonym "good" = ["g"]
-manualSynonym "small worker" = ["ant"]
-manualSynonym "hospital department" = ["ent"]
-manualSynonym "fondness" = ["endearment"]
-manualSynonym "about" = ["c"]
-manualSynonym "a thousand" = ["k", "m"]
-manualSynonym "church" = ["c"]
-manualSynonym "wine" = ["aseti"]
-manualSynonym "providing" = ["if"]
-manualSynonym "theme" = ["leitmotif"]
-manualSynonym "not public" = ["secret"]
-manualSynonym "earnest request" = ["prayer"]
-manualSynonym "paper in the street" = ["litter"]
-manualSynonym "article" = ["a", "an"]
-manualSynonym "girlfriend" = ["gf"]
-manualSynonym "tonight" = ["this evening"]
-manualSynonym "this evening" = ["tonight"]
-manualSynonym _ = []
-
-manualAbbreviation "spades" = ["s"]
-manualAbbreviation "river" = ["r"]
-manualAbbreviation "one" = ["i"]
-manualAbbreviation "very" = ["v"]
-manualAbbreviation "caught" = ["c"]
-manualAbbreviation "nationalist" = ["n"]
-manualAbbreviation _ = []
 
 ------- ABBREVIATONS --------
 

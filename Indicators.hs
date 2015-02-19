@@ -3,6 +3,7 @@ module Indicators where
 import qualified Data.Set as Set
 import Utilities
 
+isDefIndicator ["show"] = True
 isDefIndicator ["give"] = True
 isDefIndicator ["and"] = True
 isDefIndicator ["to"] = True
@@ -20,6 +21,7 @@ isDefIndicator ["for","a"] = True
 isDefIndicator _ = False
 
 
+isJuxtapositionIndicator ["after"] = True
 isJuxtapositionIndicator ["on"] = True
 isJuxtapositionIndicator ["next","to"] = True
 isJuxtapositionIndicator ["with"] = True
@@ -341,6 +343,7 @@ reverseInsertionIndicators = Set.fromList [
 
 
 
+isReversalIndicator ["after","recovery"] = True
 isReversalIndicator ["returned"] = True
 isReversalIndicator ["returns"] = True
 isReversalIndicator ["springs","back"] = True
@@ -354,9 +357,13 @@ isHiddenWordIndicator ["inside"] = True
 isHiddenWordIndicator _ = False
 
 isFirstLetterIndicator ["leader"] = True
+isFirstLetterIndicator ["leaders"] = True
+isFirstLetterIndicator ["all","leaders"] = True
+isFirstLetterIndicator ["all","leaders","in"] = True
 isFirstLetterIndicator ["at","first"] = True
 isFirstLetterIndicator ["first"] = True
 isFirstLetterIndicator ["head"] = True
+isFirstLetterIndicator ["head", "of"] = True
 isFirstLetterIndicator ["first","of"] = True
 isFirstLetterIndicator _ = False
 
@@ -1020,6 +1027,7 @@ anagramIndicators = Set.fromList [
   "special",
   "spilled",
   "spinning",
+  "splintered",
   "spoilt",
   "sprayed",
   "spread",
