@@ -7,21 +7,21 @@ isDefIndicator ["give"] = True
 isDefIndicator ["and"] = True
 isDefIndicator ["to"] = True
 isDefIndicator ["in"] = True
-isDefIndicator ["to", "get"] = True
-isDefIndicator ["to", "give"] = True
-isDefIndicator ["brings", "out"] = True
-isDefIndicator ["to", "make", "a"] = True
+isDefIndicator ["to","get"] = True
+isDefIndicator ["to","give"] = True
+isDefIndicator ["brings","out"] = True
+isDefIndicator ["to","make","a"] = True
 isDefIndicator ["for"] = True
 isDefIndicator ["is"] = True
 isDefIndicator ["providing"] = True
 isDefIndicator ["makes"] = True
-isDefIndicator ["made", "by"] = True
-isDefIndicator ["for", "a"] = True
+isDefIndicator ["made","by"] = True
+isDefIndicator ["for","a"] = True
 isDefIndicator _ = False
 
 
 isJuxtapositionIndicator ["on"] = True
-isJuxtapositionIndicator ["next", "to"] = True
+isJuxtapositionIndicator ["next","to"] = True
 isJuxtapositionIndicator ["with"] = True
 isJuxtapositionIndicator ["beside"] = True
 isJuxtapositionIndicator ["above"] = True
@@ -341,31 +341,31 @@ reverseInsertionIndicators = Set.fromList [
 
 
 
-isRIndicator ["returned"] = True
-isRIndicator ["returns"] = True
-isRIndicator ["springs", "back"] = True
-isRIndicator ["about"] = True
-isRIndicator _ = False
+isReversalIndicator ["returned"] = True
+isReversalIndicator ["returns"] = True
+isReversalIndicator ["springs","back"] = True
+isReversalIndicator ["about"] = True
+isReversalIndicator _ = False
 
-isHWIndicator ["found","in"] = True
-isHWIndicator ["needed","by"] = True
-isHWIndicator ["from"] = True
---isHWIndicator ["in"] = True
-isHWIndicator _ = False
+isHiddenWordIndicator ["found","in"] = True
+isHiddenWordIndicator ["needed","by"] = True
+isHiddenWordIndicator ["from"] = True
+isHiddenWordIndicator ["inside"] = True
+isHiddenWordIndicator _ = False
 
-isFLIndicator ["leader"] = True
-isFLIndicator ["at", "first"] = True
-isFLIndicator ["first"] = True
-isFLIndicator ["head"] = True
-isFLIndicator ["first", "of"] = True
-isFLIndicator _ = False
+isFirstLetterIndicator ["leader"] = True
+isFirstLetterIndicator ["at","first"] = True
+isFirstLetterIndicator ["first"] = True
+isFirstLetterIndicator ["head"] = True
+isFirstLetterIndicator ["first","of"] = True
+isFirstLetterIndicator _ = False
 
-isLLIndicator ["in", "the ", "end"] = True
-isLLIndicator ["end", "of"] = True
-isLLIndicator _ = False
+isLastLetterIndicator ["in","the ","end"] = True
+isLastLetterIndicator ["end","of"] = True
+isLastLetterIndicator _ = False
 
-isPartOfIndicator ["bit", "of"] = True
-isPartOfIndicator ["part", "of"] = True
+isPartOfIndicator ["bit","of"] = True
+isPartOfIndicator ["part","of"] = True
 isPartOfIndicator ["mostly"] = True
 isPartOfIndicator ["partly"] = True
 isPartOfIndicator ["almost"] = True

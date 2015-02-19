@@ -11,15 +11,14 @@ data ParseTree = Null |
                  Ident String |
                  JuxtapositionIndicator [String] |
                  Concatenate [ParseTree] |
-                 Juxtapose ParseTree ParseTree |
                  Synonym String |
                  Anagram Anagrind [String] |
                  Insertion InsertionIndicator ParseTree ParseTree |
                  Subtraction SubtractionIndicator ParseTree ParseTree |
-                 HiddenWord HWIndicator [String] |
+                 HiddenWord HiddenWordIndicator [String] |
                  Reversal ReversalIndicator ParseTree |
-                 FirstLetter FLIndicator [String] |
-                 LastLetter LLIndicator [String] |
+                 FirstLetter FirstLetterIndicator [String] |
+                 LastLetter LastLetterIndicator [String] |
                  PartOf PartOfIndicator ParseTree 
                 deriving (Show, Eq, Ord)
 
@@ -35,8 +34,8 @@ type Anagrind = [String]
 type InsertionIndicator = [String] 
 type SubtractionIndicator = [String] 
 type ReversalIndicator = [String] 
-type HWIndicator = [String] 
-type FLIndicator = [String] 
-type LLIndicator = [String] 
+type HiddenWordIndicator = [String] 
+type FirstLetterIndicator = [String] 
+type LastLetterIndicator = [String] 
 type PartOfIndicator = [String] 
 

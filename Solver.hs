@@ -1,14 +1,10 @@
 module Main where 
 
 import Debug.Trace
-import Data.Functor
 import Data.List  
 import qualified Data.Set as Set
 import qualified Data.Map as Map
-import System.Environment   
-import System.Timeout
 import Data.Char
-import Data.Binary
   
 import Types
 import Databases
@@ -17,15 +13,11 @@ import Indicators
 import Evaluation
 import LengthFunctions
 
-import ClueBank
-import Guardian
-import Everyman
-
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
 
 lowerCase :: Clue -> Clue
 lowerCase (Clue (xs, n))
-  = Clue (map toLower xs, n)
+  = Clue (filter (not . isPunctuation) (map toLower xs), n)
 
 parse :: Clue -> [Parse]
 parse (Clue (c, n))
@@ -49,9 +41,10 @@ parseWithIndicator ws n
        p <- parseClue ws'''] 
 
 parseClue :: [String] -> [ParseTree]
+parseClue [w]
+  = parseWithoutConcat [w]
 parseClue ws
-  | length ws > 1 = parseWithConcat ws ++ parseWithoutConcat ws
-  | otherwise     = parseWithoutConcat ws
+  = parseWithoutConcat ws ++ parseWithConcat ws 
 
 parseWithoutConcat :: [String] -> [ParseTree]
 parseWithoutConcat ws
@@ -73,16 +66,9 @@ parseWithConcat xs
     ps = concatMap (sequence . parseSubpart) (filter ((>1) . length) (partitions xs))
     parseSubpart part = [parseWithoutConcat subpart | subpart <- part]
 
-parseJuxtapositionIndicators :: [String] -> [ParseTree]
-parseJuxtapositionIndicators xs
-  = if isJuxtapositionIndicator xs then [JuxtapositionIndicator xs] else []
-
 parseSynonyms :: [String] -> [ParseTree]
 parseSynonyms ws
-  | null (synonyms s) = []
-  | otherwise         = [Synonym s] 
-  where
-    s = unwords ws
+  = [Synonym (unwords ws)] 
 
 parseAnagrams :: [String] -> [ParseTree]
 parseAnagrams ws
@@ -122,26 +108,26 @@ parseReversals :: [String] -> [ParseTree]
 parseReversals ws 
   = [Reversal ws p | 
       (ws, ws') <- split2' ws, 
-      isRIndicator ws, 
+      isReversalIndicator ws, 
       p <- parseClue ws']  
 
 parseHiddenWords :: [String] -> [ParseTree]
 parseHiddenWords ws
   = [HiddenWord ws ws' | 
       (ws, ws') <- split2 ws, 
-      isHWIndicator ws]
+      isHiddenWordIndicator ws]
 
 parseFirstLetters :: [String] -> [ParseTree]
 parseFirstLetters ws
   = [FirstLetter ws ws' | 
       (ws, ws') <- split2' ws,
-      isFLIndicator ws]
+      isFirstLetterIndicator ws]
 
 parseLastLetters :: [String] -> [ParseTree]
 parseLastLetters ws
   = [LastLetter ws ws' | 
       (ws, ws') <- split2' ws,
-      isLLIndicator ws]
+      isLastLetterIndicator ws]
 
 parsePartOf :: [String] -> [ParseTree]
 parsePartOf ws
@@ -150,6 +136,10 @@ parsePartOf ws
       isPartOfIndicator ws, 
       p <- map simplify (parseClue ws'),
       p /= Null]
+
+parseJuxtapositionIndicators :: [String] -> [ParseTree]
+parseJuxtapositionIndicators xs
+  = if isJuxtapositionIndicator xs then [JuxtapositionIndicator xs] else []
 
 simplify (Concatenate ts)
   = simpleConcat (map simplify ts)

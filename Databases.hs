@@ -1,4 +1,4 @@
-module Databases (isInWordlist, isPrefix, malenames, femalenames, wordlist, thesaurus, synonyms) where 
+module Databases (isInWordlist, isPrefix, malenames, femalenames, wordlist, allPrefixes, thesaurus, synonyms) where 
 
 import Debug.Trace
 import Data.Text
