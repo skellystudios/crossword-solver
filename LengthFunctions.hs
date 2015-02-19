@@ -29,8 +29,6 @@ minLength table (FirstLetter ind strings)
   = length strings
 minLength table (LastLetter ind strings) 
   = length strings
-minLength table (Juxtapose one two) 
-  = minLength table one + minLength table two
 minLength table (PartOf ind tree) 
   = 1
 minLength table (JuxtapositionIndicator xs) 
@@ -58,8 +56,6 @@ maxLength table (FirstLetter ind strings)
   = length strings
 maxLength table (LastLetter ind strings) 
   = length strings
-maxLength table (Juxtapose one two) 
-  = maxLength table one + maxLength table two
 maxLength table (PartOf ind tree) 
   = (maxLength table tree) - 1
 maxLength table (JuxtapositionIndicator xs) 

@@ -5,6 +5,8 @@ data Clue = Clue (String, Int)
 
 data Clue2 = Clue2 String (Int)
 
+type SynonymTable = [([String], (Int, Int))]
+
 type Parse = (String, ParseTree, Int)
 
 data ParseTree = Null |

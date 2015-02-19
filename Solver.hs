@@ -182,8 +182,6 @@ cost (FirstLetter ind strings)
   = 20
 cost (LastLetter ind strings)
   = 20
-cost (Juxtapose one two)
-  = 150
 cost (PartOf ind t)
   = 60 + cost t
 cost (JuxtapositionIndicator p)
@@ -206,11 +204,10 @@ isValidWord (Answer x (y, z, n))
 sortByParseCost ts
   = zip [(0::Int)..] (map snd . sort . map (\x -> (parseCost x, x)) $ ts)
 
-constrainParseLengths :: Clue -> [Parse] -> [Parse]
-constrainParseLengths (Clue (c, n)) ts
+constrainParseLengths :: Clue -> SynonymTable -> [Parse] -> [Parse]
+constrainParseLengths (Clue (c, n)) synTable ts
   = filter hasValidLength ts
   where 
-    synTable = [(w, (minimum ns, maximum ns)) | w <- substrings (words c), let ns = map length (synonyms (unwords w))]
     hasValidLength (_, clue, _)
       = (minLength synTable clue <= n) && (maxLength synTable clue >= n) 
 
@@ -218,13 +215,18 @@ checkSynonym :: Answer -> Bool
 checkSynonym (Answer string (def, clue, n))
   = Set.member string (Set.fromList (synonyms def))  
 
-solve c
-  = (head' . checkSynonyms . evaluate . sortByParseCost .  constrainParseLengths c' . parse) c'
+solve c@(Clue (s, n)) 
+  = (head' . checkSynonyms . evaluate synTable . sortByParseCost .
+     constrainParseLengths c' synTable . parse) c'
   where
     c' = lowerCase c
+    synTable = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
 
-parses c
-  = (sortByParseCost . constrainParseLengths c . parse . lowerCase) c
+parses c@(Clue (s, n))
+  = (sortByParseCost . constrainParseLengths c' synTable . parse) c'
+  where
+    c' = lowerCase c
+    synTable = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
 
 head' []
   = []

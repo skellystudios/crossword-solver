@@ -10,67 +10,65 @@ import Utilities
 import Types
 import Databases
 
-eval :: (Int, Parse) -> [Answer]
-eval (i, (def, tree, n))
-  = trace (show i) ([Answer x (def, tree, n) | 
-       x <- evalTree tree (Constraints (Just "") (Just n) (Just n))])
-
-evalTree :: ParseTree -> Constraints -> [String]
-evalTree t c
-  = filter (satisfies c) (evalTree' t)
+--evaluate :: SynonymTable -> [Parse] -> [Answer]
+evaluate synTable ts 
+  = concatMap eval ts
   where
-    evalTree' Null
-      = []
-    evalTree' (Ident s)
-      = [s]
-    evalTree' (Anagram ind ws)
-      = anagrams (concat ws)
-    evalTree' (Synonym x)
-      = synonyms x 
-    evalTree' (Concatenate ts)
-      = evalTrees ts c 
-    evalTree' (Insertion ind t t')
-      = concat [insertInto s s' | 
-                  s' <- evalTree t' (resetMin (resetPrefix c)), 
-                  let n = length s',
-                  s <- evalTree t (shiftBounds (-n) (resetPrefix c))]
-    evalTree' (Subtraction ind t t')
-      = concat [subtractFrom s s' | 
-                  s <- evalTree t noConstraints, 
-                  let n = length s,
-                  s' <- evalTree t' (shiftBounds n c)]
-    evalTree' (HiddenWord ind ws)
-      = [subs | subs <- substrings (concat ws)]
-    evalTree' (Reversal ind t)
-      = map reverse (evalTree t (resetPrefix c))
-    evalTree' (FirstLetter ind ys)
-      = [map head ys]
-    evalTree' (LastLetter ind ys)
-      = [map last ys]
-    evalTree' (PartOf ind t)
-      = concatMap partials (evalTree t noConstraints)
-    evalTree' (JuxtapositionIndicator ind)
-      = [""]
-
-
-evalTrees :: [ParseTree] -> Constraints -> [String]
-evalTrees [t] c 
-  = evalTree t c
-evalTrees (t : ts) c
-  = concatMap evalRest sols
-  where 
-    evalRest s 
-      | checkPrefix s c = map (s++) (evalTrees ts c')
-      | otherwise       = []
-                        where
-                          n = length s
-                          c' = shiftBounds (-n) (extendPrefix s c)
-    sols = [s' | s' <- evalTree t (resetMin c)]
-
---evaluate :: [Parse] -> [Answer]
-evaluate 
-  = concatMap eval 
-
+    eval (i, (def, tree, n)) 
+      = trace (show i) ([Answer x (def, tree, n) | 
+           x <- evalTree tree (Constraints (Just "") (Just n) (Just n))])
+    evalTree :: ParseTree -> Constraints -> [String]
+    evalTree t c
+      = filter (satisfies c) (evalTree' t)
+      where
+        evalTree' Null
+          = []
+        evalTree' (Ident s)
+          = [s]
+        evalTree' (Anagram ind ws)
+          = anagrams (concat ws)
+        evalTree' (Synonym x)
+          = synonyms x 
+        evalTree' (Concatenate ts)
+          = evalTrees ts c 
+        evalTree' (Insertion ind t t')
+          = concat [insertInto s s' | 
+                      s' <- evalTree t' (resetMin (resetPrefix c)), 
+                      let n = length s',
+                      s <- evalTree t (shiftBounds (-n) (resetPrefix c))]
+        evalTree' (Subtraction ind t t')
+          = concat [subtractFrom s s' | 
+                      s <- evalTree t noConstraints, 
+                      let n = length s,
+                      s' <- evalTree t' (shiftBounds n c)]
+        evalTree' (HiddenWord ind ws)
+          = [subs | subs <- substrings (concat ws)]
+        evalTree' (Reversal ind t)
+          = map reverse (evalTree t (resetPrefix c))
+        evalTree' (FirstLetter ind ys)
+          = [map head ys]
+        evalTree' (LastLetter ind ys)
+          = [map last ys]
+        evalTree' (PartOf ind t)
+          = concatMap partials (evalTree t noConstraints)
+        evalTree' (JuxtapositionIndicator ind)
+          = [""]
+    
+    
+    evalTrees :: [ParseTree] -> Constraints -> [String]
+    evalTrees [t] c 
+      = evalTree t c
+    evalTrees (t : ts) c
+      = concatMap evalRest sols
+      where 
+        evalRest s 
+          | checkPrefix s c = map (s++) (evalTrees ts c')
+          | otherwise       = []
+                            where
+                              n = length s
+                              c' = shiftBounds (-n) (extendPrefix s c)
+        sols = [s' | s' <- evalTree t (resetMin c)]
+    
 fromJust (Just x) = x
 fromJust _ = "NULL"
 
