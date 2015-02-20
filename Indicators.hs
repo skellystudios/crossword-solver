@@ -808,6 +808,7 @@ anagramIndicators = Set.fromList [
   "metamorphosis",
   "mince",
   "mint",
+  "misbehaves",
   "misbehaving",
   "mischievously",
   "misfit",
