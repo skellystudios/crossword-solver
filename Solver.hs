@@ -8,11 +8,13 @@ import Data.Char
 import Data.Either
   
 import Types
+import ManualData
 import Databases
 import Utilities
 import Indicators
 import Evaluation
 import LengthFunctions
+import Prefixes
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
 
@@ -211,7 +213,7 @@ isValidWord (Answer x (y, z, n))
   = isInWordlist x 
 
 sortByParseCost ts
-  = zip [(0::Int)..] (map snd . sort . map (\x -> (parseCost x, x)) $ ts)
+  = zip (zip [(0::Int)..] (repeat (length ts))) (map snd . sort . map (\x -> (parseCost x, x)) $ ts)
 
 constrainParseLengths :: Clue -> SynonymTable -> [Parse] -> [Parse]
 constrainParseLengths (Clue (c, n)) synTable ts
@@ -220,12 +222,15 @@ constrainParseLengths (Clue (c, n)) synTable ts
     hasValidLength (_, clue, _)
       = (minLength synTable clue <= n) && (maxLength synTable clue >= n) 
 
+makeTable s
+  = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
+
 solve c
   = (head' . checkSynonyms . evaluate synTable . sortByParseCost .
      constrainParseLengths c synTable . parse) c
   where
     Clue (s, _) = lowerCase c
-    synTable = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
+    synTable = makeTable s
 
 parses c
   = (sortByParseCost . constrainParseLengths c synTable . parse) c
@@ -287,6 +292,8 @@ clue 20
   = Clue ("indications show surprising gains for example after recovery",7)
 clue 21 
   = Clue ("Scholarly head of languages brought in", 7)
+clue 22 
+  = Clue ("A zebra dropping guts, munching bitter plant",6)
 grid
   = [("companion shredded corset", "??1???"), ("notice in flying coat", "??0??")]
 

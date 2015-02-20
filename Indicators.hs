@@ -21,6 +21,7 @@ isDefIndicator ["for","a"] = True
 isDefIndicator _ = False
 
 
+isJuxtapositionIndicator ["opposite"] = True
 isJuxtapositionIndicator ["after"] = True
 isJuxtapositionIndicator ["on"] = True
 isJuxtapositionIndicator ["next","to"] = True
@@ -189,6 +190,7 @@ reverseInsertionIndicators = Set.fromList [
 	"surrounds",
 	"including",
 	"housing",
+  "munching",
 	"outside",
 	"outwardly",
 	"overwhelms",
@@ -371,6 +373,7 @@ isLastLetterIndicator ["in","the ","end"] = True
 isLastLetterIndicator ["end","of"] = True
 isLastLetterIndicator _ = False
 
+isPartOfIndicator ["dropping","guts"] = True
 isPartOfIndicator ["bit","of"] = True
 isPartOfIndicator ["part","of"] = True
 isPartOfIndicator ["mostly"] = True
@@ -380,6 +383,8 @@ isPartOfIndicator ["nearly"] = True
 isPartOfIndicator ["tailless"] = True
 isPartOfIndicator _ = False
 
+isSubtractionIndicator ["having removed"] = True
+isSubtractionIndicator ["dropping"] = True
 isSubtractionIndicator ["leaving"] = True
 isSubtractionIndicator ["without"] = True
 isSubtractionIndicator ["letting","slip"] = True
@@ -392,6 +397,8 @@ anagramIndicators = Set.fromList [
   "amended",
   "advantage",
   "abandoned",
+  "aberration",
+  "aberrations",
   "abnormal",
   "about",
   "absurd",
@@ -619,6 +626,7 @@ anagramIndicators = Set.fromList [
   "eruption",
   "evolution",
   "exchange",
+  "exchanged",
   "excited",
   "exercising",
   "exotic",
@@ -832,6 +840,7 @@ anagramIndicators = Set.fromList [
   "moving",
   "muddled",
   "muff",
+  "munching",
   "mushy",
   "mutation",
   "mutilation",

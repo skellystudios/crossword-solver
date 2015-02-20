@@ -10,6 +10,8 @@ import Utilities
 import Types
 import Databases
 import LengthFunctions
+import ManualData
+import Prefixes
 
 --evaluate :: SynonymTable -> [Parse] -> [Answer]
 evaluate synTable ts 

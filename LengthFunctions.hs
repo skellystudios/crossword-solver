@@ -4,6 +4,7 @@ import Data.Maybe
 import Types
 import Databases
 import Indicators
+import ManualData
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
 
@@ -20,7 +21,7 @@ minLength table (HiddenWord ind strings)
 minLength table (Insertion ind tree1 tree2) 
   = (minLength table tree1) + (minLength table tree2)
 minLength table (Subtraction ind tree1 tree2) 
-  = min (minLength table tree2 - maxLength table tree1) 3
+  = max (minLength table tree1 - maxLength table tree2) 1
 minLength table (Reversal ind tree) 
   = minLength table tree
 minLength table (Synonym string) 
@@ -47,7 +48,7 @@ maxLength table (HiddenWord ind strings)
 maxLength table (Insertion ind tree1 tree2) 
   = (maxLength table tree1) + (maxLength table tree2)
 maxLength table (Subtraction ind tree1 tree2) 
-  = max (maxLength table tree2 - minLength table tree1) 3
+  = max (maxLength table tree1 - minLength table tree2) 1
 maxLength table (Reversal ind tree) 
   = maxLength table tree
 maxLength table (Synonym string) 
