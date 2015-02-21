@@ -11,7 +11,7 @@ type Parse = (String, ParseTree, Int)
 
 data ParseTree = Null |
                  Ident String |
-                 JuxtapositionIndicator [String] |
+                 Juxtaposition JuxtapositionIndicator ParseTree ParseTree |
                  Concatenate [ParseTree] |
                  Synonym String |
                  Anagram Anagrind [String] |
@@ -40,4 +40,4 @@ type HiddenWordIndicator = [String]
 type FirstLetterIndicator = [String] 
 type LastLetterIndicator = [String] 
 type PartOfIndicator = [String] 
-
+type JuxtapositionIndicator = [String]

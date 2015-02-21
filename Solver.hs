@@ -61,7 +61,7 @@ parseWithoutConcat ws
     parseFirstLetters ws ++
     parseLastLetters ws ++
     parsePartOf ws ++
-    parseJuxtapositionIndicators ws 
+    parseJuxtapositions ws 
 
 parseWithConcat :: [String] -> [ParseTree]
 parseWithConcat xs
@@ -141,9 +141,19 @@ parsePartOf ws
       p <- map simplify (parseClue ws'),
       p /= Null]
 
-parseJuxtapositionIndicators :: [String] -> [ParseTree]
-parseJuxtapositionIndicators xs
-  = if isJuxtapositionIndicator xs then [JuxtapositionIndicator xs] else []
+parseJuxtapositions :: [String] -> [ParseTree]
+parseJuxtapositions ws
+  = let parts = split3 ws
+    in [Juxtaposition ws' p p'' | 
+         (ws, ws', ws'') <- parts,
+         isJuxtapositionIndicator ws', 
+         p <- parseClue ws, 
+         p'' <- parseClue ws''] ++
+       [Juxtaposition ws' p'' p | 
+         (ws'', ws', ws) <- parts,
+         isReverseJuxtapositionIndicator ws', 
+         p <- parseClue ws, 
+         p'' <- parseClue ws''] 
 
 simplify (Concatenate ts)
   = simpleConcat (map simplify ts)
@@ -188,8 +198,8 @@ cost (LastLetter ind strings)
   = 20
 cost (PartOf ind t)
   = 60 + cost t
-cost (JuxtapositionIndicator p)
-  = 0
+cost (Juxtaposition ind t1 t2)
+  = cost (Concatenate [t1, t2])
 
 --------------------------- EVALUATION ----------------------------
 

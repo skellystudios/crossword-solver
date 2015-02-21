@@ -32,8 +32,8 @@ minLength table (LastLetter ind strings)
   = length strings
 minLength table (PartOf ind tree) 
   = 1
-minLength table (JuxtapositionIndicator xs) 
-  = 0
+minLength table (Juxtaposition ind tree1 tree2) 
+  = minLength table (Concatenate [tree1, tree2])
 
 maxLength table Null 
   = 0
@@ -59,5 +59,5 @@ maxLength table (LastLetter ind strings)
   = length strings
 maxLength table (PartOf ind tree) 
   = (maxLength table tree) - 1
-maxLength table (JuxtapositionIndicator xs) 
-  = 0
+maxLength table (Juxtaposition ind tree1 tree2) 
+  = maxLength table (Concatenate [tree1, tree2])

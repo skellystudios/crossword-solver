@@ -54,8 +54,8 @@ evaluate synTable ts
           = [map last ys]
         evalTree' (PartOf ind t)
           = concatMap partials (evalTree t noConstraints)
-        evalTree' (JuxtapositionIndicator ind)
-          = [""]
+        evalTree' (Juxtaposition ind t t')
+          = evalTree' (Concatenate [t, t'])
     
     -- m is the number of 'reserved' places and this gets reduced by the 
     -- minimum length the current tree in each call to evalTrees (n).

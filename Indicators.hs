@@ -21,8 +21,10 @@ isDefIndicator ["for","a"] = True
 isDefIndicator _ = False
 
 
-isJuxtapositionIndicator ["opposite"] = True
-isJuxtapositionIndicator ["after"] = True
+isReverseJuxtapositionIndicator ["opposite"] = True
+isReverseJuxtapositionIndicator ["after"] = True
+isReverseJuxtapositionIndicator _ = False
+
 isJuxtapositionIndicator ["on"] = True
 isJuxtapositionIndicator ["next","to"] = True
 isJuxtapositionIndicator ["with"] = True

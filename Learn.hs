@@ -17,7 +17,7 @@ type ParseTree' = ((String, Int), ParseTree'')
 
 data ParseTree'' = Null' |
                   Ident' String |
-                  JuxtapositionIndicator' [String] |
+                  Juxtaposition' JuxtapositionIndicator [ParseTree'] [ParseTree'] |
                   Concatenate' [[ParseTree']] |
                   Synonym' String |
                   Anagram' Anagrind [String] |
@@ -87,8 +87,13 @@ match s (PartOf ind t)
        s' <- partials s,
        let m = match s' t,
        not (null m)]
-match s (JuxtapositionIndicator ind)
-  = [((s, -1000), JuxtapositionIndicator' ind)]
+match s (Juxtaposition ind t t')
+  = [((s, score ts'), Juxtaposition' ind (ts' !! 0) (ts' !! 1)) |
+       p <- partitions s, length p == length ts,
+       let ts' = zipWith match p ts,
+       all (not.null) ts'] 
+  where
+    ts = [t, t']
 
 
 --evaluate :: SynonymTable -> [Parse] -> [Answer]
@@ -132,8 +137,8 @@ evaluate synTable ts
           = [map last ys]
         evalTree' (PartOf ind t)
           = concatMap partials (evalTree t noConstraints)
-        evalTree' (JuxtapositionIndicator ind)
-          = [""]
+        evalTree' (Juxtaposition ind t t')
+          = evalTree' (Concatenate [t, t'])
     
     -- m is the number of 'reserved' places and this gets reduced by the 
     -- minimum length the current tree in each call to evalTrees (n).
