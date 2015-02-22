@@ -21,7 +21,7 @@ evaluate ts synTable
            x <- evalTree tree (Constraints (Just "") (Just n) (Just n))])
     evalTree :: ParseTree -> Constraints -> [String]
     evalTree t c
-      = filter (flip satisfies c) (evalTree' t)
+      = trace (show c) (filter (flip satisfies c) (evalTree' t))
       where
         evalTree' Null
           = []
@@ -123,11 +123,11 @@ shiftBounds n (Constraints p mn mx)
   = Constraints p (add n mn) (add n mx)
 
 noConstraints 
-  = (Constraints Nothing Nothing Nothing)
+  = (Constraints (Just "") Nothing Nothing)
 
 resetPrefix :: Constraints -> Constraints
 resetPrefix (Constraints p mn mx)
-  = Constraints Nothing mn mx
+  = Constraints (Just "") mn mx
 
 resetMin :: Constraints -> Constraints
 resetMin (Constraints p mn mx)
