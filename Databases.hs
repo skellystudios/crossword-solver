@@ -1,4 +1,4 @@
-module Databases (wordlist, thesaurus, keys, malenames, femalenames) where 
+module Databases (wordlist, thesaurus, keys, malenames, femalenames, isInWordlist, isPrefix) where 
 
 import Debug.Trace
 import Data.Text
@@ -16,6 +16,10 @@ import Types
 import Utilities
 
 -- WORDLISTS
+
+manualWords
+  = ["i need", "swanlake", "angela", "tuckerbag", "put food in this", "earnest request",
+     "kempton"]
 
 read_malenames = do
     ls <- fmap Text.lines (Text.readFile "data/malenames")
@@ -104,4 +108,28 @@ map_read = read
 
 string_read :: String -> [String]
 string_read = read
+
+
+------ WORD LOOKUP ------
+
+allWords
+  = Set.union (Set.fromList (Map.keys thesaurus)) extendedWordList
+  where
+    extendedWordList = Set.union (Set.fromList manualWords) wordlist
+
+isInWordlist w 
+  = Set.member w allWords
+
+------ PREFIXES ------
+
+allPrefixes
+  = trace "Prefixes..." (Set.fromList (Prelude.concatMap prefixes (Set.elems allWords)))
+
+prefixes []
+  = []
+prefixes (c : cs)
+  = [c] : Prelude.map (c :) (prefixes cs)
+
+isPrefix s 
+  = Set.member s allPrefixes
 

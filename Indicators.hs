@@ -382,6 +382,7 @@ isPartOfIndicator ["mostly"] = True
 isPartOfIndicator ["partly"] = True
 isPartOfIndicator ["almost"] = True
 isPartOfIndicator ["nearly"] = True
+isPartOfIndicator ["headless"] = True
 isPartOfIndicator ["tailless"] = True
 isPartOfIndicator _ = False
 

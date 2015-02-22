@@ -11,7 +11,6 @@ import Types
 import Databases
 import LengthFunctions
 import ManualData
-import Prefixes
 
 type ParseTree' = ((String, Int), ParseTree'')
 
