@@ -8,56 +8,57 @@ import ManualData
 
 ------------ LENGTH EVALUATION FUNCTIONS -----------------
 
-minLength table Null 
+minLength :: ParseTree -> [([String], (Int, Int))] -> Int
+minLength Null table
   = 0
-minLength table (Ident s) 
+minLength (Ident s) table
   = length s
-minLength table (Concatenate trees) 
-  = (sum . map (minLength table)) trees
-minLength table (Anagram ind strings) 
+minLength (Concatenate trees) table
+  = (sum . map (flip minLength table)) trees
+minLength (Anagram ind strings) table
   = (length . concat) strings
-minLength table (HiddenWord ind strings) 
+minLength (HiddenWord ind strings) table
   = 2
-minLength table (Insertion ind tree1 tree2) 
-  = (minLength table tree1) + (minLength table tree2)
-minLength table (Subtraction ind tree1 tree2) 
-  = max (minLength table tree1 - maxLength table tree2) 1
-minLength table (Reversal ind tree) 
-  = minLength table tree
-minLength table (Synonym string) 
-  = fst (maybe (error string) id (lookup (words string)  table)) -- minimum (map length (synonyms string))
-minLength table (FirstLetter ind strings) 
+minLength (Insertion ind tree1 tree2) table
+  = (minLength tree1 table) + (minLength tree2 table)
+minLength (Subtraction ind tree1 tree2) table
+  = max (minLength tree1 table - maxLength tree2 table) 1
+minLength (Reversal ind tree) table
+  = minLength tree table
+minLength (Synonym string) table
+  = fst (maybe (error string) id (lookup (words string) table)) -- minimum (map length (synonyms string))
+minLength (FirstLetter ind strings) table
   = length strings
-minLength table (LastLetter ind strings) 
+minLength (LastLetter ind strings) table
   = length strings
-minLength table (PartOf ind tree) 
+minLength (PartOf ind tree) table
   = 1
-minLength table (Juxtaposition ind tree1 tree2) 
-  = minLength table (Concatenate [tree1, tree2])
+minLength (Juxtaposition ind tree1 tree2) table
+  = minLength (Concatenate [tree1, tree2]) table
 
-maxLength table Null 
+maxLength Null table
   = 0
-maxLength table (Ident s) 
+maxLength (Ident s) table
   = length s
-maxLength table (Concatenate trees) 
-  = (sum . map (maxLength table)) trees
-maxLength table (Anagram ind strings) 
+maxLength (Concatenate trees) table
+  = (sum . map (flip maxLength table)) trees
+maxLength (Anagram ind strings) table
   = (length . concat) strings
-maxLength table (HiddenWord ind strings) 
+maxLength (HiddenWord ind strings) table
   = (length . concat $ strings) - 2
-maxLength table (Insertion ind tree1 tree2) 
-  = (maxLength table tree1) + (maxLength table tree2)
-maxLength table (Subtraction ind tree1 tree2) 
-  = max (maxLength table tree1 - minLength table tree2) 1
-maxLength table (Reversal ind tree) 
-  = maxLength table tree
-maxLength table (Synonym string) 
+maxLength (Insertion ind tree1 tree2) table
+  = (maxLength tree1 table) + (maxLength tree2 table)
+maxLength (Subtraction ind tree1 tree2) table
+  = max (maxLength tree1 table - minLength tree2 table) 1
+maxLength (Reversal ind tree) table
+  = maxLength tree table
+maxLength (Synonym string) table
   = snd (maybe (error string) id (lookup (words string) table)) -- maximum (map length (synonyms string))
-maxLength table (FirstLetter ind strings) 
+maxLength (FirstLetter ind strings) table
   = length strings
-maxLength table (LastLetter ind strings) 
+maxLength (LastLetter ind strings) table
   = length strings
-maxLength table (PartOf ind tree) 
-  = (maxLength table tree) - 1
-maxLength table (Juxtaposition ind tree1 tree2) 
-  = maxLength table (Concatenate [tree1, tree2])
+maxLength (PartOf ind tree) table
+  = (maxLength tree table) - 1
+maxLength (Juxtaposition ind tree1 tree2) table
+  = maxLength (Concatenate [tree1, tree2]) table

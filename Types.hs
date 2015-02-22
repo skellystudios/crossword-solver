@@ -1,11 +1,11 @@
 module Types where 
 
+type Words = [String]
+
 data Clue = Clue (String, Int)
 	deriving (Show)
 
-data Clue2 = Clue2 String (Int)
-
-type SynonymTable = [([String], (Int, Int))]
+type SynonymTable = [(Words, (Int, Int))]
 
 type Parse = (String, ParseTree, Int)
 
@@ -14,13 +14,13 @@ data ParseTree = Null |
                  Juxtaposition JuxtapositionIndicator ParseTree ParseTree |
                  Concatenate [ParseTree] |
                  Synonym String |
-                 Anagram Anagrind [String] |
+                 Anagram Anagrind Words |
                  Insertion InsertionIndicator ParseTree ParseTree |
                  Subtraction SubtractionIndicator ParseTree ParseTree |
-                 HiddenWord HiddenWordIndicator [String] |
+                 HiddenWord HiddenWordIndicator Words |
                  Reversal ReversalIndicator ParseTree |
-                 FirstLetter FirstLetterIndicator [String] |
-                 LastLetter LastLetterIndicator [String] |
+                 FirstLetter FirstLetterIndicator Words |
+                 LastLetter LastLetterIndicator Words |
                  PartOf PartOfIndicator ParseTree 
                 deriving (Show, Eq, Ord)
 
@@ -32,12 +32,15 @@ getParse (Answer s p)
 getAnswer (Answer s p)
   = s
 
-type Anagrind = [String]
-type InsertionIndicator = [String] 
-type SubtractionIndicator = [String] 
-type ReversalIndicator = [String] 
-type HiddenWordIndicator = [String] 
-type FirstLetterIndicator = [String] 
-type LastLetterIndicator = [String] 
-type PartOfIndicator = [String] 
-type JuxtapositionIndicator = [String]
+type Anagrind = Words
+type InsertionIndicator = Words 
+type SubtractionIndicator = Words 
+type ReversalIndicator = Words 
+type HiddenWordIndicator = Words 
+type FirstLetterIndicator = Words 
+type LastLetterIndicator = Words 
+type PartOfIndicator = Words 
+type JuxtapositionIndicator = Words
+
+type Pairs = [(Words, Words)]
+type Triples = [(Words, Words, Words)]

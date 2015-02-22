@@ -12,7 +12,6 @@ import ManualData
 import Databases
 import Utilities
 import Indicators
-import Learn
 import Evaluation
 import LengthFunctions
 
@@ -50,19 +49,6 @@ parseClue [w]
 parseClue ws
   = parseWithoutConcat ws ++ parseWithConcat ws 
 
-parseWithoutConcat :: [String] -> [ParseTree]
-parseWithoutConcat ws
-  = parseSynonyms ws ++
-    parseAnagrams ws ++
-    parseHiddenWords ws ++
-    parseInsertions ws ++
-    parseSubtractions ws ++
-    parseReversals ws ++
-    parseFirstLetters ws ++
-    parseLastLetters ws ++
-    parsePartOf ws ++
-    parseJuxtapositions ws 
-
 parseWithConcat :: [String] -> [ParseTree]
 parseWithConcat xs
   = map Concatenate ps
@@ -70,90 +56,103 @@ parseWithConcat xs
     ps = concatMap (sequence . parseSubpart) (filter ((>1) . length) (partitions xs))
     parseSubpart part = [parseWithoutConcat subpart | subpart <- part]
 
+parseWithoutConcat :: [String] -> [ParseTree]
+parseWithoutConcat ws
+  = parseSynonyms ws ++
+    parseAnagrams pairs ++
+    parseHiddenWords pairs ++
+    parseInsertions triples ++
+    parseSubtractions triples ++
+    parseReversals pairs ++
+    parseFirstLetters pairs ++
+    parseLastLetters pairs ++
+    parsePartOf pairs ++
+    parseJuxtapositions triples 
+  where
+    pairs = split2' ws
+    triples = split3 ws
+
 parseSynonyms :: [String] -> [ParseTree]
 parseSynonyms ws
   = [Synonym (unwords ws)] 
 
-parseAnagrams :: [String] -> [ParseTree]
-parseAnagrams ws
+parseAnagrams :: Pairs -> [ParseTree]
+parseAnagrams splits
   = [Anagram p p' | 
-       (p, p') <- split2' ws, 
+       (p, p') <- splits,
        isAnagramIndicator p]
 
-parseInsertions :: [String] -> [ParseTree]
-parseInsertions ws
-  = let parts = split3 ws
-    in [Insertion ws' p p'' | 
-         (ws, ws', ws'') <- parts, 
-         isInsertionIndicator ws', 
-         p <- parseClue ws, 
-         p'' <- parseClue ws''] ++ 
-       [Insertion ws' p'' p | 
-         (ws, ws', ws'') <- parts,
-         isReverseInsertionIndicator ws', 
-         p <- parseClue ws, 
-         p'' <- parseClue ws''] 
+parseInsertions :: Triples -> [ParseTree]
+parseInsertions splits
+  = [Insertion ws' p p'' | 
+       (ws, ws', ws'') <- splits, 
+       isInsertionIndicator ws', 
+       p <- parseClue ws, 
+       p'' <- parseClue ws''] ++ 
+    [Insertion ws' p'' p | 
+       (ws, ws', ws'') <- splits,
+       isReverseInsertionIndicator ws', 
+       p <- parseClue ws, 
+       p'' <- parseClue ws''] 
 
-parseSubtractions :: [String] -> [ParseTree]
-parseSubtractions ws
-  = let parts = split3 ws
-    in [Subtraction ws' p p'' | 
-         (ws, ws', ws'') <- parts,
-         isSubtractionIndicator ws', 
-         p <- parseClue ws, 
-         p'' <- parseClue ws''] ++ 
-       [Subtraction ws' p p'' | 
-         (ws'', ws', ws) <- parts,
-         isSubtractionIndicator ws', 
-         p <- parseClue ws, 
-         p'' <- parseClue ws''] 
+parseSubtractions :: Triples -> [ParseTree]
+parseSubtractions splits
+  = [Subtraction ws' p p'' | 
+       (ws, ws', ws'') <- splits,
+       isSubtractionIndicator ws', 
+       p <- parseClue ws, 
+       p'' <- parseClue ws''] ++ 
+    [Subtraction ws' p p'' | 
+       (ws'', ws', ws) <- splits,
+       isSubtractionIndicator ws', 
+       p <- parseClue ws, 
+       p'' <- parseClue ws''] 
 
-parseReversals :: [String] -> [ParseTree]
-parseReversals ws 
+parseReversals :: Pairs -> [ParseTree]
+parseReversals splits 
   = [Reversal ws p | 
-      (ws, ws') <- split2' ws, 
+      (ws, ws') <- splits,
       isReversalIndicator ws, 
       p <- parseClue ws']  
 
-parseHiddenWords :: [String] -> [ParseTree]
-parseHiddenWords ws
+parseHiddenWords :: Pairs -> [ParseTree]
+parseHiddenWords splits
   = [HiddenWord ws ws' | 
-      (ws, ws') <- split2 ws, 
+      (ws, ws') <- splits, 
       isHiddenWordIndicator ws]
 
-parseFirstLetters :: [String] -> [ParseTree]
-parseFirstLetters ws
+parseFirstLetters :: Pairs -> [ParseTree]
+parseFirstLetters splits
   = [FirstLetter ws ws' | 
-      (ws, ws') <- split2' ws,
+      (ws, ws') <- splits,
       isFirstLetterIndicator ws]
 
-parseLastLetters :: [String] -> [ParseTree]
-parseLastLetters ws
+parseLastLetters :: Pairs -> [ParseTree]
+parseLastLetters splits
   = [LastLetter ws ws' | 
-      (ws, ws') <- split2' ws,
+      (ws, ws') <- splits,
       isLastLetterIndicator ws]
 
-parsePartOf :: [String] -> [ParseTree]
-parsePartOf ws
+parsePartOf :: Pairs -> [ParseTree]
+parsePartOf splits
   = [PartOf ws p | 
-      (ws, ws') <- split2' ws,
+      (ws, ws') <- splits,
       isPartOfIndicator ws, 
       p <- map simplify (parseClue ws'),
       p /= Null]
 
-parseJuxtapositions :: [String] -> [ParseTree]
-parseJuxtapositions ws
-  = let parts = split3 ws
-    in [Juxtaposition ws' p p'' | 
-         (ws, ws', ws'') <- parts,
-         isJuxtapositionIndicator ws', 
-         p <- parseClue ws, 
-         p'' <- parseClue ws''] ++
-       [Juxtaposition ws' p'' p | 
-         (ws'', ws', ws) <- parts,
-         isReverseJuxtapositionIndicator ws', 
-         p <- parseClue ws, 
-         p'' <- parseClue ws''] 
+parseJuxtapositions :: Triples -> [ParseTree]
+parseJuxtapositions splits
+  = [Juxtaposition ws' p p'' | 
+       (ws, ws', ws'') <- splits,
+       isJuxtapositionIndicator ws', 
+       p <- parseClue ws, 
+       p'' <- parseClue ws''] ++
+    [Juxtaposition ws' p'' p | 
+       (ws'', ws', ws) <- splits,
+       isReverseJuxtapositionIndicator ws', 
+       p <- parseClue ws, 
+       p'' <- parseClue ws''] 
 
 simplify (Concatenate ts)
   = simpleConcat (map simplify ts)
@@ -168,7 +167,7 @@ simpleConcat ts
 
 -------------- COST EVALUATION -------------
 
-parseCost (s, t, n)
+evalCost (s, t, n)
   = cost t * (length_penalty s)
 length_penalty ws
   = 60 + (length (words ws))
@@ -211,32 +210,36 @@ checkSynonyms answers
     sols = filter checkSynonym answers
 
 checkSynonym :: Answer -> Bool
-checkSynonym (Answer string (def, clue, n))
-  = Set.member string (Set.fromList (synonyms def))  
+checkSynonym (Answer a (def, p, n))
+  = Set.member a (Set.fromList (synonyms def))  
 
 checkValidWords ::  [Answer] -> [Answer]
 checkValidWords
   = filter isValidWord
 
 isValidWord :: Answer -> Bool
-isValidWord (Answer x (y, z, n))
-  = isInWordlist x 
+isValidWord (Answer a expl)
+  = isInWordlist a 
 
 sortByParseCost ts
-  = zip (zip [(0::Int)..] (repeat (length ts))) (map snd . sort . map (\x -> (parseCost x, x)) $ ts)
+  = zip labels (map snd . sort . map (\x -> (evalCost x, x)) $ ts)
+  where
+    labels = (zip [(0::Int)..] (repeat (length ts)))
 
 constrainParseLengths :: Clue -> SynonymTable -> [Parse] -> [Parse]
 constrainParseLengths (Clue (c, n)) synTable ts
   = filter hasValidLength ts
   where 
     hasValidLength (_, clue, _)
-      = (minLength synTable clue <= n) && (maxLength synTable clue >= n) 
+      = (minLength clue synTable <= n) && (maxLength clue synTable >= n) 
 
 makeTable s
-  = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
+  = [(w, (minimum ns, maximum ns)) | 
+       w <- substrings (words s), 
+       let ns = map length (synonyms (unwords w))]
 
 solve c
-  = (head' . checkSynonyms . evaluate synTable . sortByParseCost .
+  = (head' . checkSynonyms . flip evaluate synTable . sortByParseCost .
      constrainParseLengths c synTable . parse) c
   where
     Clue (s, _) = lowerCase c
@@ -246,10 +249,7 @@ parses c
   = (sortByParseCost . constrainParseLengths c synTable . parse) c
   where
     Clue (s, _) = lowerCase c
-    synTable = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
-
-table c@(Clue (s, n))
-  = [(w, (minimum ns, maximum ns)) | w <- substrings (words s), let ns = map length (synonyms (unwords w))]
+    synTable = makeTable s
 
 head' (Left as)
   = ("UNSOLVED", as)

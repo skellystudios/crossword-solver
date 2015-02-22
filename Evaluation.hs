@@ -12,8 +12,8 @@ import Databases
 import LengthFunctions
 import ManualData
 
---evaluate :: SynonymTable -> [Parse] -> [Answer]
-evaluate synTable ts 
+--evaluate :: [([String], (Int, Int))] -> [Parse] -> [Answer]
+evaluate ts synTable
   = concatMap eval ts
   where
     eval (i, (def, tree, n)) 
@@ -21,7 +21,7 @@ evaluate synTable ts
            x <- evalTree tree (Constraints (Just "") (Just n) (Just n))])
     evalTree :: ParseTree -> Constraints -> [String]
     evalTree t c
-      = filter (satisfies c) (evalTree' t)
+      = filter (flip satisfies c) (evalTree' t)
       where
         evalTree' Null
           = []
@@ -32,7 +32,7 @@ evaluate synTable ts
         evalTree' (Synonym x)
           = synonyms x
         evalTree' t@(Concatenate ts)
-          = evalTrees ts c (minLength synTable t)  
+          = evalTrees ts c (minLength t synTable)  
         evalTree' (Insertion ind t t')
           = concat [insertInto s s' | 
                       s' <- evalTree t' (resetMin (resetPrefix c)), 
@@ -64,11 +64,11 @@ evaluate synTable ts
     evalTrees [t] c m
       = evalTree t (addToMax (n - m) (resetMin c))
       where
-        n = minLength synTable t
+        n = minLength t synTable
     evalTrees (t : ts) c m
       = concatMap evalRest sols
       where 
-        n = minLength synTable t
+        n = minLength t synTable
         evalRest s 
           | checkPrefix s c = map (s++) (evalTrees ts c' (m - n))
           | otherwise       = []
@@ -84,8 +84,8 @@ fromJust _ = "NULL"
 
 data Constraints 
   = Constraints {prefixConstraint :: Maybe String, 
-                 minConstraint :: Maybe Int, 
-                 maxConstraint :: Maybe Int}
+                 minConstraint    :: Maybe Int, 
+                 maxConstraint    :: Maybe Int}
   deriving (Show)
 
 add :: Int -> Maybe Int -> Maybe Int
@@ -108,8 +108,8 @@ leqMax :: Int -> Constraints -> Bool
 leqMax n 
   = maybe True (n<=) . maxConstraint
 
-satisfies :: Constraints -> String -> Bool
-satisfies c s
+satisfies :: String -> Constraints -> Bool
+satisfies s c
   = checkPrefix s c && geqMin n c && leqMax n c
   where
     n = length s
@@ -132,10 +132,6 @@ resetPrefix (Constraints p mn mx)
 resetMin :: Constraints -> Constraints
 resetMin (Constraints p mn mx)
   = Constraints p Nothing mx 
-
-resetMax :: Constraints -> Constraints
-resetMax (Constraints p mn mx)
-  = Constraints p mn Nothing
 
 addToMax :: Int -> Constraints -> Constraints
 addToMax n (Constraints p mn mx)
