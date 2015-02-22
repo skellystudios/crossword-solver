@@ -31,7 +31,7 @@ evaluate synTable ts
         evalTree' (Anagram ind ws)
           = anagrams (concat ws)
         evalTree' (Synonym x)
-          = synonyms x 
+          = synonyms x
         evalTree' t@(Concatenate ts)
           = evalTrees ts c (minLength synTable t)  
         evalTree' (Insertion ind t t')
