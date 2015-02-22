@@ -3,23 +3,12 @@ module Indicators where
 import qualified Data.Set as Set
 import Utilities
 
-isDefIndicator ["show"] = True
-isDefIndicator ["give"] = True
-isDefIndicator ["and"] = True
-isDefIndicator ["to"] = True
-isDefIndicator ["in"] = True
-isDefIndicator ["to","get"] = True
-isDefIndicator ["to","give"] = True
-isDefIndicator ["brings","out"] = True
-isDefIndicator ["to","make","a"] = True
-isDefIndicator ["for"] = True
-isDefIndicator ["is"] = True
-isDefIndicator ["providing"] = True
-isDefIndicator ["makes"] = True
-isDefIndicator ["made","by"] = True
-isDefIndicator ["for","a"] = True
-isDefIndicator _ = False
+isDefIndicator ws
+  = elem (unwords ws) defIndicators
 
+defIndicators
+  = ["show", "give", "and", "to", "in", "to get", "to give", "brings out",
+     "to make a", "for", "is", "providing", "makes", "made by", "for a"]
 
 isReverseJuxtapositionIndicator ["opposite"] = True
 isReverseJuxtapositionIndicator ["after"] = True
@@ -387,11 +376,22 @@ isPartOfIndicator ["tailless"] = True
 isPartOfIndicator _ = False
 
 isSubtractionIndicator ["having removed"] = True
+isSubtractionIndicator ["has lost"] = True
 isSubtractionIndicator ["dropping"] = True
-isSubtractionIndicator ["leaving"] = True
+isSubtractionIndicator ["drops"] = True
+isSubtractionIndicator ["dropped"] = True
+isSubtractionIndicator ["lost"] = True
+isSubtractionIndicator ["loses"] = True
 isSubtractionIndicator ["without"] = True
 isSubtractionIndicator ["letting","slip"] = True
 isSubtractionIndicator _ = False
+
+isReverseSubtractionIndicator ["leaving"] = True
+isReverseSubtractionIndicator ["from"] = True
+isReverseSubtractionIndicator ["taken from"] = True
+isReverseSubtractionIndicator ["from"] = True
+isReverseSubtractionIndicator ["from"] = True
+isReverseSubtractionIndicator _ = False
 
 isAnagramIndicator :: [String] -> Bool
 isAnagramIndicator xs = Set.member (concatWithSpaces xs) anagramIndicators

@@ -21,7 +21,7 @@ evaluate ts synTable
            x <- evalTree tree (Constraints (Just "") (Just n) (Just n))])
     evalTree :: ParseTree -> Constraints -> [String]
     evalTree t c
-      = trace (show c) (filter (flip satisfies c) (evalTree' t))
+      = (filter (flip satisfies c) (evalTree' t))
       where
         evalTree' Null
           = []
