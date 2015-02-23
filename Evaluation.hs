@@ -77,9 +77,6 @@ evaluate ts synTable
                               c' = addToMax (-k) (extendPrefix s c)
         sols = [s' | s' <- evalTree t (addToMax (n - m) (resetMin c))]
     
-fromJust (Just x) = x
-fromJust _ = "NULL"
-
 --------- CONSTRAINTS ----------
 
 data Constraints 
