@@ -154,7 +154,8 @@ parsePartOf splits
   = [PartOf ws p | 
       (ws, ws') <- splits,
       isPartOfIndicator ws, 
-      p <- parseClue ws']
+      p <- map simplify (parseClue ws'),
+      p /= Null]
 
 parseJuxtapositions :: Triples -> [ParseTree]
 parseJuxtapositions splits
