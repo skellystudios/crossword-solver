@@ -7,6 +7,7 @@ import qualified Data.Map as Map
 import Data.Char
 import Data.Either
   
+import Learn
 import Types
 import ManualData
 import Databases
@@ -16,6 +17,17 @@ import Evaluation
 import LengthFunctions
 
 ------------------ CLUE PARSING MECHANICS FUNCTIONS ------------------------
+
+infixr 3 +++ 
+(+++) :: [a] -> [a] -> [a]
+{-
+Use this version to allow unknown def keywords...
+xs +++ ys
+  | null xs = ys
+  | otherwise = xs
+-}
+xs +++ ys
+  = xs
 
 lowerCase :: Clue -> Clue
 lowerCase (Clue (xs, n))
@@ -30,18 +42,22 @@ parse clue
 
 parseWithoutIndicator :: [String] -> Int -> [Parse]
 parseWithoutIndicator ws n
-  = [(unwords ws', p, n) | 
+  = [(unwords ws', "", p, n) | 
        (ws', ws'') <- split2' ws, 
-       isInWordlist (unwords ws'), 
+       isInWordlist (unwords ws'),
        p <- parseClue ws'']
 
 parseWithIndicator :: [String] -> Int -> [Parse]
 parseWithIndicator ws n
-  = [(unwords ws', p, n) | 
+  = [(unwords ws', unwords ws'', p, n) | 
        (ws', ws'', ws''') <- split3' ws,
        isInWordlist (unwords ws'), 
        isDefIndicator ws'', 
-       p <- parseClue ws'''] 
+       p <- parseClue ws'''] +++
+    [(unwords ws', unwords ws'', p, n) |
+       (ws', ws'', ws''') <- split3' ws,
+       isInWordlist (unwords ws'),
+       p <- parseClue ws''']
 
 parseClue :: [String] -> [ParseTree]
 parseClue [w]
@@ -102,9 +118,9 @@ parseSubtractions splits
        isSubtractionIndicator ws', 
        p <- parseClue ws, 
        p'' <- parseClue ws''] ++ 
-    [Subtraction ws' p p'' | 
+    [Subtraction ws' p'' p | 
        (ws'', ws', ws) <- splits,
-       isSubtractionIndicator ws', 
+       isReverseSubtractionIndicator ws', 
        p <- parseClue ws, 
        p'' <- parseClue ws''] 
 
@@ -166,8 +182,9 @@ simpleConcat ts
 
 -------------- COST EVALUATION -------------
 
-evalCost (s, t, n)
+evalCost (s, k, t, n)
   = cost t * (length_penalty s)
+
 length_penalty ws
   = 60 + (length (words ws))
 
@@ -209,10 +226,10 @@ checkSynonyms answers
     sols = filter checkSynonym answers
 
 checkSynonym :: Answer -> Bool
-checkSynonym (Answer a (def, p, n))
+checkSynonym (Answer a (def, defkey, p, n))
   = Set.member a (Set.fromList (synonyms def))  
 
-checkValidWords ::  [Answer] -> [Answer]
+checkValidWords :: [Answer] -> [Answer]
 checkValidWords
   = filter isValidWord
 
@@ -221,7 +238,7 @@ isValidWord (Answer a expl)
   = isInWordlist a 
 
 sortByParseCost ts
-  = zip labels (map snd . sort . map (\x -> (evalCost x, x)) $ ts)
+  = zip labels (map snd . sort . map (\p -> (evalCost p, p)) $ ts)
   where
     labels = (zip [(0::Int)..] (repeat (length ts)))
 
@@ -229,7 +246,7 @@ constrainParseLengths :: Clue -> SynonymTable -> [Parse] -> [Parse]
 constrainParseLengths (Clue (c, n)) synTable ts
   = filter hasValidLength ts
   where 
-    hasValidLength (_, clue, _)
+    hasValidLength (_, _, clue, _)
       = (minLength clue synTable <= n) && (maxLength clue synTable >= n) 
 
 makeTable s

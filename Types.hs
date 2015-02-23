@@ -7,7 +7,7 @@ data Clue = Clue (String, Int)
 
 type SynonymTable = [(Words, (Int, Int))]
 
-type Parse = (String, ParseTree, Int)
+type Parse = (String, String, ParseTree, Int)
 
 data ParseTree = Null |
                  Ident String |

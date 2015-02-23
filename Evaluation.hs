@@ -16,9 +16,9 @@ import ManualData
 evaluate ts synTable
   = concatMap eval ts
   where
-    eval (i, (def, tree, n)) 
-      = trace (show i) ([Answer x (def, tree, n) | 
-           x <- evalTree tree (Constraints (Just "") (Just n) (Just n))])
+    eval (i, parse@(def, defkey, tree, n)) 
+      = trace (show i) ([Answer sol parse | 
+           sol <- evalTree tree (Constraints (Just "") (Just n) (Just n))])
     evalTree :: ParseTree -> Constraints -> [String]
     evalTree t c
       = (filter (flip satisfies c) (evalTree' t))
