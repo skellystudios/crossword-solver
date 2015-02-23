@@ -125,7 +125,7 @@ noConstraints
 
 resetPrefix :: Constraints -> Constraints
 resetPrefix (Constraints p mn mx)
-  = Constraints (Just "") mn mx
+  = Constraints Nothing mn mx
 
 resetMin :: Constraints -> Constraints
 resetMin (Constraints p mn mx)
