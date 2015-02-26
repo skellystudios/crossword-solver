@@ -2,10 +2,10 @@
 
 module Wordlists
   ( isInWordlist
+  , isPrefixOfWord
   ) where
 
 import Language.Haskell.TH
-import Language.Haskell.TH.Syntax
 
 import qualified Data.Set as S
 
@@ -15,10 +15,24 @@ isInWordlist :: Word -> Bool
 isInWordlist
   = flip S.member wordlist
 
-wordlistString :: String
-wordlistString
-  = $(runIO (readFile "data/wordlist") >>= stringE)
+wordlistLines :: [String]
+wordlistLines
+  = lines $(runIO (readFile "data/wordlist") >>= stringE)
 
 wordlist :: S.Set Word
 wordlist
-  = S.fromList (lines wordlistString)
+  = S.fromList wordlistLines
+
+isPrefixOfWord :: String -> Bool
+isPrefixOfWord
+  = flip S.member prefixWordlist
+
+prefixes :: [a] -> [[a]]
+prefixes xs
+  = map (flip take xs) [n,n-1..1]
+  where
+    n = length xs
+
+prefixWordlist :: S.Set String
+prefixWordlist
+  = S.fromList (concatMap prefixes wordlistLines)
