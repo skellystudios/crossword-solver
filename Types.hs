@@ -1,25 +1,41 @@
 module Types where
 
-type Word       = String
-type Words      = [Word]
-type Indicator  = Words
+type Phrase       = String
+type Length       = Int
+
+type Word         = String
+type Words        = [Word]
+
+type Definition   = Phrase
+type Indicator    = Words
+
+type PairsOf a    = [(a, a)]
+type TriplesOf a  = [(a, a, a)]
 
 newtype Clue
-  = Clue (Int, String)
+  = Clue (Phrase, Length)
   deriving (Eq, Show)
 
-data ParsedClue
+newtype ParsedClue
+  = ParsedClue (Clue, Definition, Indicator, ParseTree)
+  deriving (Eq, Show)
+
+data ParseTree
   = NullC
   | IdentC Word
-  | JuxtC Indicator ParsedClue ParsedClue
-  | ConcatC [ParsedClue]
-  | SynC Word
+  | JuxtC Indicator ParseTree ParseTree
+  | ConcatC [ParseTree]
+  | SynC Phrase
   | AnagC Indicator Words
-  | InsertC Indicator ParsedClue ParsedClue
-  | SubC Indicator ParsedClue ParsedClue
+  | InsertC Indicator ParseTree ParseTree
+  | SubC Indicator ParseTree ParseTree
   | HiddenC Indicator Words
-  | RevC Indicator ParsedClue
+  | RevC Indicator ParseTree
   | FirstsC Indicator Words
   | LastsC Indicator Words
-  | PartC Indicator ParsedClue
-  deriving (Eq, Ord, Show)
+  | PartC Indicator ParseTree
+  deriving (Eq, Show)
+
+newtype Answer
+  = Answer (Phrase, ParsedClue)
+  deriving (Eq, Show)

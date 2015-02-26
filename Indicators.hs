@@ -46,7 +46,7 @@ isFirstsIndicator         = isIndicatorIn firstsIndicators
 isLastsIndicator          = isIndicatorIn lastsIndicators
 isPartIndicator           = isIndicatorIn partsIndicators
 
-isIndicatorIn :: S.Set String -> Words -> Bool
+isIndicatorIn :: S.Set Phrase -> Words -> Bool
 isIndicatorIn s ws
   = S.member (unwords ws) s
 
@@ -62,7 +62,7 @@ defIndicators,
   reverseIndicators,
   firstsIndicators,
   lastsIndicators,
-  partsIndicators :: S.Set String
+  partsIndicators :: S.Set Phrase
 
 defIndicators
   = S.fromList
@@ -519,6 +519,7 @@ anagIndicators
       , "dissipate"
       , "dissolute"
       , "dissolve"
+      , "dissolving"
       , "distilled"
       , "distort"
       , "distorted"
