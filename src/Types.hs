@@ -1,5 +1,7 @@
 module Types where
 
+import Prelude hiding (Word)
+
 type Phrase       = String
 type Length       = Int
 
