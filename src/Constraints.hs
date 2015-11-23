@@ -14,6 +14,8 @@ module Constraints
 
   , minLength
   , maxLength
+
+  , makeConstraints -- This is temporary, remove it when I work this stuff out
   ) where
 
 import Data.Functor
@@ -23,6 +25,9 @@ import Types
 newtype Constraints
   = Constraints (Maybe String, Maybe Length, Maybe Length)
   deriving (Eq, Show)
+
+makeConstraints :: Maybe String -> Maybe Length -> Maybe Length -> Constraints
+makeConstraints s n m = Constraints (s, n, m)
 
 noConstraints :: Constraints
 noConstraints

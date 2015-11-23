@@ -1,5 +1,7 @@
 module Evaluator
   (
+    evaluateConcatenatedParseTrees,
+    evaluate
   ) where
 
 import Control.Monad
@@ -8,8 +10,6 @@ import Constraints
 import Types
 import Wordlists
 
-evaluate pcs
-  = undefined
 
 {-
 data ParseTree
@@ -66,3 +66,14 @@ evaluateConcatenatedParseTrees (pt : pts) cs maxL
 isPrefixOfWordWith :: Constraints -> Phrase -> Bool
 isPrefixOfWordWith cs phr
   = maybe True (\p -> isPrefixOfWord (p ++ phr)) (prefix cs)
+
+evaluate :: [ParsedClue] -> [Answer]
+evaluate = concatMap evaluateParsedClue 
+
+evaluateParsedClue :: ParsedClue -> [Answer]
+evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt)) 
+  = do
+    let constraints = makeConstraints Nothing  Nothing Nothing --(Just "", Just len, Just len)
+    phrs <- evaluateParseTree pt constraints
+    guard (isInWordlist phrs)
+    return $ Answer (phrs, pc)

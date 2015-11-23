@@ -5,19 +5,21 @@ module Wordlists
   , isPrefixOfWord
   ) where
 
+import Prelude hiding (Word)
+
 import Language.Haskell.TH
 
 import qualified Data.Set as S
 
 import Types
 
-isInWordlist :: Word -> Bool
+isInWordlist :: String -> Bool
 isInWordlist
   = flip S.member wordlist
 
 wordlistLines :: [String]
 wordlistLines
-  = lines $(runIO (readFile "data/wordlist") >>= stringE)
+  = lines $(runIO (readFile "../data/wordlist") >>= stringE)
 
 wordlist :: S.Set Word
 wordlist
