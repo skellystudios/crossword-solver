@@ -16,7 +16,7 @@ thesaurusSynonyms phr
 
 thesaurusString :: String
 thesaurusString
-  = $(runIO (readFile "../data/thesaurus") >>= stringE)
+  = $(runIO (readFile "../data/thesaurus.small") >>= stringE)
 
 thesaurus :: H.Map Phrase [Phrase]
 thesaurus

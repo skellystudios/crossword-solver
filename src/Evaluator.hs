@@ -1,14 +1,18 @@
 module Evaluator
   (
     evaluateConcatenatedParseTrees,
-    evaluate
+    evaluate, 
+    chooseAnswer
   ) where
 
 import Control.Monad
+import Data.Set (Set,fromList,member) 
+import Data.List 
 
 import Constraints
 import Types
 import Wordlists
+import Synonyms
 
 
 {-
@@ -30,30 +34,35 @@ data ParseTree
  -}
 
 evaluateParseTree :: ParseTree -> Constraints -> [Phrase]
-evaluateParseTree
-  = undefined
+evaluateParseTree pt cs
+  = evaluateParseTree' pt cs
   where
-    evaluateParseTree' NullC
+    evaluateParseTree' NullC cs
       = []
 
-    evaluateParseTree' (IdentC w)
+    evaluateParseTree' (IdentC w) cs
       = [w]
 
-    evaluateParseTree' (JuxtC _ pt1 pt2)
+    evaluateParseTree' (SynC w) cs
+      = [w] -- Not this, but works for now
+
+    evaluateParseTree' pt@(AnagC i w) cs
+      = evaluateAnagramClue pt cs-- Not this, but works for now
+
+    evaluateParseTree' (JuxtC _ pt1 pt2) cs
       = undefined
 
-    evaluateParseTree' (ConcatC pts)
-      = undefined
+    evaluateParseTree' (ConcatC pts) cs
+      = evaluateConcatenatedParseTrees pts cs
 
 evaluateConcatenatedParseTrees  :: [ParseTree]
                                 -> Constraints
-                                -> Length
                                 -> [Phrase]
 
-evaluateConcatenatedParseTrees [pt] cs maxL
-  = undefined
+evaluateConcatenatedParseTrees [pt] cs 
+  = evaluateParseTree pt cs
 
-evaluateConcatenatedParseTrees (pt : pts) cs maxL
+evaluateConcatenatedParseTrees (pt : pts) cs 
   = do
       let minPtL  = minLength pt
           cs'     = withMax (subtract minPtL) (withNoMin cs)
@@ -62,6 +71,11 @@ evaluateConcatenatedParseTrees (pt : pts) cs maxL
       guard (isPrefixOfWordWith cs' phr)
 
       return ""
+
+evaluateAnagramClue :: ParseTree -> Constraints-> [Phrase]
+evaluateAnagramClue (AnagC i ws) cs
+  = anagrams . concat $ ws
+
 
 isPrefixOfWordWith :: Constraints -> Phrase -> Bool
 isPrefixOfWordWith cs phr
@@ -77,3 +91,19 @@ evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt))
     phrs <- evaluateParseTree pt constraints
     guard (isInWordlist phrs)
     return $ Answer (phrs, pc)
+
+chooseAnswer :: [Answer] -> [Answer]
+chooseAnswer = filter isCorrectAnswer 
+
+isCorrectAnswer :: Answer -> Bool
+isCorrectAnswer (Answer (ans, ParsedClue (c, d, i, p))) 
+  = Data.Set.member 
+      ans 
+      (Data.Set.fromList (synonyms d))
+
+
+{----- Helper methods to help evaluate ----}
+
+anagrams :: String -> [String]
+anagrams [] = [[]]
+anagrams xs = [x:ys | x<- nub xs, ys <- anagrams $ delete x xs]

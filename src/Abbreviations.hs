@@ -16,7 +16,7 @@ abbreviations phr
 
 abbreviationsString :: String
 abbreviationsString
-  = $(runIO (readFile "data/abbreviations") >>= stringE)
+  = $(runIO (readFile "../data/abbreviations") >>= stringE)
 
 abbreviations_ :: H.Map Phrase [Phrase]
 abbreviations_

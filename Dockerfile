@@ -1,7 +1,3 @@
 FROM haskell
-RUN cabal update
-RUN cabal install hashmap
-ADD ./data /opt/solver/data
-ADD ./src /opt/solver/src
+RUN cabal update ; cabal install hashmap
 WORKDIR /opt/solver/src
-CMD ghci Thesaurus.hs

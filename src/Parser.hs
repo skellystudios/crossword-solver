@@ -96,6 +96,7 @@ parseAnags wps
   = do
       (ys, zs) <- wps
       guard (isAnagIndicator ys)
+      guard (zs /= [])
       return (AnagC ys zs)
 
 parseInserts :: TriplesOf Words -> [ParseTree]
@@ -187,3 +188,4 @@ simplifyPartsClue (SynC phr)
 
 simplifyPartsClue _
   = NullC
+
