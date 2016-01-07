@@ -5,6 +5,7 @@ module Solver
 import Types
 import Parser
 import Evaluator
+import Constraints
 
 solve = undefined
 

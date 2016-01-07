@@ -1,9 +1,5 @@
 module Evaluator
-  (
-    evaluateConcatenatedParseTrees,
-    evaluate, 
-    chooseAnswer
-  ) where
+  where
 
 import Control.Monad
 import Data.Set (Set,fromList,member) 
@@ -43,11 +39,11 @@ evaluateParseTree pt cs
     evaluateParseTree' (IdentC w) cs
       = [w]
 
-    evaluateParseTree' (SynC w) cs
-      = [w] -- Not this, but works for now
+    evaluateParseTree' pt@(SynC w) cs
+      = evaluateSynClue pt cs 
 
     evaluateParseTree' pt@(AnagC i w) cs
-      = evaluateAnagramClue pt cs-- Not this, but works for now
+      = evaluateAnagramClue pt cs
 
     evaluateParseTree' (JuxtC _ pt1 pt2) cs
       = undefined
@@ -55,10 +51,7 @@ evaluateParseTree pt cs
     evaluateParseTree' (ConcatC pts) cs
       = evaluateConcatenatedParseTrees pts cs
 
-evaluateConcatenatedParseTrees  :: [ParseTree]
-                                -> Constraints
-                                -> [Phrase]
-
+evaluateConcatenatedParseTrees  :: [ParseTree] -> Constraints -> [Phrase]
 evaluateConcatenatedParseTrees [pt] cs 
   = evaluateParseTree pt cs
 
@@ -68,13 +61,17 @@ evaluateConcatenatedParseTrees (pt : pts) cs
           cs'     = withMax (subtract minPtL) (withNoMin cs)
 
       phr <- evaluateParseTree pt cs'
-      guard (isPrefixOfWordWith cs' phr)
-
-      return ""
+      guard (isPrefixOfWordWith cs' phr)    
+      guard (phr /= "")
+      map ((++) phr) (evaluateConcatenatedParseTrees pts cs)
 
 evaluateAnagramClue :: ParseTree -> Constraints-> [Phrase]
 evaluateAnagramClue (AnagC i ws) cs
   = anagrams . concat $ ws
+
+evaluateSynClue :: ParseTree -> Constraints-> [Phrase]
+evaluateSynClue (SynC w) cs
+  = synonyms w -- Needs to check constraints
 
 
 isPrefixOfWordWith :: Constraints -> Phrase -> Bool
@@ -85,6 +82,10 @@ evaluate :: [ParsedClue] -> [Answer]
 evaluate = concatMap evaluateParsedClue 
 
 evaluateParsedClue :: ParsedClue -> [Answer]
+evaluateParsedClue 
+  pc@(ParsedClue ((Clue (_, len)), def, indicator, (SynC c)))
+  = [] 
+
 evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt)) 
   = do
     let constraints = makeConstraints Nothing  Nothing Nothing --(Just "", Just len, Just len)
