@@ -2,8 +2,8 @@ module Evaluator
   where
 
 import Control.Monad
-import Data.Set (Set,fromList,member) 
-import Data.List 
+import Data.Set (Set,fromList,member)
+import Data.List
 
 import Constraints
 import Types
@@ -40,28 +40,31 @@ evaluateParseTree pt cs
       = [w]
 
     evaluateParseTree' pt@(SynC w) cs
-      = evaluateSynClue pt cs 
+      = evaluateSynClue pt cs
 
     evaluateParseTree' pt@(AnagC i w) cs
       = evaluateAnagramClue pt cs
 
     evaluateParseTree' (JuxtC _ pt1 pt2) cs
-      = undefined
+      = do
+        e1 <- evaluateParseTree pt1 cs
+        e2 <- evaluateParseTree pt2 cs
+        return (e1 ++ e2)
 
     evaluateParseTree' (ConcatC pts) cs
       = evaluateConcatenatedParseTrees pts cs
 
 evaluateConcatenatedParseTrees  :: [ParseTree] -> Constraints -> [Phrase]
-evaluateConcatenatedParseTrees [pt] cs 
+evaluateConcatenatedParseTrees [pt] cs
   = evaluateParseTree pt cs
 
-evaluateConcatenatedParseTrees (pt : pts) cs 
+evaluateConcatenatedParseTrees (pt : pts) cs
   = do
       let minPtL  = minLength pt
           cs'     = withMax (subtract minPtL) (withNoMin cs)
 
       phr <- evaluateParseTree pt cs'
-      guard (isPrefixOfWordWith cs' phr)    
+      guard (isPrefixOfWordWith cs' phr)
       guard (phr /= "")
       map ((++) phr) (evaluateConcatenatedParseTrees pts cs)
 
@@ -79,14 +82,14 @@ isPrefixOfWordWith cs phr
   = maybe True (\p -> isPrefixOfWord (p ++ phr)) (prefix cs)
 
 evaluate :: [ParsedClue] -> [Answer]
-evaluate = concatMap evaluateParsedClue 
+evaluate = concatMap evaluateParsedClue
 
 evaluateParsedClue :: ParsedClue -> [Answer]
-evaluateParsedClue 
+evaluateParsedClue
   pc@(ParsedClue ((Clue (_, len)), def, indicator, (SynC c)))
-  = [] 
+  = []
 
-evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt)) 
+evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt))
   = do
     let constraints = makeConstraints Nothing  Nothing Nothing --(Just "", Just len, Just len)
     phrs <- evaluateParseTree pt constraints
@@ -94,12 +97,12 @@ evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt))
     return $ Answer (phrs, pc)
 
 chooseAnswer :: [Answer] -> [Answer]
-chooseAnswer = filter isCorrectAnswer 
+chooseAnswer = filter isCorrectAnswer
 
 isCorrectAnswer :: Answer -> Bool
-isCorrectAnswer (Answer (ans, ParsedClue (c, d, i, p))) 
-  = Data.Set.member 
-      ans 
+isCorrectAnswer (Answer (ans, ParsedClue (c, d, i, p)))
+  = Data.Set.member
+      ans
       (Data.Set.fromList (synonyms d))
 
 

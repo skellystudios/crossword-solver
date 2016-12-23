@@ -1,5 +1,5 @@
 module Parser
-  ( parseClue
+  ( parseClue, parseTrees
   ) where
 
 import Control.Monad
@@ -55,7 +55,7 @@ parseWithoutConcat :: Words -> [ParseTree]
 parseWithoutConcat ws
   = parseSyn ws :
       parseJuxts wts ++
-    --  parseAnags wps ++
+      parseAnags wps ++
       parseInserts wts ++
       parseSubs wts ++
       parseHiddens wps ++
@@ -188,4 +188,3 @@ simplifyPartsClue (SynC phr)
 
 simplifyPartsClue _
   = NullC
-
