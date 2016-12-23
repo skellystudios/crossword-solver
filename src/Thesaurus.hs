@@ -5,19 +5,31 @@ module Thesaurus
   ) where
 
 import Language.Haskell.TH
+import System.IO.Unsafe
 
 import qualified Data.HashMap as H
+import Data.Char
 
 import Types
 
 thesaurusSynonyms :: Phrase -> [Phrase]
 thesaurusSynonyms phr
-  = H.findWithDefault [] phr thesaurus
+  = H.findWithDefault [] phr (phraseThesaurus phr)
+  -- = H.findWithDefault [] phr thesaurus
 
-thesaurusString :: String
-thesaurusString
-  = $(runIO (readFile "../data/thesaurus.small") >>= stringE)
+-- thesaurusString :: String
+-- thesaurusString
+--   = $(runIO (readFile "../data/thesaurus.small") >>= stringE)
+--
+-- thesaurus :: H.Map Phrase [Phrase]
+-- thesaurus
+--   = makeHashMap thesaurusString
 
-thesaurus :: H.Map Phrase [Phrase]
-thesaurus
-  = H.fromList (map read (lines thesaurusString))
+makeHashMap :: String -> H.Map Phrase [Phrase]
+makeHashMap string = H.fromList (map read (lines string))
+
+phraseThesaurus :: Phrase -> H.Map Phrase [Phrase]
+phraseThesaurus phr =
+  let path = "../data/words/" ++ [Data.Char.toUpper( head phr) ] ++ "/" ++ phr in
+    let string = unsafePerformIO . readFile $ path
+      in makeHashMap string

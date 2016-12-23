@@ -4,11 +4,14 @@ module Evaluator
 import Control.Monad
 import Data.Set (Set,fromList,member)
 import Data.List
+import Data.List (inits, tails)
+
 
 import Constraints
 import Types
 import Wordlists
 import Synonyms
+import Lists
 
 
 {-
@@ -45,11 +48,25 @@ evaluateParseTree pt cs
     evaluateParseTree' pt@(AnagC i w) cs
       = evaluateAnagramClue pt cs
 
+    evaluateParseTree' pt@(InsertC i pt1 pt2) cs
+      = do
+        e1 <- evaluateParseTree pt1 cs
+        e2 <- evaluateParseTree pt2 cs
+        ret <- performInsertion e1 e2
+        return ret
+
     evaluateParseTree' (JuxtC _ pt1 pt2) cs
       = do
         e1 <- evaluateParseTree pt1 cs
         e2 <- evaluateParseTree pt2 cs
         return (e1 ++ e2)
+
+
+    evaluateParseTree' (HiddenC i w) cs
+      = do
+        substring <- substrings w
+        return substring
+
 
     evaluateParseTree' (ConcatC pts) cs
       = evaluateConcatenatedParseTrees pts cs
@@ -111,3 +128,12 @@ isCorrectAnswer (Answer (ans, ParsedClue (c, d, i, p)))
 anagrams :: String -> [String]
 anagrams [] = [[]]
 anagrams xs = [x:ys | x<- nub xs, ys <- anagrams $ delete x xs]
+
+performInsertion :: Phrase -> Phrase -> [Phrase]
+performInsertion p1 p2
+  = do
+    (p2a, p2b) <- twoSplitsOf p2
+    return $ p2a ++ p1 ++ p2b
+
+substrings :: Words -> [String]
+substrings = concatMap (tail . inits) . tails . concat

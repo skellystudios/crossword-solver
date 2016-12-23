@@ -24,14 +24,14 @@ newtype ParsedClue
 
 data ParseTree
   = NullC
-  | IdentC Word
-  | JuxtC Indicator ParseTree ParseTree
-  | ConcatC [ParseTree]
-  | SynC Phrase
-  | AnagC Indicator Words
-  | InsertC Indicator ParseTree ParseTree
+  | IdentC Word -- Done
+  | JuxtC Indicator ParseTree ParseTree -- Done
+  | ConcatC [ParseTree] -- Done
+  | SynC Phrase -- Done
+  | AnagC Indicator Words -- Done
+  | InsertC Indicator ParseTree ParseTree -- Done
   | SubC Indicator ParseTree ParseTree
-  | HiddenC Indicator Words
+  | HiddenC Indicator Words -- Done
   | RevC Indicator ParseTree
   | FirstsC Indicator Words
   | LastsC Indicator Words

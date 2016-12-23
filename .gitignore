@@ -3,3 +3,5 @@
 *.dyn_hi
 *.dyn_o
 ghc-mod
+data/synonyms/
+data/words/
