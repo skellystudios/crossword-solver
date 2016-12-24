@@ -9,6 +9,7 @@ import System.IO.Unsafe
 
 import qualified Data.HashMap as H
 import Data.Char
+import System.Directory
 
 import Types
 
@@ -30,6 +31,9 @@ makeHashMap string = H.fromList (map read (lines string))
 
 phraseThesaurus :: Phrase -> H.Map Phrase [Phrase]
 phraseThesaurus phr =
-  let path = "../data/words/" ++ [Data.Char.toUpper( head phr) ] ++ "/" ++ phr in
-    let string = unsafePerformIO . readFile $ path
+  let path = "../data/words/" ++ [Data.Char.toUpper( head phr) ] ++ "/" ++ phr
+  in
+    let exists = unsafePerformIO .doesFileExist $ path
+    in
+      let string = if exists then unsafePerformIO . readFile $ path else ""
       in makeHashMap string
