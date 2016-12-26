@@ -37,7 +37,7 @@ phraseThesaurusUnMemoized :: Phrase -> H.Map Phrase [Phrase]
 phraseThesaurusUnMemoized phr =
   let path = if null phr then "" else "../data/words/" ++ [Data.Char.toUpper( head phr) ] ++ "/" ++ phr
   in
-    let exists = trace "rofl" unsafePerformIO .doesFileExist $ path
+    let exists = unsafePerformIO .doesFileExist $ path
     in
       let string = if exists then unsafePerformIO . readFile $ path else ""
       in makeHashMap string

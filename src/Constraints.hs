@@ -12,6 +12,10 @@ module Constraints
   , withNoMax
   , withMax
 
+  , phraseFitsMax
+  , phraseFitsMin
+  , phraseFitsMaxMin
+
   , minLength
   , maxLength
 
@@ -25,7 +29,7 @@ import Types
 import Synonyms
 
 newtype Constraints
-  = Constraints (Maybe String, Maybe Length, Maybe Length)
+  = Constraints (Maybe String, Maybe Length, Maybe Length) -- Prefix, Min, Max
   deriving (Eq, Show)
 
 makeConstraints :: Maybe String -> Maybe Length -> Maybe Length -> Constraints
@@ -62,6 +66,21 @@ withNoMax (Constraints (maybePrefix, maybeMinL, _))
 withMax :: (Length -> Length) -> Constraints -> Constraints
 withMax f (Constraints (maybePrefix, maybeMinL, maybeMaxL))
   = Constraints (maybePrefix, maybeMinL, f <$> maybeMaxL)
+
+phraseFitsMin :: Constraints -> Phrase -> Bool
+phraseFitsMin (Constraints (_, Just min, _)) phr
+  = length phr >= min
+phraseFitsMin (Constraints (_, Nothing, _)) phr
+  = True
+
+phraseFitsMax :: Constraints -> Phrase -> Bool
+phraseFitsMax (Constraints (_, _, Just max)) phr
+  = length phr <= max
+phraseFitsMax (Constraints (_, _, Nothing)) phr
+  = True
+
+phraseFitsMaxMin :: Constraints -> Phrase -> Bool
+phraseFitsMaxMin cs phr = (phraseFitsMin cs phr) && (phraseFitsMax cs phr)
 
 minLength, maxLength :: ParseTree -> Length
 

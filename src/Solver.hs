@@ -7,7 +7,7 @@ import Parser
 import Evaluator
 import Constraints
 
-solve = chooseAnswer . evaluate . parseClue . clue 
+solve = chooseAnswer . evaluate . parseClue . clue
 
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT

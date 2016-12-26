@@ -5,6 +5,7 @@ import Control.Monad
 import Data.Set (Set,fromList,member)
 import Data.List
 import Data.List (inits, tails)
+import Debug.Trace
 
 
 import Constraints
@@ -36,7 +37,7 @@ data ParseTree
 
 evaluateParseTree :: ParseTree -> Constraints -> [Phrase]
 evaluateParseTree pt cs
-  = evaluateParseTree' pt cs
+  =  evaluateParseTree' pt cs
   where
     evaluateParseTree' NullC cs
       = []
@@ -50,28 +51,40 @@ evaluateParseTree pt cs
     evaluateParseTree' pt@(AnagC i w) cs
       = evaluateAnagramClue pt cs
 
+    evaluateParseTree' pt@(ConcatC pts) cs
+      = evaluateConcatenatedParseTrees pts cs
+
     evaluateParseTree' pt@(InsertC i pt1 pt2) cs
       = do
         e1 <- evaluateParseTree pt1 cs
-        e2 <- evaluateParseTree pt2 cs
+        let e1len = length e1
+            cs' =  withMin (subtract e1len) $ withMax (subtract e1len) $ cs
+        e2 <- evaluateParseTree pt2 cs'
         ret <- performInsertion e1 e2
         return ret
 
-    evaluateParseTree' (JuxtC _ pt1 pt2) cs
+    evaluateParseTree' pt@(JuxtC _ pt1 pt2) cs
       = do
         e1 <- evaluateParseTree pt1 cs
-        e2 <- evaluateParseTree pt2 cs
+        let e1len = length e1
+            cs' =  withMin (subtract e1len) $ withMax (subtract e1len) $ cs
+        e2 <- evaluateParseTree pt2 cs'
         return (e1 ++ e2)
 
-
-    evaluateParseTree' (HiddenC i w) cs
+    evaluateParseTree' pt@(HiddenC i w) cs
       = do
         substring <- substrings w
+        guard $ phraseFitsMaxMin cs substring
         return substring
 
+    evaluateParseTree' pt@(RevC i pts) cs
+      = do
+        e <- evaluateParseTree pts cs
+        return $ reverse e
 
-    evaluateParseTree' (ConcatC pts) cs
-      = evaluateConcatenatedParseTrees pts cs
+--    evaluateParseTree' pt _
+--      = trace (show pt) $ trace "lol" []
+
 
 evaluateConcatenatedParseTrees  :: [ParseTree] -> Constraints -> [Phrase]
 evaluateConcatenatedParseTrees [pt] cs
@@ -80,12 +93,14 @@ evaluateConcatenatedParseTrees [pt] cs
 evaluateConcatenatedParseTrees (pt : pts) cs
   = do
       let minPtL  = minLength pt
-          cs'     = withMax (subtract minPtL) (withNoMin cs)
+          cs'     =  withMax (subtract minPtL) (withNoMin cs)
 
       phr <- evaluateParseTree pt cs'
       guard (isPrefixOfWordWith cs' phr)
       guard (phr /= "")
-      map ((++) phr) (evaluateConcatenatedParseTrees pts cs)
+      let phrLength = length phr
+          cs'' =  withMin (subtract phrLength) $ withMax (subtract phrLength) $ cs
+      map ((++) phr) (evaluateConcatenatedParseTrees pts cs'')
 
 evaluateAnagramClue :: ParseTree -> Constraints-> [Phrase]
 evaluateAnagramClue (AnagC i ws) cs
@@ -93,8 +108,7 @@ evaluateAnagramClue (AnagC i ws) cs
 
 evaluateSynClue :: ParseTree -> Constraints-> [Phrase]
 evaluateSynClue (SynC w) cs
-  = synonyms w -- Needs to check constraints
-
+  = filter (phraseFitsMaxMin cs) . synonyms $ w
 
 isPrefixOfWordWith :: Constraints -> Phrase -> Bool
 isPrefixOfWordWith cs phr
@@ -110,7 +124,7 @@ evaluateParsedClue
 
 evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt))
   = do
-    let constraints = makeConstraints Nothing  Nothing Nothing --(Just "", Just len, Just len)
+    let constraints = makeConstraints Nothing (Just len) (Just len) -- (Just "") (Just len) (Just len)
     phrs <- evaluateParseTree pt constraints
     guard (isInWordlist phrs)
     return $ Answer (phrs, pc)
