@@ -12,7 +12,7 @@ with open('thesaurus', 'r') as f:
                 os.makedirs(directory)
 
             f2 = open(directory + word, 'w')
-            f2.write(line + "\n")
+            f2.write(line)
             f2.close()
         except:
             print "failed on line " + str(i)

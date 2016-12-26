@@ -1,5 +1,5 @@
 module Parser
-  ( parseClue, parseTrees
+  ( parseClue, parseTrees, parseClueUnfiltered
   ) where
 
 import Control.Monad
@@ -10,13 +10,26 @@ import Indicators
 import Lists
 import Types
 import Wordlists
+import Constraints
+import Debug.Trace
+import Memoize
+
+parseFitsLength :: Length -> ParsedClue -> Bool
+parseFitsLength l pc@(ParsedClue (c, def, zs, pt)) =
+  minLength pt <= l && maxLength pt >= l
 
 parseClue :: Clue -> [ParsedClue]
 parseClue c@(Clue (phr, l))
+  = (filter (parseFitsLength l) parses)
+    where
+        parses = parseClueUnfiltered c
+
+parseClueUnfiltered :: Clue -> [ParsedClue]
+parseClueUnfiltered c@(Clue (phr, l))
   = parseWithDefIndicator c ws l ++ parseWithoutDefIndicator c ws l
-  where
-    normalisePhrase = filter (not . isPunctuation) . map toLower
-    ws              = words (normalisePhrase phr)
+    where
+        normalisePhrase = filter (not . isPunctuation) . map toLower
+        ws              = words (normalisePhrase phr)
 
 parseWithDefIndicator :: Clue -> Words -> Length -> [ParsedClue]
 parseWithDefIndicator c ws l
@@ -36,11 +49,15 @@ parseWithoutDefIndicator c ws l
       pt <- parseTrees zs
       return (ParsedClue (c, def, [], pt))
 
-parseTrees :: Words -> [ParseTree]
-parseTrees ws@[w]
+
+
+parseTrees = memoize parseTreesUnMemoized
+
+parseTreesUnMemoized :: Words -> [ParseTree]
+parseTreesUnMemoized ws@[w]
   = parseWithoutConcat ws
 
-parseTrees ws
+parseTreesUnMemoized ws
   = parseWithoutConcat ws ++ parseWithConcat ws
 
 parseWithConcat :: Words -> [ParseTree]

@@ -12,7 +12,7 @@ import Types
 import Wordlists
 import Synonyms
 import Lists
-
+import Memoize
 
 {-
 data ParseTree
@@ -31,6 +31,8 @@ data ParseTree
   | PartC Indicator ParseTree
   deriving (Eq, Show)
  -}
+
+
 
 evaluateParseTree :: ParseTree -> Constraints -> [Phrase]
 evaluateParseTree pt cs

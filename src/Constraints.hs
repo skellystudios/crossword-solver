@@ -16,11 +16,13 @@ module Constraints
   , maxLength
 
   , makeConstraints -- This is temporary, remove it when I work this stuff out
+  , maxOfNonEmptyList
   ) where
 
 import Data.Functor
 
 import Types
+import Synonyms
 
 newtype Constraints
   = Constraints (Maybe String, Maybe Length, Maybe Length)
@@ -81,7 +83,7 @@ maxLength NullC               = 0
 maxLength (IdentC w)          = length w
 maxLength (JuxtC _ pt1 pt2)   = maxLength pt1 + maxLength pt2
 maxLength (ConcatC pts)       = foldr (\pt l -> maxLength pt + l) 0 pts
-maxLength (SynC _)            = 100
+maxLength (SynC w)            = maxOfNonEmptyList . (map length) . synonyms $ w
 maxLength (AnagC _ ws)        = length (concat ws)
 maxLength (InsertC _ pt1 pt2) = maxLength pt1 + maxLength pt2
 maxLength (SubC _ pt1 pt2)    = max (maxLength pt1 - minLength pt2) 1
@@ -90,3 +92,5 @@ maxLength (RevC _ pt)         = maxLength pt
 maxLength (FirstsC _ ws)      = length ws
 maxLength (LastsC _ ws)       = length ws
 maxLength (PartC _ pt)        = maxLength pt - 0
+
+maxOfNonEmptyList l = if null l then 0 else maximum l

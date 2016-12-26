@@ -10,8 +10,10 @@ import System.IO.Unsafe
 import qualified Data.HashMap as H
 import Data.Char
 import System.Directory
+import Debug.Trace
 
 import Types
+import Memoize
 
 thesaurusSynonyms :: Phrase -> [Phrase]
 thesaurusSynonyms phr
@@ -29,11 +31,13 @@ thesaurusSynonyms phr
 makeHashMap :: String -> H.Map Phrase [Phrase]
 makeHashMap string = H.fromList (map read (lines string))
 
-phraseThesaurus :: Phrase -> H.Map Phrase [Phrase]
-phraseThesaurus phr =
-  let path = "../data/words/" ++ [Data.Char.toUpper( head phr) ] ++ "/" ++ phr
+phraseThesaurus = memoize phraseThesaurusUnMemoized
+
+phraseThesaurusUnMemoized :: Phrase -> H.Map Phrase [Phrase]
+phraseThesaurusUnMemoized phr =
+  let path = if null phr then "" else "../data/words/" ++ [Data.Char.toUpper( head phr) ] ++ "/" ++ phr
   in
-    let exists = unsafePerformIO .doesFileExist $ path
+    let exists = trace "rofl" unsafePerformIO .doesFileExist $ path
     in
       let string = if exists then unsafePerformIO . readFile $ path else ""
       in makeHashMap string
