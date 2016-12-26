@@ -2,13 +2,21 @@ module Solver
   ( solve
   ) where
 
+import System.Timeout
+import System.IO.Unsafe
+
 import Types
 import Parser
 import Evaluator
 import Constraints
 import SampleClues.Everyman
 
-solve = chooseAnswer . evaluate . parseClue
+-- Timeout is in microseconds
+seconds = 1000000
+
+solve = take 1 . chooseAnswer . evaluate . parseClue
+
+solveWithTimeout t x = unsafePerformIO $ timeout (t) (return $ solve x)
 
 clue :: Int -> Clue
 clue 1 = Clue ("companion shredded corset",6) -- ESCORT
