@@ -22,6 +22,10 @@ newtype ParsedClue
   = ParsedClue (Clue, Definition, Indicator, ParseTree)
   deriving (Eq, Show)
 
+instance Ord ParsedClue where
+  p1 `compare` p2 = EQ
+
+
 data ParseTree
   = NullC
   | IdentC Word -- Done
@@ -32,7 +36,7 @@ data ParseTree
   | InsertC Indicator ParseTree ParseTree -- Done
   | SubC Indicator ParseTree ParseTree
   | HiddenC Indicator Words -- Done
-  | RevC Indicator ParseTree
+  | RevC Indicator ParseTree -- Done ?
   | FirstsC Indicator Words
   | LastsC Indicator Words
   | PartC Indicator ParseTree

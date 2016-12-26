@@ -14,6 +14,7 @@ import Wordlists
 import Synonyms
 import Lists
 import Memoize
+import EvaluationCosts
 
 {-
 data ParseTree
@@ -82,6 +83,9 @@ evaluateParseTree pt cs
         e <- evaluateParseTree pts cs
         return $ reverse e
 
+    evaluateParseTree' pt@(FirstsC i ws) cs
+      = [map head $ ws]
+
 --    evaluateParseTree' pt _
 --      = trace (show pt) $ trace "lol" []
 
@@ -115,12 +119,16 @@ isPrefixOfWordWith cs phr
   = maybe True (\p -> isPrefixOfWord (p ++ phr)) (prefix cs)
 
 evaluate :: [ParsedClue] -> [Answer]
-evaluate = concatMap evaluateParsedClue
+evaluate = concatMap evaluateParsedClue . sortCheapestFirst
+
+sortCheapestFirst :: [ParsedClue] -> [ParsedClue]
+sortCheapestFirst = map (snd) . sort . map (\x -> (evaluationCost x, x))
+
 
 evaluateParsedClue :: ParsedClue -> [Answer]
 evaluateParsedClue
   pc@(ParsedClue ((Clue (_, len)), def, indicator, (SynC c)))
-  = []
+  = [] -- TODO: need to probably reinclude this at some point, as these do exist
 
 evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt))
   = do

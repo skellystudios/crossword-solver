@@ -5,13 +5,14 @@ module Parser
 import Control.Monad
 import Data.Char
 import Data.Functor
+import Data.List
+import Debug.Trace
 
 import Indicators
 import Lists
 import Types
 import Wordlists
 import Constraints
-import Debug.Trace
 import Memoize
 
 parseFitsLength :: Length -> ParsedClue -> Bool
