@@ -57,11 +57,22 @@ evaluateParseTree pt cs
 
     evaluateParseTree' pt@(InsertC i pt1 pt2) cs
       = do
-        e1 <- evaluateParseTree pt1 cs
+        let cs' = withMin (const 1) $ withMax (subtract 2) $ withNoPrefix $ cs
+        e1 <- evaluateParseTree pt1 cs'
         let e1len = length e1
-            cs' =  withMin (subtract e1len) $ withMax (subtract e1len) $ cs
-        e2 <- evaluateParseTree pt2 cs'
+            cs'' =  withNoPrefix $ withMin (subtract e1len) $ withMax (subtract e1len) $ cs
+        e2 <- evaluateParseTree pt2 cs''
         ret <- performInsertion e1 e2
+        return ret
+
+    evaluateParseTree' pt@(SubC i pt1 pt2) cs
+      = do
+        let cs' = withNoMax $ withMin (const 1) $ withNoPrefix $ cs
+        e1 <- evaluateParseTree pt1 cs'
+        let e1len = length e1
+            cs'' =  withNoPrefix $ withMin ((+) e1len) $ withMax ((+) e1len) $ cs
+        e2 <- evaluateParseTree pt2 cs''
+        ret <- (performSubtraction e1 e2) -- ++ (performSubtraction e2 e1)
         return ret
 
     evaluateParseTree' pt@(JuxtC _ pt1 pt2) cs
@@ -85,9 +96,6 @@ evaluateParseTree pt cs
 
     evaluateParseTree' pt@(FirstsC i ws) cs
       = [map head $ ws]
-
---    evaluateParseTree' pt _
---      = trace (show pt) $ trace "lol" []
 
 
 evaluateConcatenatedParseTrees  :: [ParseTree] -> Constraints -> [Phrase]
@@ -158,6 +166,27 @@ performInsertion p1 p2
   = do
     (p2a, p2b) <- twoSplitsOf p2
     return $ p2a ++ p1 ++ p2b
+
+performSubtraction :: Phrase -> Phrase -> [Phrase]
+performSubtraction p1 p2
+  = (performMiddleAndEndSubtraction p1 p2) ++ (performFrontSubtraction p1 p2)
+-- trace (p1 ++ p2)
+
+performMiddleAndEndSubtraction :: Phrase -> Phrase -> [Phrase]
+performMiddleAndEndSubtraction p1 p2
+  = do
+    -- For some reason threeSplitsOf "abc" will return ("a", "bc", "") but not ("", "ab", "c")
+    (p2a, p2b, p2c) <- threeSplitsOf p2
+    guard (p2b == p1)
+    return $ p2a ++ p2c
+
+performFrontSubtraction :: Phrase -> Phrase -> [Phrase]
+performFrontSubtraction p1 p2
+  = do
+  -- For some reason threeSplitsOf "abc" will return ("a", "bc", "") but not ("", "ab", "c")
+  (p2a, p2b) <- twoSplitsOf p2
+  guard (p2a == p1)
+  return p2b
 
 substrings :: Words -> [String]
 substrings = concatMap (tail . inits) . tails . concat

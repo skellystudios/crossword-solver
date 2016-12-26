@@ -139,8 +139,8 @@ parseSubs :: TriplesOf Words -> [ParseTree]
 parseSubs wts
   = do
       (ys, zs, ws) <- wts
-      let ysFromWs = isSubIndicator zs
-          wsFromYs = isReverseSubIndicator zs
+      let ysFromWs = isReverseSubIndicator zs
+          wsFromYs = isSubIndicator zs
 
       guard (ysFromWs || wsFromYs)
       pt1 <- parseTrees ys
