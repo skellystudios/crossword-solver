@@ -37,11 +37,15 @@ If you do want to do it in memory, then uncomment out the `THESAURUS IN MEMORY` 
 
 ### Functioning
 - [ ] Get all the clue types working
-- [ ] Move the thesaurus function to be a system call rather than via files
-- [ ] Make a more expansive, extensible thesaurus + wordlist
 - [ ] Pull in a proper memoize library, and memoize the eval function
 - [ ] Print the Answers in a nicer way
+- [ ] Support multi-word clues?
+
+### Data
+- [ ] Move the thesaurus function to be a system call rather than via files
+- [ ] Make a more expansive, extensible thesaurus + wordlist
+- [ ] Scrape the web / books for more indicators words
 
 ### Testing/Results
-- [ ] Start gathering a better benchmark suite
+- [ ] Start gathering a better benchmark suite – scrape the Times, Guardian, Telegraph etc.
 - [ ] Make a function to run solver against the benchmarks: at a different level of timeout
