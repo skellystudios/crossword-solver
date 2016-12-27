@@ -15,10 +15,12 @@ import Debug.Trace
 import Types
 import Memoize
 
-thesaurusSynonyms :: Phrase -> [Phrase]
-thesaurusSynonyms phr
-  = H.findWithDefault [] phr (phraseThesaurus phr)
-  -- = H.findWithDefault [] phr thesaurus
+
+----------- THESAURUS IN MEMORY -----------
+
+-- thesaurusSynonyms :: Phrase -> [Phrase]
+-- thesaurusSynonyms phr
+-- = H.findWithDefault [] phr thesaurus
 
 -- thesaurusString :: String
 -- thesaurusString
@@ -28,10 +30,13 @@ thesaurusSynonyms phr
 -- thesaurus
 --   = makeHashMap thesaurusString
 
-makeHashMap :: String -> H.Map Phrase [Phrase]
-makeHashMap string = H.fromList (map read (lines string))
+------------------ END ------------------
 
-phraseThesaurus = memoize phraseThesaurusUnMemoized
+----------- THESAURUS VIA FILE -----------
+
+thesaurusSynonyms :: Phrase -> [Phrase]
+thesaurusSynonyms phr
+  = H.findWithDefault [] phr (phraseThesaurus phr)
 
 phraseThesaurusUnMemoized :: Phrase -> H.Map Phrase [Phrase]
 phraseThesaurusUnMemoized phr =
@@ -41,3 +46,11 @@ phraseThesaurusUnMemoized phr =
     in
       let string = if exists then unsafePerformIO . readFile $ path else ""
       in makeHashMap string
+
+phraseThesaurus = memoize phraseThesaurusUnMemoized
+
+------------------ END ------------------
+
+
+makeHashMap :: String -> H.Map Phrase [Phrase]
+makeHashMap string = H.fromList (map read (lines string))
