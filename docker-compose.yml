@@ -1,0 +1,7 @@
+solver:
+    build: .
+    volumes:
+        - ./data:/opt/solver/data
+        - ./src:/opt/solver/src
+    command: ghci Solver.hs
+
