@@ -99,11 +99,13 @@ reverseJuxtIndicators
   = S.fromList
       [ "after"
       , "opposite"
+      , "with"
       ]
 
 anagIndicators
   = S.fromList
-      [ "Byzantine"
+      [ "moister"
+      , "Byzantine"
       , "Machiavellian"
       , "abandon"
       , "abandoned"
@@ -2085,6 +2087,7 @@ hiddenIndicators
       , "from"
       , "inside"
       , "needed by"
+      , "letters from"
       ]
 
 reverseIndicators
@@ -2115,6 +2118,7 @@ lastsIndicators
   = S.fromList
       [ "end of"
       , "in the end"
+      , "ultimate"
       ]
 
 partsIndicators

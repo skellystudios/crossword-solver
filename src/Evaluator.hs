@@ -97,6 +97,9 @@ evaluateParseTree pt cs
     evaluateParseTree' pt@(FirstsC i ws) cs
       = [map head $ ws]
 
+    evaluateParseTree' pt@(LastsC i ws) cs
+      = [map (head . reverse) $ ws]
+
 
 evaluateConcatenatedParseTrees  :: [ParseTree] -> Constraints -> [Phrase]
 evaluateConcatenatedParseTrees [pt] cs
@@ -134,9 +137,9 @@ sortCheapestFirst = map (snd) . sort . map (\x -> (evaluationCost x, x))
 
 
 evaluateParsedClue :: ParsedClue -> [Answer]
-evaluateParsedClue
-  pc@(ParsedClue ((Clue (_, len)), def, indicator, (SynC c)))
-  = [] -- TODO: need to probably reinclude this at some point, as these do exist
+-- evaluateParsedClue
+--   pc@(ParsedClue ((Clue (_, len)), def, indicator, (SynC c)))
+--   = [] -- TODO: need to probably reinclude this at some point, as these do exist
 
 evaluateParsedClue pc@(ParsedClue ((Clue (_, len)), def, indicator, pt))
   = do

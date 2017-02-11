@@ -8,4 +8,4 @@ import Types
 
 synonyms :: Phrase -> [Phrase]
 synonyms phr
-  = thesaurusSynonyms phr ++ abbreviations phr -- ++ [""]
+  = thesaurusSynonyms phr ++ abbreviations phr ++ [phr] -- ++ [""] 

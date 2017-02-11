@@ -72,7 +72,7 @@ parseWithConcat ws
 parseWithoutConcat :: Words -> [ParseTree]
 parseWithoutConcat ws
   = parseSyn ws :
-      -- parseJuxts wts ++
+      parseJuxts wts ++
       parseAnags wps ++
       parseInserts wts ++
       parseSubs wts ++

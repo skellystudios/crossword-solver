@@ -12,6 +12,7 @@ lengthPenalty ws = 60 + (length (words ws))   -- Magic constant here ):
 
 parseTreeCost :: ParseTree -> Int
 parseTreeCost (ConcatC trees) = 20 * (length trees) + sum (map parseTreeCost trees)
+parseTreeCost (JuxtC i tree1 tree2) =  10 + parseTreeCost tree1 + parseTreeCost tree2
 parseTreeCost (AnagC i ws) = 10
 parseTreeCost (HiddenC ind strings) = 40
 parseTreeCost (InsertC ind tree1 tree2) = 10 + parseTreeCost tree1 + parseTreeCost tree2  -- weight against complex insertions?
