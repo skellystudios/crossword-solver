@@ -52,6 +52,8 @@ If you do want to do it in memory, then uncomment out the `THESAURUS IN MEMORY` 
     - [ ] "X is a Y" types things -> I'm missing Ibsen, Scorsese, BSE, Waterloo (battle + song) etc.
     - [ ] More abbreviations -> Ag = silver
     - [ ] Phrasal verbs? "Expand on" + conjugates
+    - [ ] Currently have "hesitate" = "think twice" but not past tense
+    - [ ] Have okapi -> animal, but not "rainforest animal" –– Maybe ignore adjectives???
 - [ ] Scrape the web / books for more indicators words
 
 ### Testing/Results
