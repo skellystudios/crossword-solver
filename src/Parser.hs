@@ -13,7 +13,7 @@ import Lists
 import Types
 import Wordlists
 import Constraints
-import Memoize
+import Data.Function.Memoize
 
 parseFitsLength :: Length -> ParsedClue -> Bool
 parseFitsLength l pc@(ParsedClue (c, def, zs, pt)) =

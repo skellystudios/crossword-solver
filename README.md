@@ -39,7 +39,7 @@ If you do want to do it in memory, then uncomment out the `THESAURUS IN MEMORY` 
 - [x] Get all the missing clue types working
   - [x] Firsts
   - [x] Lasts
-- [ ] Pull in a proper memoize library, and memoize the eval function
+- [x] Pull in a proper memoize library, and memoize the eval function
 - [ ] Print the Answers in a nicer way
 - [ ] Support multi-word clues?
 

@@ -13,8 +13,7 @@ import System.Directory
 import Debug.Trace
 
 import Types
-import Memoize
-
+import Data.Function.Memoize
 
 ----------- THESAURUS IN MEMORY -----------
 

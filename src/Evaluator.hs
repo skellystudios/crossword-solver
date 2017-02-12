@@ -13,7 +13,7 @@ import Types
 import Wordlists
 import Synonyms
 import Lists
-import Memoize
+import Data.Function.Memoize
 import EvaluationCosts
 
 {-
@@ -34,10 +34,10 @@ data ParseTree
   deriving (Eq, Show)
  -}
 
+evaluateParseTree = memoize2 evaluateParseTreeUnmemoized
 
-
-evaluateParseTree :: ParseTree -> Constraints -> [Phrase]
-evaluateParseTree pt cs
+evaluateParseTreeUnmemoized :: ParseTree -> Constraints -> [Phrase]
+evaluateParseTreeUnmemoized pt cs
   =  evaluateParseTree' pt cs
   where
     evaluateParseTree' NullC cs

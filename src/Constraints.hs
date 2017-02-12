@@ -1,3 +1,5 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Constraints
   ( Constraints
   , noConstraints
@@ -24,6 +26,7 @@ module Constraints
   ) where
 
 import Data.Functor
+import Data.Function.Memoize
 
 import Types
 import Synonyms
@@ -31,6 +34,8 @@ import Synonyms
 newtype Constraints
   = Constraints (Maybe String, Maybe Length, Maybe Length) -- Prefix, Min, Max
   deriving (Eq, Show)
+
+deriveMemoizable ''Constraints
 
 makeConstraints :: Maybe String -> Maybe Length -> Maybe Length -> Constraints
 makeConstraints s n m = Constraints (s, n, m)

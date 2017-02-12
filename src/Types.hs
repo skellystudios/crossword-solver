@@ -1,6 +1,9 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module Types where
 
 import Prelude hiding (Word)
+import Data.Function.Memoize
 
 type Phrase       = String
 type Length       = Int
@@ -45,3 +48,6 @@ data ParseTree
 newtype Answer
   = Answer (Phrase, ParsedClue)
   deriving (Eq, Show)
+
+deriveMemoizable ''ParseTree
+-- deriveMemoizable ''T
