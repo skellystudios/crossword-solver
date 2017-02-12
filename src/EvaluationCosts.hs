@@ -24,3 +24,4 @@ parseTreeCost (LastsC ind strings) = 20
 parseTreeCost (PartC ind tree) = 60 + parseTreeCost tree
 parseTreeCost (BeforeC ind tree1 tree2) = 10 + parseTreeCost tree1 + parseTreeCost tree2  -- weight against complex insertions?
 parseTreeCost (AfterC ind tree1 tree2) = 10 + parseTreeCost tree1 + parseTreeCost tree2  -- weight against complex insertions?
+parseTreeCost (IdentC tree1) = 5

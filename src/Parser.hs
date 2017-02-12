@@ -190,7 +190,9 @@ parseParts wps
   = do
       (ys, zs) <- wps
       guard (isPartIndicator ys)
-      pt <- simplifyPartsClue <$> parseTrees zs
+      -- Not sure if that simplification is really needed
+      -- pt <- simplifyPartsClue <$> parseTrees zs
+      pt <- parseTrees zs
       return (PartC ys pt)
 
 
@@ -223,19 +225,22 @@ parsePrefixAfterClues wts
       pt2 <- parseTrees ws
       return (AfterC ys pt1 pt2) -- Zs should become first
 
-simplifyPartsClue :: ParseTree -> ParseTree
-simplifyPartsClue (ConcatC pts)
-  = maybe NullC ConcatC (foldr f (Just []) pts)
-  where
-    f pt mpts
-      = do
-          pts <- mpts
-          case simplifyPartsClue pt of
-            NullC  -> Nothing
-            spt   -> Just (spt : pts)
 
-simplifyPartsClue (SynC phr)
-  = IdentC phr
+-- This below is a pretty neat way of doing something, but I'm not sure it's correct semantics
 
-simplifyPartsClue _
-  = NullC
+-- simplifyPartsClue :: ParseTree -> ParseTree
+-- simplifyPartsClue (ConcatC pts)
+--   = maybe NullC ConcatC (foldr f (Just []) pts)
+--   where
+--     f pt mpts
+--       = do
+--           pts <- mpts
+--           case simplifyPartsClue pt of
+--             NullC  -> Nothing
+--             spt   -> Just (spt : pts)
+--
+-- simplifyPartsClue (SynC phr)
+--   = IdentC phr
+--
+-- simplifyPartsClue _
+--   = NullC

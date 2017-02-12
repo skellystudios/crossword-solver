@@ -118,6 +118,14 @@ evaluateParseTreeUnmemoized pt cs
         e2 <- evaluateParseTree pt2 cs''
         return (e1 ++ e2)
 
+    evaluateParseTree' pt@(PartC i pt1) cs
+      = do
+        let cs' = withNoPrefix $ withNoMax $ cs
+        e1 <- evaluateParseTree pt1 cs'
+        substring <- phraseSubstrings e1
+        guard $ phraseFitsMaxMin cs substring
+        return substring
+
 
 evaluateConcatenatedParseTrees  :: [ParseTree] -> Constraints -> [Phrase]
 evaluateConcatenatedParseTrees [pt] cs
@@ -211,3 +219,7 @@ performFrontSubtraction p1 p2
 
 substrings :: Words -> [String]
 substrings = concatMap (tail . inits) . tails . concat
+
+
+phraseSubstrings :: Phrase -> [String]
+phraseSubstrings = concatMap (tail . inits) . tails

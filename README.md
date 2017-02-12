@@ -41,6 +41,7 @@ If you do want to do it in memory, then uncomment out the `THESAURUS IN MEMORY` 
   - [x] Lasts
   - [x] Before
   - [x] After
+  - [ ] "Small" (small female = "f")
 - [x] Pull in a proper memoize library, and memoize the eval function
 - [ ] Print the Answers in a nicer way
 - [ ] Support multi-word clues?
@@ -48,6 +49,9 @@ If you do want to do it in memory, then uncomment out the `THESAURUS IN MEMORY` 
 ### Data
 - [ ] Move the thesaurus function to be a system call rather than via files
 - [ ] Make a more expansive, extensible thesaurus + wordlist
+    - [ ] "X is a Y" types things -> I'm missing Ibsen, Scorsese, BSE, Waterloo (battle + song) etc.
+    - [ ] More abbreviations -> Ag = silver
+    - [ ] Phrasal verbs? "Expand on" + conjugates
 - [ ] Scrape the web / books for more indicators words
 
 ### Testing/Results
