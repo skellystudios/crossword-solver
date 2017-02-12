@@ -43,6 +43,8 @@ data ParseTree
   | FirstsC Indicator Words
   | LastsC Indicator Words
   | PartC Indicator ParseTree
+  | BeforeC Indicator ParseTree ParseTree
+  | AfterC Indicator ParseTree ParseTree 
   deriving (Eq, Show)
 
 newtype Answer

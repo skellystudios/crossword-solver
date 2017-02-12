@@ -80,7 +80,10 @@ parseWithoutConcat ws
       parseRevs wps ++
       parseFirsts wps ++
       parseLasts wps ++
-      parseParts wps
+      parseParts wps ++
+      parseBeforeClues wts ++
+      parseInfixAfterClues wts ++
+      parsePrefixAfterClues wts
 
   where
     wps = mirroredTwoSplitsOf ws
@@ -188,7 +191,37 @@ parseParts wps
       (ys, zs) <- wps
       guard (isPartIndicator ys)
       pt <- simplifyPartsClue <$> parseTrees zs
-      return (PartC zs pt)
+      return (PartC ys pt)
+
+
+parseBeforeClues :: TriplesOf Words -> [ParseTree]
+parseBeforeClues wts
+  = do
+      (ys, zs, ws) <- wts -- These are of the form "before zs, ws"
+      guard (isBeforeIndicator ys)
+      pt2 <- parseTrees zs
+      pt1 <- parseTrees ws
+      return (BeforeC ys pt1 pt2) -- Ws should come first
+
+
+parseInfixAfterClues :: TriplesOf Words -> [ParseTree]
+parseInfixAfterClues wts
+  = do
+      (ys, zs, ws) <- wts   -- "Ys after Ws"
+      guard (isAfterIndicator zs)
+      pt1 <- parseTrees ws
+      pt2 <- parseTrees ys
+      return (AfterC zs pt1 pt2) -- Ws should come first
+
+
+parsePrefixAfterClues :: TriplesOf Words -> [ParseTree]
+parsePrefixAfterClues wts
+  = do
+      (ys, zs, ws) <- wts  -- "After Zs Ws"
+      guard (isAfterIndicator ys)
+      pt1 <- parseTrees zs
+      pt2 <- parseTrees ws
+      return (AfterC ys pt1 pt2) -- Zs should become first
 
 simplifyPartsClue :: ParseTree -> ParseTree
 simplifyPartsClue (ConcatC pts)

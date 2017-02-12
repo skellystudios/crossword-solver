@@ -79,7 +79,7 @@ evaluateParseTreeUnmemoized pt cs
       = do
         e1 <- evaluateParseTree pt1 cs
         let e1len = length e1
-            cs' =  withMin (subtract e1len) $ withMax (subtract e1len) $ cs
+            cs' =  withNoPrefix $ withMin (subtract e1len) $ withMax (subtract e1len) $ cs
         e2 <- evaluateParseTree pt2 cs'
         return (e1 ++ e2)
 
@@ -99,6 +99,24 @@ evaluateParseTreeUnmemoized pt cs
 
     evaluateParseTree' pt@(LastsC i ws) cs
       = [map (head . reverse) $ ws]
+
+    evaluateParseTree' pt@(BeforeC i pt1 pt2) cs
+      = do
+        let cs' = withMin (const 1) $ withMax (subtract 2) $ cs
+        e1 <- evaluateParseTree pt1 cs'
+        let e1len = length e1
+            cs'' =  withNoPrefix $ withMin (subtract e1len) $ withMax (subtract e1len) $ cs
+        e2 <- evaluateParseTree pt2 cs''
+        return (e1 ++ e2)
+
+    evaluateParseTree' pt@(AfterC i pt1 pt2) cs
+      = do
+        let cs' = withMin (const 1) $ withMax (subtract 2) $ cs
+        e1 <- evaluateParseTree pt1 cs'
+        let e1len = length e1
+            cs'' =  withNoPrefix $ withMin (subtract e1len) $ withMax (subtract e1len) $ cs
+        e2 <- evaluateParseTree pt2 cs''
+        return (e1 ++ e2)
 
 
 evaluateConcatenatedParseTrees  :: [ParseTree] -> Constraints -> [Phrase]

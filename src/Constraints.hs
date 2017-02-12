@@ -102,6 +102,8 @@ minLength (RevC _ pt)         = minLength pt
 minLength (FirstsC _ ws)      = length ws
 minLength (LastsC _ ws)       = length ws
 minLength (PartC _ pt)        = 1
+minLength (BeforeC _ pt1 pt2) = minLength pt1 + minLength pt2
+minLength (AfterC _ pt1 pt2)  = minLength pt1 + minLength pt2
 
 maxLength NullC               = 0
 maxLength (IdentC w)          = length w
@@ -116,5 +118,7 @@ maxLength (RevC _ pt)         = maxLength pt
 maxLength (FirstsC _ ws)      = length ws
 maxLength (LastsC _ ws)       = length ws
 maxLength (PartC _ pt)        = maxLength pt - 0
+maxLength (BeforeC _ pt1 pt2) = maxLength pt1 + maxLength pt2
+maxLength (AfterC _ pt1 pt2)  = maxLength pt1 + maxLength pt2
 
 maxOfNonEmptyList l = if null l then 0 else maximum l

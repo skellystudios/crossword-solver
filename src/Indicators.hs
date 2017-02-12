@@ -12,6 +12,8 @@ module Indicators
   , isFirstsIndicator
   , isLastsIndicator
   , isPartIndicator
+  , isBeforeIndicator
+  , isAfterIndicator
   ) where
 
 import qualified Data.Set as S
@@ -30,7 +32,9 @@ isDefIndicator,
   isReverseIndicator,
   isFirstsIndicator,
   isLastsIndicator,
-  isPartIndicator :: Words -> Bool
+  isPartIndicator,
+  isBeforeIndicator,
+  isAfterIndicator :: Words -> Bool
 
 isDefIndicator            = isIndicatorIn defIndicators
 isJuxtIndicator           = isIndicatorIn juxtIndicators
@@ -45,6 +49,8 @@ isReverseIndicator        = isIndicatorIn reverseIndicators
 isFirstsIndicator         = isIndicatorIn firstsIndicators
 isLastsIndicator          = isIndicatorIn lastsIndicators
 isPartIndicator           = isIndicatorIn partsIndicators
+isBeforeIndicator         = isIndicatorIn beforeIndicators
+isAfterIndicator          = isIndicatorIn afterIndicators
 
 isIndicatorIn :: S.Set Phrase -> Words -> Bool
 isIndicatorIn s ws
@@ -62,7 +68,9 @@ defIndicators,
   reverseIndicators,
   firstsIndicators,
   lastsIndicators,
-  partsIndicators :: S.Set Phrase
+  partsIndicators,
+  beforeIndicators,
+  afterIndicators :: S.Set Phrase
 
 defIndicators
   = S.fromList
@@ -2112,6 +2120,7 @@ firstsIndicators
       , "head"
       , "leader"
       , "leaders"
+      , "opening of"
       ]
 
 lastsIndicators
@@ -2136,3 +2145,11 @@ partsIndicators
       , "partly"
       , "tailless"
       ]
+
+beforeIndicators
+  = S.fromList
+    [ "before" ]
+
+afterIndicators
+  = S.fromList
+    [ "after" ]
